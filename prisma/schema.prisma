@@ -3,9 +3,8 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")   // Neon pooled (runtime)
-  directUrl = env("DIRECT_URL")     // Neon direct (migrations)
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 enum InstitutionStatus {
@@ -20,36 +19,293 @@ enum UserRole {
   STUDENT
 }
 
+/**
+ * Targets de visibilidad para publicaciones
+ * - ALL: visible para toda la institución
+ * - ROLE: visible para uno o más roles
+ * - COURSE: visible para uno o más cursos (ALUMNOS del curso + PROFESOR JEFE del curso)
+ * Nota: "Profesor jefe" se determina por TeacherCourse.isChief=true (no por Course.chiefTeacherId).
+ */
+enum PostTargetType {
+  ALL
+  ROLE
+  COURSE
+}
+
+enum AcademicLevelType {
+  BASIC
+  MIDDLE
+}
+
+enum SectionNaming {
+  LETTERS
+  NUMBERS
+}
+
+enum CourseNameFormat {
+  CHILE_TRADITIONAL // 7° A, 1° Medio B
+  COMPACT // 7A, 1MA / 4MB
+  HUNDREDS // 101/102/103 para 1M; 201/202 para 2M; etc.
+}
+
 model Institution {
-   id           String     @id @default(uuid()) @db.Uuid
-  name         String
-  domainSlug   String?    @unique
+  id           String            @id @default(uuid()) @db.Uuid
+  name         String            @unique
   contactEmail String?
   status       InstitutionStatus @default(draft)
-  trialEndsAt  DateTime?
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
 
-  // 🔽 Nuevo campo: quién creó esta institución (ID de Neon Auth)
-  createdByAuthUserId String?   // authUserId de Neon Auth
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   appUsers     AppUser[]
+  invitations  Invitation[]
+  courses      Course[]
+  posts        Post[]
+  courseConfig InstitutionCourseConfig?
+
+  // Relaciones inversas
+  teacherCourses              TeacherCourse[]
+  invitationCourseAssignments InvitationCourseAssignment[]
+
+  @@index([status])
 }
 
 model AppUser {
-  id            String       @id @default(uuid()) @db.Uuid
+  id String @id @default(uuid()) @db.Uuid
 
-  /// ID del usuario en Neon Auth (neon_auth.users_sync.id)
-  authUserId    String?      @unique   
+  // Únicos globales (simplicidad)
+  authUserId String @unique
+  email      String @unique
 
-  email         String?
-  fullName      String?
+  fullName String?
+  role     UserRole
+
+  positionTitle String?
+  isSuperAdmin  Boolean @default(false)
+
+  // Pertenece a 1 institución
+  institutionId String      @db.Uuid
+  institution   Institution @relation(fields: [institutionId], references: [id], onDelete: Cascade)
+
+  /**
+   * Curso principal:
+   * - STUDENT: normalmente requerido a nivel app
+   * - TEACHER/ADMIN: normalmente null
+   */
+  courseId String? @db.Uuid
+  course   Course? @relation("StudentCourse", fields: [courseId], references: [id], onDelete: SetNull)
+
+  profileCompletedAt DateTime?
+  isActive           Boolean   @default(true)
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  // Invitaciones creadas por este usuario
+  invitationsCreated Invitation[] @relation("InvitationCreatedBy")
+
+  // Publicaciones creadas por este usuario
+  posts Post[] @relation("PostsByAuthor")
+
+  // Cursos donde enseña / y opcionalmente donde es jefe (isChief=true)
+  teacherCourses TeacherCourse[]
+
+  @@index([institutionId, role])
+  @@index([institutionId, courseId])
+  @@index([institutionId, isActive])
+}
+
+model Invitation {
+  id        String @id @default(uuid()) @db.Uuid
+  tokenHash String @unique
+
+  email         String
   role          UserRole
+  positionTitle String?
 
-  institutionId String?      @db.Uuid
-  institution   Institution? @relation(fields: [institutionId], references: [id])
+  /**
+   * Asignación inicial:
+   * - role=STUDENT => courseId requerido por lógica (en server action)
+   * - role=TEACHER/ADMIN => normalmente null
+   */
+  courseId String? @db.Uuid
+  course   Course? @relation("InvitationCourse", fields: [courseId], references: [id], onDelete: SetNull)
 
-  isActive      Boolean      @default(true)
-  createdAt     DateTime     @default(now())
-  updatedAt     DateTime     @updatedAt
+  /**
+   * Para TEACHER: pre-asignación de cursos (y jefaturas) con isChief
+   * - role=TEACHER => 1..N (recomendado) filas aquí
+   * - role=ADMINISTRATIVE/STUDENT => normalmente vacío
+   */
+  courseAssignments InvitationCourseAssignment[]
+
+  institutionId      String @db.Uuid
+  createdByAppUserId String @db.Uuid
+
+  institution Institution @relation(fields: [institutionId], references: [id], onDelete: Cascade)
+  createdBy   AppUser     @relation("InvitationCreatedBy", fields: [createdByAppUserId], references: [id], onDelete: Cascade)
+
+  usedAt    DateTime?
+  expiresAt DateTime
+  createdAt DateTime  @default(now())
+
+  @@index([institutionId])
+  @@index([institutionId, email])
+  @@index([expiresAt])
+  @@index([courseId])
+}
+
+model InvitationCourseAssignment {
+  id            String @id @default(uuid()) @db.Uuid
+  invitationId  String @db.Uuid
+  courseId      String @db.Uuid
+  institutionId String @db.Uuid
+
+  // Si es jefe del curso
+  isChief Boolean @default(false)
+
+  invitation  Invitation  @relation(fields: [invitationId], references: [id], onDelete: Cascade)
+  course      Course      @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  institution Institution @relation(fields: [institutionId], references: [id], onDelete: Cascade)
+
+  @@unique([invitationId, courseId])
+  @@index([institutionId])
+  @@index([courseId])
+  @@index([courseId, isChief])
+}
+
+model InstitutionCourseConfig {
+  id            String      @id @default(uuid()) @db.Uuid
+  institutionId String      @unique @db.Uuid
+  institution   Institution @relation(fields: [institutionId], references: [id], onDelete: Cascade)
+
+  activeLevels String[] @default([])
+
+  // Paralelos
+  sectionNaming SectionNaming @default(LETTERS)
+  sectionCount  Int           @default(2)
+
+  // Formato nombre visible
+  nameFormat CourseNameFormat @default(CHILE_TRADITIONAL)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([institutionId])
+}
+
+model Course {
+  id            String      @id @default(uuid()) @db.Uuid
+  institutionId String      @db.Uuid
+  institution   Institution @relation(fields: [institutionId], references: [id], onDelete: Cascade)
+
+  // Código estable: B1..B8, M1..M4
+  levelCode String
+
+  // Tipo + número para consultas
+  levelType   AcademicLevelType
+  levelNumber Int
+
+  // Sección estable: A/B/C o 1/2/3
+  section String
+
+  // Nombre visible (se puede recalcular si cambia el formato)
+  name String
+
+  isActive Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Estudiantes asignados a este curso (AppUser.courseId)
+  students AppUser[] @relation("StudentCourse")
+
+  // Profesores asignados a este curso (y jefe si isChief=true)
+  teacherCourses TeacherCourse[]
+
+  // Visibilidad de publicaciones por curso
+  postTargets PostTarget[]
+
+  // Invitaciones cuyo courseId apunta a este curso (p.ej. STUDENT)
+  invitations Invitation[] @relation("InvitationCourse")
+
+  // Pre-asignaciones en invitaciones (para TEACHER)
+  invitationCourseAssignments InvitationCourseAssignment[]
+
+  @@unique([institutionId, levelCode, section])
+  @@unique([institutionId, name])
+  @@index([institutionId])
+  @@index([institutionId, isActive])
+}
+
+model TeacherCourse {
+  id            String @id @default(uuid()) @db.Uuid
+  teacherId     String @db.Uuid
+  courseId      String @db.Uuid
+  institutionId String @db.Uuid
+
+  isChief Boolean @default(false)
+
+  teacher     AppUser     @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  course      Course      @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  institution Institution @relation(fields: [institutionId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@unique([teacherId, courseId])
+  @@index([institutionId])
+  @@index([teacherId])
+  @@index([courseId])
+  @@index([courseId, isChief])
+}
+
+model Post {
+  id String @id @default(uuid()) @db.Uuid
+
+  institutionId String @db.Uuid
+  authorId      String @db.Uuid
+
+  content String @db.VarChar(2000)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  institution Institution @relation(fields: [institutionId], references: [id], onDelete: Cascade)
+  author      AppUser     @relation("PostsByAuthor", fields: [authorId], references: [id], onDelete: Cascade)
+
+  attachmentId String?     @db.Uuid
+  attachment   Attachment? @relation(fields: [attachmentId], references: [id], onDelete: SetNull)
+
+  targets PostTarget[]
+
+  @@index([institutionId, createdAt])
+  @@index([authorId, createdAt])
+}
+
+model PostTarget {
+  id     String         @id @default(uuid()) @db.Uuid
+  postId String         @db.Uuid
+  type   PostTargetType
+
+  // ROLE target
+  role UserRole?
+
+  // COURSE target
+  courseId String? @db.Uuid
+  course   Course? @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@index([postId])
+  @@index([type, role])
+  @@index([type, courseId])
+}
+
+model Attachment {
+  id        String   @id @default(uuid()) @db.Uuid
+  name      String
+  mimeType  String
+  url       String
+  size      Int?
+  createdAt DateTime @default(now())
+
+  posts Post[]
 }

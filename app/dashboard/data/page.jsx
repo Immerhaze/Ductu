@@ -1,16 +1,23 @@
-// app/dashboard/userManagment/page.js
+// app/dashboard/data/page.jsx
+import { redirect } from "next/navigation";
+import { requireAppUser } from "@/lib/authz";
+import PerformanceDashboard from "./components/PerformanceDashboard";
 
-// Si usas hooks de React, siempre usa 'use client'
-'use client' 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
-import React from 'react';
-import PerformanceDashboard from './components/PerformanceDashboard';
+export default async function DataPage() {
+  try {
+     await requireAppUser({ requireProfileCompleted: true });
+  return <PerformanceDashboard />;
+  } catch (e) {
+    const code = e?.message;
 
-export default function DataPage() {
-  return (
-    <div className="h-screen w-full flex flex-col overflow-hidden">
-      <PerformanceDashboard/>
-    </div>
+    if (code === "PROFILE_INCOMPLETE") redirect("/complete-profile");
+    if (code === "APP_USER_NOT_FOUND") redirect("/post-auth");
+    if (code === "NO_INSTITUTION") redirect("/onboarding");
+    if (code === "ACCOUNT_DISABLED") redirect("/auth??mode=login");
 
-  );
+    redirect("/auth??mode=login");
+  }
 }

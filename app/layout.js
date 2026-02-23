@@ -13,11 +13,15 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+
 export const metadata = {
   title: "Ductu",
   description:
     "Software por inscripcion  de Sistema de administrativo para instituciones educativas",
-  viewport: "width=device-width, initial-scale=1.0",
+};
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
 };
 
 const theme = {

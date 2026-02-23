@@ -1,8 +1,11 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Button } from "../ui/button";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useUser, useStackApp } from "@stackframe/stack";
+
 import { MacbookScroll } from "../ui/macbook-scroll";
 import { TypewriterEffectSmooth } from "../ui/typewriter-effect";
 import FeaturesSection from "./featureSection";
@@ -10,33 +13,15 @@ import CallToActionSection from "./callToAction";
 import FooterSection from "./footer";
 
 export default function LandingPageContent() {
-  // Nuevo estado para controlar la aparición del resto de la página
-//   const [showFullPage, setShowFullPage] = useState(false);
+  const router = useRouter();
+  const user = useUser();              // null/undefined if not signed in
+  const stackApp = useStackApp();      // gives you signOut()
+  const [isSwitching, setIsSwitching] = useState(false);
 
-//   useEffect(() => {
-//     // 1. Duración del "parpadeo" del logo en el centro
-//     const initialDelay = 400;
-//     // 2. Duración de las animaciones de movimiento (logo y página)
-
-//     // Primer temporizador: Inicia las dos animaciones al mismo tiempo
-//     const startAnimationsTimer = setTimeout(() => {
-//       setShowFullPage(true);  // Inicia la animación de la página
-//     }, initialDelay);
-
-//     return () => {
-//       clearTimeout(startAnimationsTimer);
-//     };
-//   }, []);
-
-  // Clases dinámicas para el logo
-  const logoClasses = `text-blue-950 tracking-widest text-2xl font-semibold  absolute`;
+  const logoClasses = `text-blue-950 tracking-widest text-2xl font-semibold absolute`;
 
   function NavItem({ children }) {
-    return (
-      <li className="cursor-pointer hover:text-blue-950  ">
-        {children}
-      </li>
-    );
+    return <li className="cursor-pointer hover:text-blue-950">{children}</li>;
   }
 
   const words = [
@@ -45,26 +30,30 @@ export default function LandingPageContent() {
     { text: "con" },
     { text: "el" },
     { text: "ambiente" },
-    { text: "educativo.", },
+    { text: "educativo." },
   ];
+
+  async function handleSwitchAccount(target = "register") {
+    try {
+      setIsSwitching(true);
+      await stackApp.signOut(); // clears Stack session cookie
+      router.push(`/auth?mode=${target}`);
+    } finally {
+      setIsSwitching(false);
+    }
+  }
+
+  const isAuthed = !!user;
 
   return (
     <div className="relative w-full min-h-screen h-auto">
-      
-      {/* HEADER: Animación del logo y la barra de navegación */}
+      {/* HEADER */}
       <div className="w-full h-16 flex flex-row">
-        {/* El logo se renderiza con el estilo inicial y se anima al estilo final */}
-        <div className="w-1/3 h-16 flex justify-start items-center pl-8 ">
-          <h1 
-            className={logoClasses}
-          >
-            DUCTU
-          </h1>
+        <div className="w-1/3 h-16 flex justify-start items-center pl-8">
+          <h1 className={logoClasses}>DUCTU</h1>
         </div>
 
-        {/* El resto de la barra de navegación aparece después de la animación del logo */}
-        <div className={`
-          w-2/3 h-16 flex flex-row justify-center items-end`}>
+        <div className="w-2/3 h-16 flex flex-row justify-center items-end">
           <div className="w-1/2 min-h-16 flex justify-center items-center">
             <ul className="w-full text-gray-400 tracking-wide flex flex-row justify-around text-sm">
               <NavItem>Características</NavItem>
@@ -72,33 +61,66 @@ export default function LandingPageContent() {
               <NavItem>Contacto</NavItem>
             </ul>
           </div>
-          <div className="w-1/2 min-h-16 flex justify-center items-center space-x-8 ">
-            <Button  className={"bg-blue-950 cursor-pointer"} asChild>
-              <Link href={"/auth?login=true"} >
-              Ingresar
-              </Link>
-              </Button>
-            <Button className={"bg-blue-500 text-white hover:text-blue-950 cursor-pointer"} variant={"outline"}>
-               <Link href={"/auth?login=false"}>
-              Registrarse
-               </Link>
-            </Button>
+
+          <div className="w-1/2 min-h-16 flex justify-center items-center space-x-8">
+            {!isAuthed ? (
+              <>
+                <Button className="bg-blue-950 cursor-pointer" asChild>
+                  <Link href="/auth?mode=login">Ingresar</Link>
+                </Button>
+
+                <Button
+                  className="bg-blue-500 text-white hover:text-blue-950 cursor-pointer"
+                  variant="outline"
+                  asChild
+                >
+                  <Link href="/auth?mode=register">Registrarse</Link>
+                </Button>
+              </>
+            ) : (
+              <>
+   <Button
+  className="bg-blue-950 h-9  md:w-[100px] px-3 text-xs flex items-center gap-2 overflow-hidden"
+  asChild
+>
+  <Link
+    href="/post-auth"
+    title={user?.primaryEmail ?? ""}
+    className="flex items-center gap-2  min-w-0"
+  >
+    <span className="icon-[material-symbols--arrow-circle-right-outline] shrink-0 text-base" />
+    <span className="truncate min-w-0">{user?.primaryEmail}</span>
+  </Link>
+</Button>
+
+
+                <Button
+                  className="bg-blue-500 text-white hover:text-blue-950 cursor-pointer"
+                  variant="outline"
+                  disabled={isSwitching}
+                  onClick={() => handleSwitchAccount("register")}
+                >
+                  {isSwitching ? "Cambiando..." : "Cambiar cuenta"}
+                </Button>
+              </>
+            )}
           </div>
         </div>
       </div>
 
-      {/* CONTENIDO PRINCIPAL: Animación de la página principal */}
-      <div className={ "animate-fade-in duration-300 overflow-hidden"}>
+      {/* MAIN */}
+      <div className="animate-fade-in duration-300 overflow-hidden">
         <MacbookScroll
-          title={ <TypewriterEffectSmooth words={words} /> }
+          title={<TypewriterEffectSmooth words={words} />}
           src={"/screenshot.png"}
           showGradient={false}
         />
       </div>
-      <FeaturesSection/>
+
+      <FeaturesSection />
       <div className="w-full min-h-[100vh] h-screen">
-      <CallToActionSection/>
-      < FooterSection/>
+        <CallToActionSection />
+        <FooterSection />
       </div>
     </div>
   );

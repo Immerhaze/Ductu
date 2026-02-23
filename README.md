@@ -39,3 +39,7 @@ The easiest way to deploy your Next.js app is to use the [Vercel Platform](https
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
 >>>>>>> master
+
+
+
+arrelglano la lista de getsion de usuarios para uqe evnag del db y tambine para comenzar a poder hacer los cambios de los usuaiors en la misma tabla

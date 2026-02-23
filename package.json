@@ -31,8 +31,10 @@
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "recharts": "^2.15.4",
-    "tailwind-merge": "^3.3.1",
-    "vaul": "^1.1.2"
+    "swr": "^2.4.0",
+    "tailwind-merge": "^3.4.0",
+    "vaul": "^1.1.2",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@iconify/json": "^2.2.360",

@@ -26,7 +26,7 @@ export default function OnboardingCompletePage() {
             Volver al inicio
           </Link>
           <Link
-            href="/auth?login=true"
+            href="/auth?mode=login"
             className="inline-flex justify-center rounded-md border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
           >
             Ir a iniciar sesión

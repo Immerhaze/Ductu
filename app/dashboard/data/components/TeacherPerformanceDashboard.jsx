@@ -27,7 +27,7 @@ const DUMMY_TEACHER_ID_FOR_TESTING = 'T100'; // Example: A non-chief teacher (ve
 // const DUMMY_TEACHER_ID_FOR_TESTING = 'T102'; // Example: A chief teacher (verify from your console output)
 
 
-const TeacherDashboard = () => {
+const TeacherPerformanceDashboard = () => {
     const teacherInfo = DUMMY_TEACHERS.find(t => t.id === DUMMY_TEACHER_ID_FOR_TESTING);
 
     if (!teacherInfo) {
@@ -433,4 +433,4 @@ const TeacherDashboard = () => {
     );
 };
 
-export default TeacherDashboard;
+export default TeacherPerformanceDashboard;

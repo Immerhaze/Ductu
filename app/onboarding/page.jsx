@@ -3,52 +3,111 @@ import { stackServerApp } from "@/stack/server";
 import prisma from "@/lib/prisma";
 import { redirect } from "next/navigation";
 
-export default async function OnboardingPage() {
-  // Garantiza que el usuario esté autenticado antes de permitir onboarding
-  const user = await stackServerApp.getUser({
-    or: "redirect",
-  });
+// helpers: idealmente importarlos desde lib
+const DEFAULT_ACTIVE_LEVELS = ["B1","B2","B3","B4","B5","B6","B7","B8","M1","M2","M3","M4"];
 
-  // Acción del formulario ejecutada en el servidor
+function buildSections(sectionNaming, sectionCount) {
+  if (sectionNaming === "NUMBERS") return Array.from({ length: sectionCount }, (_, i) => String(i + 1));
+  return "ABCDEFGHIJKLMNOPQRSTUVWXYZ".slice(0, sectionCount).split("");
+}
+function parseLevel(levelCode) {
+  const levelType = levelCode.startsWith("B") ? "BASIC" : "MIDDLE";
+  const levelNumber = Number(levelCode.slice(1));
+  return { levelType, levelNumber };
+}
+function courseName({ levelType, levelNumber, section, nameFormat }) {
+  if (nameFormat === "CHILE_TRADITIONAL") {
+    return levelType === "BASIC" ? `${levelNumber}° ${section}` : `${levelNumber}° Medio ${section}`;
+  }
+  if (nameFormat === "COMPACT") {
+    return levelType === "BASIC" ? `${levelNumber}${section}` : `${levelNumber}M${section}`;
+  }
+  // HUNDREDS
+  if (levelType === "MIDDLE") {
+    const base = levelNumber * 100;
+    const sectionIndex = section.charCodeAt(0) - 64; // A=1,B=2...
+    return String(base + sectionIndex); // 101, 102...
+  }
+  return `${levelNumber}${section}`;
+}
+
+export default async function OnboardingPage() {
+  await stackServerApp.getUser({ or: "redirect" });
+
   async function handleOnboarding(formData) {
     "use server";
 
     const institutionName = formData.get("institutionName")?.toString().trim();
     const superAdminName = formData.get("superAdminName")?.toString().trim();
-    const superAdminEmailRaw = formData.get("superAdminEmail")?.toString().trim();
+    const superAdminEmail = formData.get("superAdminEmail")?.toString().trim().toLowerCase();
 
-    if (!institutionName || !superAdminName || !superAdminEmailRaw) {
-      return;
-    }
+    if (!institutionName || !superAdminName || !superAdminEmail) return;
 
-    // Normalizamos email a minúsculas para evitar problemas de comparación
-    const superAdminEmail = superAdminEmailRaw.toLowerCase();
-
-    // 1. Crear institución
-    const institution = await prisma.institution.create({
-      data: {
-        name: institutionName,
-        contactEmail: superAdminEmail,
-        status: "draft",
-      },
-    });
-
-    // 2. Obtenemos nuevamente al usuario actual autenticado (por seguridad)
     const currentUser = await stackServerApp.getUser({ or: "redirect" });
 
-    // 3. Crear AppUser YA ENLAZADO AL authUserId
-    await prisma.appUser.create({
-      data: {
-        email: superAdminEmail,
-        fullName: superAdminName,
-        role: "ADMINISTRATIVE",
-        institutionId: institution.id,
-        authUserId: currentUser.id, // 👈 FIX: ENLAZA DESDE EL PRIMER MOMENTO
-      },
+    await prisma.$transaction(async (tx) => {
+      // 1) Institution
+      const institution = await tx.institution.create({
+        data: {
+          name: institutionName,
+          contactEmail: superAdminEmail,
+          status: "draft",
+        },
+        select: { id: true },
+      });
+
+      // 2) Super admin AppUser
+      await tx.appUser.create({
+        data: {
+          email: superAdminEmail,
+          fullName: superAdminName,
+          role: "ADMINISTRATIVE",
+          isSuperAdmin: true,
+          institutionId: institution.id,
+          authUserId: currentUser.id,
+        },
+      });
+
+      // 3) Default course config (base fija)
+      const config = await tx.institutionCourseConfig.create({
+        data: {
+          institutionId: institution.id,
+          activeLevels: DEFAULT_ACTIVE_LEVELS,
+          sectionNaming: "LETTERS",
+          sectionCount: 2,
+          nameFormat: "CHILE_TRADITIONAL",
+        },
+        select: { activeLevels: true, sectionNaming: true, sectionCount: true, nameFormat: true },
+      });
+
+      // 4) Generate courses (idempotencia: como es onboarding no existen aún)
+      const sections = buildSections(config.sectionNaming, config.sectionCount);
+
+      const rows = [];
+      for (const levelCode of config.activeLevels) {
+        const { levelType, levelNumber } = parseLevel(levelCode);
+        for (const section of sections) {
+          rows.push({
+            institutionId: institution.id,
+            levelCode,
+            levelType,
+            levelNumber,
+            section,
+            name: courseName({ levelType, levelNumber, section, nameFormat: config.nameFormat }),
+            isActive: true,
+          });
+        }
+      }
+
+      if (rows.length) {
+        await tx.course.createMany({
+          data: rows,
+          skipDuplicates: true, // por si algún retry
+        });
+      }
     });
 
-    // 4. Redirigir a pantalla de confirmación
-    return redirect("/onboarding/complete");
+    redirect("/onboarding/complete");
   }
 
   // JSX completo

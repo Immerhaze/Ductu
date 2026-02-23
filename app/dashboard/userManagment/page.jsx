@@ -1,13 +1,11 @@
-// app/dashboard/userManagment/page.js
-'use client' 
+import "server-only";
+import UserManagementClient from "./userManagementClient";
+import { getUsersForTable } from "./actions/getUsers";
 
-import React from 'react';
-import UserManagementTable from './components/UserManagmentTable';
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
-export default function UserManagmentPage() {
-  return (
-    <div className="h-screen w-full flex flex-col">
-     <UserManagementTable/>
-    </div>
-  );
+export default async function UserManagmentPage() {
+  const initialUsers = await getUsersForTable();
+  return <UserManagementClient initialUsers={initialUsers} />;
 }
