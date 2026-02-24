@@ -1,45 +1,143 @@
-<<<<<<< HEAD
-# grupo4_sass
-Desarrollo del proyecto del grupo 4 en el tecnólogo de sena en análisis y desarrollo de software
-=======
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# DUCTU  
+### Plataforma SaaS de Gestión Académica
 
-## Getting Started
+DUCTU es un sistema web de gestión académica diseñado para instituciones educativas.  
+Permite la administración estructurada de usuarios, roles, procesos institucionales y comunicación interna mediante una arquitectura modular y escalable.
 
-First, run the development server:
+La plataforma está construida con tecnologías modernas de desarrollo web, aplicando principios de arquitectura limpia y control de acceso basado en roles, garantizando mantenibilidad y crecimiento a largo plazo.
+
+---
+
+## 🚀 Tecnologías Utilizadas
+
+### Frontend
+- React JS
+- Next.js (App Router)
+- JavaScript
+- Tailwind CSS
+- Arquitectura basada en componentes
+
+### Backend e Infraestructura
+- Prisma ORM
+- PostgreSQL (Neon)
+- Control de acceso basado en roles (RBAC)
+- Git y GitHub para control de versiones
+
+---
+
+## 🧩 Módulo Principal – Administración de Usuarios
+
+Este repositorio incluye la implementación del **Módulo de Administración de Usuarios**, desarrollado como parte de la evidencia académica GA7-220501096-AA4-EV03.
+
+### Funcionalidades Implementadas
+
+- Listado de usuarios institucionales
+- Visualización de detalle por usuario
+- Registro manual de nuevos usuarios
+- Asignación y gestión de roles
+- Integración con el panel administrativo
+- Protección de rutas según rol
+- Validación de formularios
+- Manejo de estados de carga y error
+
+El módulo está alineado con las historias de usuario, casos de uso y artefactos de diseño definidos previamente en el ciclo del desarrollo del software.
+
+---
+
+## 🏗️ Estructura del Proyecto
+
+El proyecto sigue una estructura modular organizada por responsabilidad:
+/app
+/dashboard
+/admin
+/components
+/lib
+/services
+/prisma
+
+
+### Principios Arquitectónicos Aplicados
+
+- Separación de responsabilidades
+- Organización modular
+- Componentes reutilizables
+- Capa de servicios desacoplada
+- Control de acceso por roles
+- Convenciones claras de nomenclatura (PascalCase y camelCase)
+- Comentarios en lógica crítica del sistema
+
+---
+
+## 🔐 Autenticación y Autorización
+
+DUCTU implementa un sistema de control de acceso basado en roles (RBAC):
+
+- Super Administrador
+- Administrador institucional
+- Docente
+- Estudiante
+
+Las rutas administrativas están protegidas y solo pueden ser accedidas por usuarios autorizados.
+
+---
+
+## 🧭 Flujo de Navegación
+
+El sistema ofrece navegación estructurada dentro del panel administrativo:
+
+- Panel principal (Dashboard)
+- Gestión de usuarios
+- Vista de detalle de usuario
+- Formulario de creación de usuario
+
+La navegación es gestionada mediante el sistema de rutas de Next.js (App Router), garantizando control de acceso y experiencia fluida.
+
+---
+
+## ⚙️ Configuración para Desarrollo Local
+
+### 1. Clonar el repositorio
 
 ```bash
+git clone [URL_DEL_REPOSITORIO]
+
+2. Instalar dependencias
+npm install
+3. Ejecutar el servidor de desarrollo
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+
+La aplicación se ejecutará en:
+
+http://localhost:3000
+
 ```
+📊 Estado Actual del Proyecto
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Actualmente el sistema incluye:
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+Sistema de autenticación
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Flujo de onboarding institucional
 
-## Learn More
+Módulo de administración de usuarios
 
-To learn more about Next.js, take a look at the following resources:
+Gestión de invitaciones
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Publicaciones institucionales
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Modelado de base de datos con Prisma
 
-## Deploy on Vercel
+Panel administrativo con control por roles
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+El proyecto se encuentra en desarrollo activo y evoluciona hacia una solución SaaS académica completamente escalable.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
->>>>>>> master
+📌 Acceso al Repositorio
 
+El repositorio se encuentra en modo privado debido a que el proyecto está en desarrollo activo.
+Se ha otorgado acceso al instructor para su respectiva revisión académica.
 
+👨‍💻 Autor
 
-arrelglano la lista de getsion de usuarios para uqe evnag del db y tambine para comenzar a poder hacer los cambios de los usuaiors en la misma tabla
+Nicolás Romero Carrillo
+Tecnólogo en Análisis y Desarrollo de Software
+Proyecto Académico – ADSO
