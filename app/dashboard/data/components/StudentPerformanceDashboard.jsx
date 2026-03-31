@@ -124,7 +124,7 @@ export default function StudentPerformanceDashboard() {
   useEffect(() => {
     async function fetchStats() {
       try {
-        const res = await fetch("/api/student/stats");
+        const res = await fetch("/api/students/stats");
         if (!res.ok) throw new Error(`Error ${res.status}`);
         const data = await res.json();
         setKpis(data.kpis);

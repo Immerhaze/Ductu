@@ -79,7 +79,7 @@ export default function TeacherPerformanceDashboard() {
   useEffect(() => {
     async function fetchTeacherStats() {
       try {
-        const res = await fetch("/api/teacher/stats");
+        const res = await fetch("/api/teachers/stats");
         if (!res.ok) throw new Error(`Error ${res.status}`);
         const data = await res.json();
         setKpis(data.kpis);
@@ -97,7 +97,7 @@ export default function TeacherPerformanceDashboard() {
 
     async function fetchChiefStats() {
       try {
-        const res = await fetch("/api/teacher/chief-stats");
+        const res = await fetch("/api/teachers/chief-stats");
         if (!res.ok) throw new Error(`Error ${res.status}`);
         const data = await res.json();
         setIsChief(data.isChief);

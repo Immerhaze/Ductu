@@ -4,14 +4,14 @@ import React, { useMemo, useState } from "react";
 import useSWR from "swr";
 
 import UserTableControls from "./components/UserTableControls";
-import UsersTable from "./components/UserManagmentTable";
+import UsersTable from "./components/UserManagementTable";
 import InvitationsTable from "./components/InvitationsTable";
 
 import InviteUserModal from "./components/RegisterUserForm";
 import ImportUsersModal from "./components/ImportUsersModal";
 import EditUserModal from "./components/EditUserModal";
 
-import { revokeInvitation } from "../invitations/actions";
+import { revokeInvitation } from "@/lib/server/actions/invitations";
 
 /**
  * Fetcher estándar para SWR

@@ -1,4 +1,4 @@
-// app/api/teacher/chief-stats/route.js
+// app/api/teachers/chief-stats/route.js
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { requireAppUser } from "@/lib/authz";

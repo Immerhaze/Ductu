@@ -13,7 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-import { getCoursesForPostTargetsAction } from "./actions/posts";
+import { getCoursesForPostTargetsAction } from "@/lib/server/actions/posts";
 
 const MAX_CHARS = 2000;
 

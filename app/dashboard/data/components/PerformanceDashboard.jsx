@@ -5,7 +5,7 @@ import AdminPerformanceDashboard from "./AdminPerformanceDashboard";
 import TeacherPerformanceDashboard from "./TeacherPerformanceDashboard";
 import StudentPerformanceDashboard from "./StudentPerformanceDashboard";
 import { DUMMY_TEACHERS } from "@/lib/DummyPerformanceOverallData";
-import { useAppUser } from "@/app/auth/AppUserContext";
+import { useAppUser } from "@/components/providers/AppUserContext";
 
 export default function PerformanceDashboard() {
   const { me, isLoading, error } = useAppUser();

@@ -1,7 +1,7 @@
 "use client";
 
 import SideBar from "@/components/sidebar";
-import { AppUserProvider, useAppUser } from "../auth/AppUserContext";
+import { AppUserProvider, useAppUser } from "@/components/providers/AppUserContext";
 
 function ShellInner({ children }) {
   const { me, isLoading } = useAppUser();

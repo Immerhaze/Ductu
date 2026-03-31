@@ -12,7 +12,7 @@ import {
   Select, SelectContent, SelectItem,
   SelectTrigger, SelectValue,
 } from '@/components/ui/select';
-import { createInvitation } from '../../invitations/actions';
+import { createInvitation } from '@/lib/server/actions/invitations';
 
 const ROLES = [
   { label: 'Administrativo', value: 'ADMINISTRATIVE' },

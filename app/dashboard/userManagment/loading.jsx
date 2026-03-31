@@ -1,4 +1,4 @@
-import UsersTable from "./components/UserManagmentTable";
+import UsersTable from "./components/UserManagementTable";
 
 export default function Loading() {
   return (

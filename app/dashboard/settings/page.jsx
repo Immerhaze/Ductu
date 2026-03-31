@@ -14,7 +14,7 @@ import { DUMMY_INSTITUTION_DATA, DUMMY_UPLOAD_HISTORY } from '@/lib/dummyConfigD
 import {
   getCoursesAdminViewAction,
   saveCourseConfigAndGenerateCoursesAction,
-} from './actions/courses';
+} from '@/lib/server/actions/courses';
 
 export default function ConfigPage() {
   const [role, setRole] = useState('admin'); // 'admin' | 'profesor' | 'alumno'

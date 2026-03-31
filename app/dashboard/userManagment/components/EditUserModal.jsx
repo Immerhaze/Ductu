@@ -71,7 +71,7 @@ export default function EditUserModal({ open, onClose, user, onSaved }) {
     setDetailLoading(true);
     setDetailError("");
     try {
-      const res = await fetch(`/api/users/${id}`, { method: "GET" });
+      const res = await fetch(`/api/admin/users/${id}`, { method: "GET" });
       if (!res.ok) throw new Error(await res.text());
       const data = await res.json();
       setDetail(data);
@@ -182,7 +182,7 @@ const onSave = async () => {
           : [],
     };
 
-    const res = await fetch(`/api/users/${detail.id}`, {
+   const res = await fetch(`/api/admin/users/${detail.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),

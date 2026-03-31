@@ -2,7 +2,7 @@
 "use client";
 
 import React, { useEffect, useState, useMemo } from "react";
-import { useAppUser } from "@/app/auth/AppUserContext";
+import { useAppUser } from "@/components/providers/AppUserContext";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";

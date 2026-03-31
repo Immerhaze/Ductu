@@ -3,7 +3,7 @@
 
 import React, { useEffect, useMemo, useState } from "react";
 import LoginForm from "./loginForm";
-import RegisterForm from "./resgiterForm";
+import RegisterForm from "./registerForm";
 import InvitedRegisterForm from "./InvitedRegisterForm";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";

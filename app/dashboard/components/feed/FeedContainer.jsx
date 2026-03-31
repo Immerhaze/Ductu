@@ -4,8 +4,8 @@ import React, { useEffect, useState } from "react";
 import CreatePostForm from "./CreatePostForm";
 import PostItem from "./PostItem";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { createPostAction, getFeedAction } from "./actions/posts";
-import { useAppUser } from "@/app/auth/AppUserContext";
+import { createPostAction, getFeedAction } from "@/lib/server/actions/posts";
+import { useAppUser } from "@/components/providers/AppUserContext";
 
 export default function FeedContainer() {
   const { me, isLoading: meLoading, error: meError } = useAppUser();

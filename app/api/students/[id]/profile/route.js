@@ -6,13 +6,13 @@ import { requireAppUser } from "@/lib/authz";
 export async function GET(request, { params }) {
   try {
     const { appUser } = await requireAppUser({ requireProfileCompleted: true });
-
-    if (appUser.role === "STUDENT") {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-    }
-
     const { id: studentId } = await params;
     const { institutionId } = appUser;
+
+    // Estudiante solo puede ver su propio perfil
+    if (appUser.role === "STUDENT" && appUser.id !== studentId) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
 
     const student = await prisma.appUser.findFirst({
       where: { id: studentId, institutionId, role: "STUDENT" },
@@ -36,7 +36,6 @@ export async function GET(request, { params }) {
 
     const passingGrade = Number(policy?.passingGrade ?? 4.0);
 
-    // Notas del año activo
     const grades = await prisma.grade.findMany({
       where: {
         studentId,
@@ -67,7 +66,6 @@ export async function GET(request, { params }) {
       orderBy: { createdAt: "asc" },
     });
 
-    // Agrupar notas por asignatura
     const subjectMap = {};
     grades.forEach((g) => {
       const subj = g.teachingAssignment.subject;
@@ -108,7 +106,6 @@ export async function GET(request, { params }) {
           ) / 10
         : 0;
 
-    // Anotaciones
     const annotations = await prisma.studentAnnotation.findMany({
       where: { studentId, institutionId },
       select: {
@@ -123,7 +120,6 @@ export async function GET(request, { params }) {
       orderBy: { date: "desc" },
     });
 
-    // Logros
     const achievements = await prisma.studentAchievement.findMany({
       where: { studentId, institutionId },
       select: {
@@ -136,7 +132,6 @@ export async function GET(request, { params }) {
       orderBy: { date: "desc" },
     });
 
-    // Planes de mejora
     const improvementPlans = await prisma.studentImprovementPlan.findMany({
       where: { studentId, institutionId },
       select: {
