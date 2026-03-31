@@ -14,9 +14,9 @@ export default async function DataPage() {
     const code = e?.message;
 
     if (code === "PROFILE_INCOMPLETE") redirect("/complete-profile");
-    if (code === "APP_USER_NOT_FOUND") redirect("/post-auth");
+    if (code === "APP_USER_NOT_FOUND") redirect("/api/auth/post-auth");
     if (code === "NO_INSTITUTION") redirect("/onboarding");
-    if (code === "ACCOUNT_DISABLED") redirect("/auth??mode=login");
+    if (code === "ACCOUNT_DISABLED") redirect("/auth?mode=login");
 
     redirect("/auth??mode=login");
   }

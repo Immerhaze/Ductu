@@ -1,34 +1,138 @@
-// app/onboarding/page.jsx
+import { redirect } from "next/navigation";
 import { stackServerApp } from "@/stack/server";
 import prisma from "@/lib/prisma";
-import { redirect } from "next/navigation";
+import OnboardingWizard from "./OnboardingWizard";
 
-// helpers: idealmente importarlos desde lib
-const DEFAULT_ACTIVE_LEVELS = ["B1","B2","B3","B4","B5","B6","B7","B8","M1","M2","M3","M4"];
+const DEFAULT_SUBJECTS = [
+  { name: "Lenguaje y Comunicación", code: "LENG" },
+  { name: "Matemática", code: "MAT" },
+  { name: "Historia, Geografía y Ciencias Sociales", code: "HIS" },
+  { name: "Ciencias Naturales", code: "CNAT" },
+  { name: "Inglés", code: "ING" },
+  { name: "Educación Física y Salud", code: "EFI" },
+  { name: "Artes Visuales", code: "ART" },
+  { name: "Tecnología", code: "TEC" },
+  { name: "Orientación", code: "ORI" },
+  { name: "Religión", code: "REL" },
+];
 
 function buildSections(sectionNaming, sectionCount) {
-  if (sectionNaming === "NUMBERS") return Array.from({ length: sectionCount }, (_, i) => String(i + 1));
+  if (sectionNaming === "NUMBERS") {
+    return Array.from({ length: sectionCount }, (_, i) => String(i + 1));
+  }
+
   return "ABCDEFGHIJKLMNOPQRSTUVWXYZ".slice(0, sectionCount).split("");
 }
+
 function parseLevel(levelCode) {
   const levelType = levelCode.startsWith("B") ? "BASIC" : "MIDDLE";
   const levelNumber = Number(levelCode.slice(1));
   return { levelType, levelNumber };
 }
+
 function courseName({ levelType, levelNumber, section, nameFormat }) {
   if (nameFormat === "CHILE_TRADITIONAL") {
-    return levelType === "BASIC" ? `${levelNumber}° ${section}` : `${levelNumber}° Medio ${section}`;
+    return levelType === "BASIC"
+      ? `${levelNumber}° ${section}`
+      : `${levelNumber}° Medio ${section}`;
   }
+
   if (nameFormat === "COMPACT") {
-    return levelType === "BASIC" ? `${levelNumber}${section}` : `${levelNumber}M${section}`;
+    return levelType === "BASIC"
+      ? `${levelNumber}${section}`
+      : `${levelNumber}M${section}`;
   }
-  // HUNDREDS
-  if (levelType === "MIDDLE") {
-    const base = levelNumber * 100;
-    const sectionIndex = section.charCodeAt(0) - 64; // A=1,B=2...
-    return String(base + sectionIndex); // 101, 102...
+
+  if (nameFormat === "HUNDREDS") {
+    if (levelType === "MIDDLE") {
+      const numericSection = /^\d+$/.test(section)
+        ? Number(section)
+        : section.charCodeAt(0) - 64;
+      return String(levelNumber * 100 + numericSection);
+    }
+
+    return `${levelNumber}${section}`;
   }
+
   return `${levelNumber}${section}`;
+}
+
+function buildAcademicPeriods({ academicRegime, startDate, endDate }) {
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+
+  if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) {
+    throw new Error("INVALID_ACADEMIC_DATES");
+  }
+
+  const periods = [];
+
+  if (academicRegime === "SEMESTER") {
+    const mid = new Date(start);
+    mid.setMonth(start.getMonth() + 6);
+
+    periods.push({
+      name: "1° Semestre",
+      periodNumber: 1,
+      startDate: start,
+      endDate: new Date(mid.getTime() - 1),
+      isActive: true,
+    });
+
+    periods.push({
+      name: "2° Semestre",
+      periodNumber: 2,
+      startDate: mid,
+      endDate: end,
+      isActive: false,
+    });
+
+    return periods;
+  }
+
+  if (academicRegime === "TRIMESTER") {
+    for (let i = 0; i < 3; i += 1) {
+      const pStart = new Date(start);
+      pStart.setMonth(start.getMonth() + i * 4);
+
+      const pEnd = i === 2 ? end : new Date(pStart);
+      if (i !== 2) {
+        pEnd.setMonth(pStart.getMonth() + 4);
+        pEnd.setTime(pEnd.getTime() - 1);
+      }
+
+      periods.push({
+        name: `${i + 1}° Trimestre`,
+        periodNumber: i + 1,
+        startDate: pStart,
+        endDate: pEnd,
+        isActive: i === 0,
+      });
+    }
+
+    return periods;
+  }
+
+  for (let i = 0; i < 4; i += 1) {
+    const pStart = new Date(start);
+    pStart.setMonth(start.getMonth() + i * 3);
+
+    const pEnd = i === 3 ? end : new Date(pStart);
+    if (i !== 3) {
+      pEnd.setMonth(pStart.getMonth() + 3);
+      pEnd.setTime(pEnd.getTime() - 1);
+    }
+
+    periods.push({
+      name: `${i + 1}° Período`,
+      periodNumber: i + 1,
+      startDate: pStart,
+      endDate: pEnd,
+      isActive: i === 0,
+    });
+  }
+
+  return periods;
 }
 
 export default async function OnboardingPage() {
@@ -37,26 +141,90 @@ export default async function OnboardingPage() {
   async function handleOnboarding(formData) {
     "use server";
 
-    const institutionName = formData.get("institutionName")?.toString().trim();
-    const superAdminName = formData.get("superAdminName")?.toString().trim();
-    const superAdminEmail = formData.get("superAdminEmail")?.toString().trim().toLowerCase();
-
-    if (!institutionName || !superAdminName || !superAdminEmail) return;
-
     const currentUser = await stackServerApp.getUser({ or: "redirect" });
+    const payloadRaw = formData.get("payload")?.toString();
+
+    if (!payloadRaw) {
+      throw new Error("ONBOARDING_PAYLOAD_MISSING");
+    }
+
+    const payload = JSON.parse(payloadRaw);
+
+    const institutionName = payload?.institution?.name?.trim();
+    const contactEmail = payload?.institution?.contactEmail?.trim()?.toLowerCase();
+    const superAdminName = payload?.superAdmin?.fullName?.trim();
+    const superAdminEmail = payload?.superAdmin?.email?.trim()?.toLowerCase();
+
+    if (!institutionName || !superAdminName || !superAdminEmail) {
+      throw new Error("ONBOARDING_REQUIRED_FIELDS_MISSING");
+    }
+
+    const activeLevels = Array.isArray(payload?.courseConfig?.activeLevels)
+      ? payload.courseConfig.activeLevels
+      : [];
+
+    const sectionNaming = payload?.courseConfig?.sectionNaming || "LETTERS";
+    const sectionCount = Number(payload?.courseConfig?.sectionCount || 2);
+    const nameFormat = payload?.courseConfig?.nameFormat || "CHILE_TRADITIONAL";
+
+    const academicRegime = payload?.academicPolicy?.academicRegime || "SEMESTER";
+    const gradingScaleMin = Number(payload?.academicPolicy?.gradingScaleMin ?? 1.0);
+    const gradingScaleMax = Number(payload?.academicPolicy?.gradingScaleMax ?? 7.0);
+    const passingGrade = Number(payload?.academicPolicy?.passingGrade ?? 4.0);
+    const gradeDecimals = Number(payload?.academicPolicy?.gradeDecimals ?? 1);
+    const useAttendanceForPromotion = Boolean(
+      payload?.academicPolicy?.useAttendanceForPromotion ?? true
+    );
+    const minimumAttendancePercent =
+      payload?.academicPolicy?.minimumAttendancePercent === ""
+        ? null
+        : payload?.academicPolicy?.minimumAttendancePercent != null
+          ? Number(payload.academicPolicy.minimumAttendancePercent)
+          : 85;
+
+    const academicYearValue = Number(payload?.academicYear?.year);
+    const academicYearName =
+      payload?.academicYear?.name?.trim() || `Año Académico ${academicYearValue}`;
+    const academicYearStartDate = payload?.academicYear?.startDate;
+    const academicYearEndDate = payload?.academicYear?.endDate;
+
+    const subjects = Array.isArray(payload?.subjects)
+      ? payload.subjects
+          .map((subject) => ({
+            name: String(subject?.name || "").trim(),
+            code: String(subject?.code || "").trim().toUpperCase() || null,
+          }))
+          .filter((subject) => subject.name)
+      : [];
+
+    if (!academicYearValue || !academicYearStartDate || !academicYearEndDate) {
+      throw new Error("ACADEMIC_YEAR_REQUIRED");
+    }
+
+    if (activeLevels.length === 0) {
+      throw new Error("COURSES_REQUIRED");
+    }
+
+    if (subjects.length === 0) {
+      throw new Error("SUBJECTS_REQUIRED");
+    }
+
+    const periods = buildAcademicPeriods({
+      academicRegime,
+      startDate: academicYearStartDate,
+      endDate: academicYearEndDate,
+    });
 
     await prisma.$transaction(async (tx) => {
-      // 1) Institution
       const institution = await tx.institution.create({
         data: {
           name: institutionName,
-          contactEmail: superAdminEmail,
+          contactEmail: contactEmail || superAdminEmail,
           status: "draft",
         },
         select: { id: true },
       });
 
-      // 2) Super admin AppUser
       await tx.appUser.create({
         data: {
           email: superAdminEmail,
@@ -65,140 +233,151 @@ export default async function OnboardingPage() {
           isSuperAdmin: true,
           institutionId: institution.id,
           authUserId: currentUser.id,
+          profileCompletedAt: new Date(),
         },
       });
 
-      // 3) Default course config (base fija)
-      const config = await tx.institutionCourseConfig.create({
+      const courseConfig = await tx.institutionCourseConfig.create({
         data: {
           institutionId: institution.id,
-          activeLevels: DEFAULT_ACTIVE_LEVELS,
-          sectionNaming: "LETTERS",
-          sectionCount: 2,
-          nameFormat: "CHILE_TRADITIONAL",
+          activeLevels,
+          sectionNaming,
+          sectionCount,
+          nameFormat,
         },
-        select: { activeLevels: true, sectionNaming: true, sectionCount: true, nameFormat: true },
+        select: {
+          activeLevels: true,
+          sectionNaming: true,
+          sectionCount: true,
+          nameFormat: true,
+        },
       });
 
-      // 4) Generate courses (idempotencia: como es onboarding no existen aún)
-      const sections = buildSections(config.sectionNaming, config.sectionCount);
+      const sections = buildSections(
+        courseConfig.sectionNaming,
+        courseConfig.sectionCount
+      );
 
-      const rows = [];
-      for (const levelCode of config.activeLevels) {
+      const courseRows = [];
+
+      for (const levelCode of courseConfig.activeLevels) {
         const { levelType, levelNumber } = parseLevel(levelCode);
+
         for (const section of sections) {
-          rows.push({
+          courseRows.push({
             institutionId: institution.id,
             levelCode,
             levelType,
             levelNumber,
             section,
-            name: courseName({ levelType, levelNumber, section, nameFormat: config.nameFormat }),
+            name: courseName({
+              levelType,
+              levelNumber,
+              section,
+              nameFormat: courseConfig.nameFormat,
+            }),
             isActive: true,
           });
         }
       }
 
-      if (rows.length) {
+      if (courseRows.length > 0) {
         await tx.course.createMany({
-          data: rows,
-          skipDuplicates: true, // por si algún retry
+          data: courseRows,
+          skipDuplicates: true,
         });
       }
+
+      const academicYear = await tx.academicYear.create({
+        data: {
+          institutionId: institution.id,
+          year: academicYearValue,
+          name: academicYearName,
+          startDate: new Date(academicYearStartDate),
+          endDate: new Date(academicYearEndDate),
+          isActive: true,
+        },
+        select: { id: true },
+      });
+
+      await tx.institutionAcademicPolicy.create({
+        data: {
+          institutionId: institution.id,
+          academicRegime,
+          gradingScaleMin,
+          gradingScaleMax,
+          passingGrade,
+          gradeDecimals,
+          useAttendanceForPromotion,
+          minimumAttendancePercent,
+          activeAcademicYearId: academicYear.id,
+        },
+      });
+
+      await tx.academicPeriod.createMany({
+        data: periods.map((period) => ({
+          institutionId: institution.id,
+          academicYearId: academicYear.id,
+          name: period.name,
+          periodNumber: period.periodNumber,
+          startDate: period.startDate,
+          endDate: period.endDate,
+          isActive: period.isActive,
+        })),
+      });
+
+      await tx.subject.createMany({
+        data: subjects.map((subject) => ({
+          institutionId: institution.id,
+          name: subject.name,
+          code: subject.code,
+          isActive: true,
+        })),
+        skipDuplicates: true,
+      });
     });
 
     redirect("/onboarding/complete");
   }
 
-  // JSX completo
+  const currentYear = new Date().getFullYear();
+
+  const initialData = {
+    institution: {
+      name: "",
+      contactEmail: "",
+    },
+    superAdmin: {
+      fullName: "",
+      email: "",
+    },
+    courseConfig: {
+      activeLevels: ["B1", "B2", "B3", "B4", "B5", "B6", "B7", "B8", "M1", "M2", "M3", "M4"],
+      sectionNaming: "LETTERS",
+      sectionCount: 2,
+      nameFormat: "CHILE_TRADITIONAL",
+    },
+    academicPolicy: {
+      academicRegime: "SEMESTER",
+      gradingScaleMin: 1.0,
+      gradingScaleMax: 7.0,
+      passingGrade: 4.0,
+      gradeDecimals: 1,
+      useAttendanceForPromotion: true,
+      minimumAttendancePercent: 85,
+    },
+    academicYear: {
+      year: currentYear,
+      name: `Año Académico ${currentYear}`,
+      startDate: `${currentYear}-03-01`,
+      endDate: `${currentYear}-12-20`,
+    },
+    subjects: DEFAULT_SUBJECTS,
+  };
+
   return (
-    <main className="min-h-screen flex items-center justify-center bg-slate-50">
-      <div className="w-full max-w-xl bg-white rounded-xl shadow-lg p-8 space-y-6">
-        <h1 className="text-2xl font-bold text-slate-900">
-          Registrar institución en DUCTU
-        </h1>
-
-        <p className="text-sm text-slate-600">
-          Vamos a crear la institución y definir quién será el administrador principal.
-        </p>
-
-        <form action={handleOnboarding} className="space-y-6">
-          {/* DATOS INSTITUCIÓN */}
-          <section className="space-y-4">
-            <h2 className="text-lg font-semibold text-slate-800">
-              Datos de la institución
-            </h2>
-
-            <div>
-              <label
-                htmlFor="institutionName"
-                className="block text-sm font-medium text-slate-700"
-              >
-                Nombre de la institución *
-              </label>
-              <input
-                id="institutionName"
-                name="institutionName"
-                required
-                className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Colegio San Martín"
-              />
-            </div>
-          </section>
-
-          {/* DATOS SUPER ADMIN */}
-          <section className="space-y-4">
-            <h2 className="text-lg font-semibold text-slate-800">
-              Primer administrador de la institución
-            </h2>
-
-            <div>
-              <label
-                htmlFor="superAdminName"
-                className="block text-sm font-medium text-slate-700"
-              >
-                Nombre completo del administrador *
-              </label>
-              <input
-                id="superAdminName"
-                name="superAdminName"
-                required
-                className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Nombre y apellido"
-              />
-            </div>
-
-            <div>
-              <label
-                htmlFor="superAdminEmail"
-                className="block text-sm font-medium text-slate-700"
-              >
-                Email del administrador (para entrar a DUCTU) *
-              </label>
-              <input
-                id="superAdminEmail"
-                name="superAdminEmail"
-                type="email"
-                required
-                className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="admin@institucion.com"
-              />
-            </div>
-
-            <p className="text-xs text-slate-500">
-              Más adelante, este administrador podrá invitar a otros usuarios
-              (profesores, estudiantes y equipo administrativo).
-            </p>
-          </section>
-
-          <button
-            type="submit"
-            className="w-full rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 transition-colors"
-          >
-            Crear institución
-          </button>
-        </form>
-      </div>
+    <main className="min-h-screen bg-slate-50">
+      <OnboardingWizard action={handleOnboarding} initialData={initialData} />
     </main>
   );
 }

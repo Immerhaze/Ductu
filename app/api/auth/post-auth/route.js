@@ -10,41 +10,15 @@ export const dynamic = "force-dynamic";
 
 function redirectTo(path, req, { clearInvite = false, clearIntent = false } = {}) {
   const res = NextResponse.redirect(new URL(path, req.url));
-
-  if (clearInvite) {
-    res.cookies.set("invite_token", "", {
-      path: "/",
-      maxAge: 0,
-    });
-  }
-
-  if (clearIntent) {
-    res.cookies.set("signup_intent", "", {
-      path: "/",
-      maxAge: 0,
-    });
-  }
-
+  if (clearInvite) res.cookies.set("invite_token", "", { path: "/", maxAge: 0 });
+  if (clearIntent) res.cookies.set("signup_intent", "", { path: "/", maxAge: 0 });
   return res;
 }
 
 function plain200(message, { clearInvite = false, clearIntent = false } = {}) {
   const res = new NextResponse(message, { status: 200 });
-
-  if (clearInvite) {
-    res.cookies.set("invite_token", "", {
-      path: "/",
-      maxAge: 0,
-    });
-  }
-
-  if (clearIntent) {
-    res.cookies.set("signup_intent", "", {
-      path: "/",
-      maxAge: 0,
-    });
-  }
-
+  if (clearInvite) res.cookies.set("invite_token", "", { path: "/", maxAge: 0 });
+  if (clearIntent) res.cookies.set("signup_intent", "", { path: "/", maxAge: 0 });
   return res;
 }
 
@@ -77,13 +51,14 @@ async function validateInvite(inviteToken, email) {
       expiresAt: true,
       courseId: true,
       positionTitle: true,
-      courseAssignments: {
-        select: {
-          courseId: true,
-          isChief: true,
-          institutionId: true,
-        },
-      },
+    courseAssignments: {
+  select: {
+    courseId: true,
+    subjectId: true,  
+    isChief: true,
+    institutionId: true,
+  },
+},
     },
   });
 
@@ -113,21 +88,19 @@ async function createInvitedUser({ authUser, email, invite }) {
         institutionId: invite.institutionId,
         fullName: authUser.displayName ?? null,
         courseId: invite.role === "STUDENT" ? invite.courseId : null,
-        positionTitle: invite.role === "ADMINISTRATIVE" ? invite.positionTitle ?? null : null,
+        positionTitle: invite.positionTitle ?? null,
       },
-      select: {
-        id: true,
-      },
+      select: { id: true },
     });
 
     if (invite.role === "TEACHER") {
       const teacherCourseRows = (invite.courseAssignments ?? [])
-        .filter((assignment) => assignment.institutionId === invite.institutionId)
-        .map((assignment) => ({
+        .filter((a) => a.institutionId === invite.institutionId)
+        .map((a) => ({
           teacherId: createdUser.id,
-          courseId: assignment.courseId,
+          courseId: a.courseId,
           institutionId: invite.institutionId,
-          isChief: assignment.isChief,
+          isChief: a.isChief,
         }));
 
       if (teacherCourseRows.length === 0) {
@@ -139,7 +112,36 @@ async function createInvitedUser({ authUser, email, invite }) {
         skipDuplicates: true,
       });
     }
+    // Dentro de prisma.$transaction en createInvitedUser
+// después del bloque if (invite.role === "TEACHER") { ... TeacherCourse ... }
 
+// Crear TeachingAssignments
+if (invite.role === "TEACHER" && invite.courseAssignments?.length > 0) {
+  const policy = await tx.institutionAcademicPolicy.findUnique({
+    where: { institutionId: invite.institutionId },
+    select: { activeAcademicYearId: true },
+  });
+
+  if (policy?.activeAcademicYearId) {
+    const assignmentRows = invite.courseAssignments
+      .filter((a) => a.subjectId) // solo las que tienen asignatura
+      .map((a) => ({
+        institutionId: invite.institutionId,
+        academicYearId: policy.activeAcademicYearId,
+        teacherId: createdUser.id,
+        courseId: a.courseId,
+        subjectId: a.subjectId,
+        isActive: true,
+      }));
+
+    if (assignmentRows.length > 0) {
+      await tx.teachingAssignment.createMany({
+        data: assignmentRows,
+        skipDuplicates: true,
+      });
+    }
+  }
+}
     await tx.invitation.update({
       where: { id: invite.id },
       data: { usedAt: new Date() },
@@ -154,15 +156,17 @@ export async function GET(req) {
   const email = authUser.primaryEmail?.toLowerCase() ?? null;
 
   if (!email) {
+    await authUser.signOut();
     return redirectTo("/auth?mode=login", req);
   }
 
   const existingAppUser = await findExistingAppUser(authUser.id);
 
-  // 1) Already provisioned in app DB
+  // 1) Ya existe en la BD
   if (existingAppUser) {
     if (!existingAppUser.isActive) {
-      return redirectTo("/auth?mode=login", req);
+      await authUser.signOut();
+      return redirectTo("/auth?mode=login&error=account_disabled", req);
     }
 
     if (!existingAppUser.profileCompletedAt) {
@@ -176,23 +180,19 @@ export async function GET(req) {
   const inviteToken = cookieStore.get("invite_token")?.value ?? null;
   const signupIntent = cookieStore.get("signup_intent")?.value ?? null;
 
-  // 2) Invited signup flow
+  // 2) Flujo de invitación
   if (signupIntent === "invited" || inviteToken) {
     try {
       const invite = await validateInvite(inviteToken, email);
 
       if (!invite) {
         return plain200(
-          "This invitation is invalid, expired, or does not match your signed-in email. Please request a new invitation.",
+          "Esta invitación no es válida, ha expirado, o no coincide con tu email.",
           { clearInvite: true, clearIntent: true }
         );
       }
 
-      await createInvitedUser({
-        authUser,
-        email,
-        invite,
-      });
+      await createInvitedUser({ authUser, email, invite });
 
       return redirectTo("/complete-profile", req, {
         clearInvite: true,
@@ -200,39 +200,35 @@ export async function GET(req) {
       });
     } catch (error) {
       if (error.message === "INVITE_STUDENT_MISSING_COURSE") {
-        return plain200("Invalid invitation: missing student course assignment.", {
+        return plain200("Invitación inválida: falta asignación de curso del estudiante.", {
           clearInvite: true,
           clearIntent: true,
         });
       }
-
       if (error.message === "INVITE_TEACHER_MISSING_ASSIGNMENTS") {
-        return plain200("Invalid invitation: missing teacher course assignments.", {
+        return plain200("Invitación inválida: falta asignación de cursos del docente.", {
           clearInvite: true,
           clearIntent: true,
         });
       }
-
-      return plain200("We could not finish your invited registration. Please contact support or request a new invitation.", {
+      return plain200("No se pudo completar el registro. Contacta soporte o solicita una nueva invitación.", {
         clearInvite: true,
         clearIntent: true,
       });
     }
   }
 
-  // 3) Direct institution signup flow
+  // 3) Flujo de registro de institución
   if (signupIntent === "institution") {
-    return redirectTo("/onboarding", req, {
-      clearInvite: true,
-    });
+    return redirectTo("/onboarding", req, { clearInvite: true });
   }
 
-  // 4) Fallback:
-  // authenticated in Stack Auth, but app user not provisioned
-  // and we don't know what flow they started
+  // 4) Fallback: Stack tiene sesión pero no hay AppUser ni intent conocido
+  // Hacer sign out para romper el loop de redirección
+  await authUser.signOut();
+
   return redirectTo("/auth?mode=login&error=registration_incomplete", req, {
     clearInvite: true,
     clearIntent: true,
   });
 }
-

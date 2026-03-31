@@ -37,21 +37,31 @@ export default function FeedContainer() {
 
   return (
     <section className="flex-grow flex flex-col items-center overflow-y-auto p-4 bg-gray-50">
-      <h1 className="text-4xl my-5 text-gray-800">
+      <div className="w-full max-w-5xl mb-6">
+       <h1 className="text-4xl my-5 text-gray-800">
         {meLoading ? (
           "Cargando..."
         ) : meError ? (
           "Bienvenido"
         ) : (
           <>
-            Bienvenido, <span className="text-blue-500">{displayName}</span>
+          <span className="text-gray-800  font-semibold">Novedades</span>
           </>
+
+          // 
         )}
       </h1>
+       <p className="text-sm text-gray-500 mt-1">
+         Publicaciones y avisos recientes de tu institución.
+       </p>
+     </div>
 
-      <div className="w-full max-w-5xl mb-8">
-        <CreatePostForm onPublish={handlePublish} />
-      </div>
+      {/* // Solo cambia esta parte en FeedContainer */}
+{me?.role !== "STUDENT" && (
+  <div className="w-full max-w-5xl mb-8">
+    <CreatePostForm onPublish={handlePublish} currentUser={me} />
+  </div>
+)}
 
       <div className="w-full max-w-5xl flex flex-col space-y-6">
         <TooltipProvider>

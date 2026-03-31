@@ -1,196 +1,187 @@
 // app/api/admin/invitations/bulk/route.js
 import "server-only";
-
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { requireAppUser } from "@/lib/authz";
 import { createInviteToken } from "@/lib/invitations";
 import { findCourseByUserInput } from "@/lib/courses/courseKey";
+import { sendInvitationEmail } from "@/lib/email/sendInvitationEmail";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-function json(message, status = 400) {
-  return NextResponse.json({ message }, { status });
-}
-
 export async function POST(req) {
-  const { appUser: requester } = await requireAppUser({
-    roles: ["ADMINISTRATIVE"],
-    requireProfileCompleted: true,
-  });
+  try {
+    const { appUser: requester } = await requireAppUser({
+      roles: ["ADMINISTRATIVE"],
+      requireProfileCompleted: true,
+    });
 
-  const institutionId = requester.institutionId;
+    const institutionId = requester.institutionId;
+    const body = await req.json().catch(() => null);
 
-  const body = await req.json().catch(() => null);
-  if (!body?.rows || !Array.isArray(body.rows)) {
-    return json("Body inválido: rows[] requerido.", 400);
-  }
+    if (!body?.rows || !Array.isArray(body.rows) || !body.rows.length) {
+      return NextResponse.json({ message: "Body inválido: rows[] requerido." }, { status: 400 });
+    }
 
-  const rows = body.rows;
+    // Filtrar filas que no quieren invitación
+    const rowsToProcess = body.rows.filter((r) => r.sendInvite !== false);
 
-  const result = {
-    created: 0,
-    skipped: 0,
-    errors: [],
-  };
+    if (!rowsToProcess.length) {
+      return NextResponse.json({ ok: true, created: 0, skipped: body.rows.length, errors: [] });
+    }
 
-  // Procesar fila a fila (seguro). Luego optimizamos a batch si quieres.
-  for (const r of rows) {
-    try {
-      const email = String(r.email || "").trim().toLowerCase();
-      const role = String(r.role || "").trim();
+    // Batch: traer emails existentes de usuarios e invitaciones activas de una sola vez
+    const emails = rowsToProcess.map((r) => String(r.email).trim().toLowerCase());
 
-      if (!email) throw new Error("Email requerido");
-      if (!role) throw new Error("Rol requerido");
-
-      // ✅ 0) filtro opcional desde excel: "S/N"
-      // si viene false, saltamos silenciosamente
-      if (r.sendInvite !== undefined) {
-        const v = String(r.sendInvite || "").trim().toLowerCase();
-        if (["n", "no", "0", "false"].includes(v)) {
-          result.skipped++;
-          continue;
-        }
-      }
-
-      // 1) si existe usuario en institución => skip
-      const exists = await prisma.appUser.findFirst({
-        where: { institutionId, email },
-        select: { id: true },
-      });
-      if (exists) {
-        result.skipped++;
-        continue;
-      }
-
-      // 2) si existe invitación activa => skip
-      const activeInvite = await prisma.invitation.findFirst({
+    const [existingUsers, existingInvites] = await Promise.all([
+      prisma.appUser.findMany({
+        where: { institutionId, email: { in: emails } },
+        select: { email: true },
+      }),
+      prisma.invitation.findMany({
         where: {
           institutionId,
-          email,
+          email: { in: emails },
           usedAt: null,
           expiresAt: { gt: new Date() },
         },
-        select: { id: true },
-      });
-      if (activeInvite) {
-        result.skipped++;
-        continue;
-      }
+        select: { email: true },
+      }),
+    ]);
 
-      // 3) resolver cursos según rol
-      let studentCourseId = null;
+    const existingEmailSet = new Set([
+      ...existingUsers.map((u) => u.email),
+      ...existingInvites.map((i) => i.email),
+    ]);
 
-      /** @type {{courseId:string,isChief:boolean}[]} */
-      let teacherAssignments = [];
+    // Resolver todos los nombres de cursos únicos de una sola vez
+    const allCourseNames = new Set();
+    rowsToProcess.forEach((r) => {
+      if (r.studentCourseName) allCourseNames.add(r.studentCourseName);
+      if (r.teacherCourseNames) r.teacherCourseNames.forEach((c) => allCourseNames.add(c));
+      if (r.teacherChiefCourseName) allCourseNames.add(r.teacherChiefCourseName);
+    });
 
-      if (role === "STUDENT") {
-        const rawCourse = String(r.studentCourseName || "").trim();
-        if (!rawCourse) throw new Error("STUDENT requiere curso");
+    const courseCache = {};
+    await Promise.all(
+      [...allCourseNames].map(async (name) => {
+        const course = await findCourseByUserInput(prisma, institutionId, name);
+        courseCache[name] = course ?? null;
+      })
+    );
 
-        const course = await findCourseByUserInput(prisma, institutionId, rawCourse);
-        if (!course) {
-          throw new Error(
-            `Curso no existe o formato inválido: "${rawCourse}". Ej: 7B, 1MA, 2MB`
-          );
-        }
-        studentCourseId = course.id;
-      }
+    // Obtener institución para el email
+    const institution = await prisma.institution.findUnique({
+      where: { id: institutionId },
+      select: { name: true },
+    });
 
-      if (role === "TEACHER") {
-        const names = Array.isArray(r.teacherCourseNames) ? r.teacherCourseNames : [];
-        if (!names.length) throw new Error("TEACHER requiere teacherCourseNames (>=1)");
+    const result = { created: 0, skipped: 0, errors: [] };
+    const expiresAt = new Date(Date.now() + 1000 * 60 * 60 * 24 * 7); // 7 días
 
-        // resolver todos los cursos del docente
-        const resolved = [];
-        for (const name of names) {
-          const raw = String(name || "").trim();
-          if (!raw) continue;
+    for (const r of rowsToProcess) {
+      const email = String(r.email).trim().toLowerCase();
 
-          const c = await findCourseByUserInput(prisma, institutionId, raw);
-          if (!c) {
-            throw new Error(
-              `Curso no existe o formato inválido: "${raw}". Ej: 7B, 1MA, 2MB`
-            );
-          }
-          resolved.push(c);
-        }
-
-        if (!resolved.length) throw new Error("TEACHER requiere al menos 1 curso válido.");
-
-        // resolver curso jefe (opcional)
-        const chiefRaw = String(r.teacherChiefCourseName || "").trim();
-        let chiefCourseId = null;
-
-        if (chiefRaw) {
-          const chiefCourse = await findCourseByUserInput(prisma, institutionId, chiefRaw);
-          if (!chiefCourse) {
-            throw new Error(
-              `Curso jefe no existe o formato inválido: "${chiefRaw}". Ej: 7B, 1MA`
-            );
-          }
-          chiefCourseId = chiefCourse.id;
-
-          // asegurar que esté dentro de los cursos seleccionados
-          const isInTeacherList = resolved.some((c) => c.id === chiefCourseId);
-          if (!isInTeacherList) {
-            throw new Error("Curso jefe debe estar dentro de los cursos del docente");
-          }
+      try {
+        // Skip si ya existe
+        if (existingEmailSet.has(email)) {
+          result.skipped++;
+          continue;
         }
 
-        teacherAssignments = resolved.map((c) => ({
-          courseId: c.id,
-          isChief: chiefCourseId ? c.id === chiefCourseId : false,
-        }));
-      }
+        const role = String(r.role).trim();
+        let studentCourseId = null;
+        let teacherAssignments = [];
 
-      if (role === "ADMINISTRATIVE") {
-        const pos = String(r.positionTitle || "").trim();
-        if (!pos) throw new Error("Cargo requerido para ADMINISTRATIVE");
-      }
-
-      // 4) crear invitación + asignaciones (transacción)
-      const { tokenHash } = createInviteToken();
-
-      await prisma.$transaction(async (tx) => {
-        const inv = await tx.invitation.create({
-          data: {
-            institutionId,
-            email,
-            role,
-            positionTitle:
-              role === "ADMINISTRATIVE" ? String(r.positionTitle || "").trim() : null,
-            courseId: role === "STUDENT" ? studentCourseId : null,
-            tokenHash,
-            expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
-            createdByAppUserId: requester.id,
-          },
-          select: { id: true },
-        });
+        // Resolver cursos
+        if (role === "STUDENT") {
+          const course = courseCache[r.studentCourseName];
+          if (!course) throw new Error(`Curso no encontrado: "${r.studentCourseName}"`);
+          studentCourseId = course.id;
+        }
 
         if (role === "TEACHER") {
-          await tx.invitationCourseAssignment.createMany({
-            data: teacherAssignments.map((a) => ({
-              invitationId: inv.id,
-              institutionId,
-              courseId: a.courseId,
-              isChief: a.isChief,
-            })),
-            skipDuplicates: true,
+          const resolved = r.teacherCourseNames.map((name) => {
+            const course = courseCache[name];
+            if (!course) throw new Error(`Curso no encontrado: "${name}"`);
+            return course;
           });
+
+          let chiefCourseId = null;
+          if (r.teacherChiefCourseName) {
+            const chief = courseCache[r.teacherChiefCourseName];
+            if (!chief) throw new Error(`Curso jefe no encontrado: "${r.teacherChiefCourseName}"`);
+            chiefCourseId = chief.id;
+          }
+
+          teacherAssignments = resolved.map((c) => ({
+            courseId: c.id,
+            isChief: chiefCourseId ? c.id === chiefCourseId : false,
+          }));
         }
-      });
 
-      result.created++;
-    } catch (e) {
-      result.errors.push({
-        row: r.row ?? null,
-        email: r.email ?? null,
-        message: e?.message || "Error desconocido",
-      });
+        if (role === "ADMINISTRATIVE" && !r.positionTitle?.trim()) {
+          throw new Error("Cargo requerido para Administrativo");
+        }
+
+        // Crear invitación en transacción
+        const { token, tokenHash } = createInviteToken();
+
+        const inv = await prisma.$transaction(async (tx) => {
+          const created = await tx.invitation.create({
+            data: {
+              institutionId,
+              email,
+              role,
+              positionTitle: role === "ADMINISTRATIVE" ? r.positionTitle.trim() : null,
+              courseId: role === "STUDENT" ? studentCourseId : null,
+              tokenHash,
+              expiresAt,
+              createdByAppUserId: requester.id,
+            },
+            select: { id: true },
+          });
+
+          if (role === "TEACHER" && teacherAssignments.length) {
+            await tx.invitationCourseAssignment.createMany({
+              data: teacherAssignments.map((a) => ({
+                invitationId: created.id,
+                institutionId,
+                courseId: a.courseId,
+                isChief: a.isChief,
+              })),
+              skipDuplicates: true,
+            });
+          }
+
+          return created;
+        });
+
+        // Enviar email
+        await sendInvitationEmail({
+          to: email,
+          token,
+          institutionName: institution?.name ?? "tu institución",
+          role,
+          expiresAt,
+        });
+
+        result.created++;
+      } catch (e) {
+        result.errors.push({
+          row: r.row ?? null,
+          email,
+          message: e?.message ?? "Error desconocido",
+        });
+      }
     }
-  }
 
-  return NextResponse.json({ ok: true, ...result });
+    return NextResponse.json({ ok: true, ...result });
+  } catch (e) {
+    console.error("[bulk invitations]", e?.message);
+    const code = e?.message;
+    if (code === "FORBIDDEN") return NextResponse.json({ message: "Sin permisos" }, { status: 403 });
+    return NextResponse.json({ message: "Error interno" }, { status: 500 });
+  }
 }

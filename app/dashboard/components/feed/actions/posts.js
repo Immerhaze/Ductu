@@ -1,7 +1,7 @@
 "use server";
 
 import prisma from "@/lib/prisma";
-import { stackServerApp } from "@/stack/server";
+import { requireAppUser } from "@/lib/authz";
 
 const MAX_POST_CHARS = 2000;
 
@@ -13,24 +13,23 @@ function assertCanPost(appUser) {
 }
 
 export async function createPostAction({ content, targets, attachment }) {
-  const user = await stackServerApp.getUser({ or: "throw" });
-
-  const appUser = await prisma.appUser.findUnique({
-    where: { authUserId: user.id },
-    select: { id: true, role: true, institutionId: true, fullName: true },
-  });
+  const { appUser } = await requireAppUser({ requireProfileCompleted: true });
 
   assertCanPost(appUser);
 
   const text = String(content ?? "").trim();
   if (!text) throw new Error("La publicación no puede estar vacía.");
-  if (text.length > MAX_POST_CHARS) throw new Error(`Máximo ${MAX_POST_CHARS} caracteres.`);
+  if (text.length > MAX_POST_CHARS) {
+    throw new Error(`Máximo ${MAX_POST_CHARS} caracteres.`);
+  }
 
-  // Normaliza targets: si viene vacío => ALL
-  const normalizedTargets = Array.isArray(targets) && targets.length > 0 ? targets : [{ type: "ALL" }];
+  const normalizedTargets =
+    Array.isArray(targets) && targets.length > 0
+      ? targets
+      : [{ type: "ALL" }];
 
-  // (Opcional) Crear attachment metadata si llega
   let attachmentId = null;
+
   if (attachment?.url && attachment?.mimeType && attachment?.name) {
     const created = await prisma.attachment.create({
       data: {
@@ -41,6 +40,7 @@ export async function createPostAction({ content, targets, attachment }) {
       },
       select: { id: true },
     });
+
     attachmentId = created.id;
   }
 
@@ -52,7 +52,7 @@ export async function createPostAction({ content, targets, attachment }) {
       attachmentId,
       targets: {
         create: normalizedTargets.map((t) => ({
-          type: t.type, // "ALL" | "ROLE" | "COURSE"
+          type: t.type,
           role: t.type === "ROLE" ? t.role : null,
           courseId: t.type === "COURSE" ? t.courseId : null,
         })),
@@ -62,9 +62,15 @@ export async function createPostAction({ content, targets, attachment }) {
       id: true,
       content: true,
       createdAt: true,
-      author: { select: { fullName: true, role: true } },
-      attachment: { select: { url: true, name: true, mimeType: true } },
-      targets: { select: { type: true, role: true, courseId: true } },
+      author: {
+        select: { fullName: true, role: true },
+      },
+      attachment: {
+        select: { url: true, name: true, mimeType: true },
+      },
+      targets: {
+        select: { type: true, role: true, courseId: true },
+      },
     },
   });
 
@@ -72,26 +78,14 @@ export async function createPostAction({ content, targets, attachment }) {
 }
 
 export async function getFeedAction({ take = 20 } = {}) {
-  const user = await stackServerApp.getUser({ or: "throw" });
-
-  const appUser = await prisma.appUser.findUnique({
-    where: { authUserId: user.id },
-    select: { id: true, role: true, institutionId: true, courseId: true },
-  });
-
-  if (!appUser) throw new Error("Perfil interno no encontrado.");
+  const { appUser } = await requireAppUser({ requireProfileCompleted: true });
 
   const posts = await prisma.post.findMany({
     where: {
       institutionId: appUser.institutionId,
       OR: [
-        // Visible para todos
         { targets: { some: { type: "ALL" } } },
-
-        // Visible para tu rol
         { targets: { some: { type: "ROLE", role: appUser.role } } },
-
-        // Visible para tu curso (si existe)
         ...(appUser.courseId
           ? [{ targets: { some: { type: "COURSE", courseId: appUser.courseId } } }]
           : []),
@@ -103,43 +97,41 @@ export async function getFeedAction({ take = 20 } = {}) {
       id: true,
       content: true,
       createdAt: true,
-      author: { select: { fullName: true, role: true } },
-      attachment: { select: { url: true, name: true, mimeType: true } },
-      targets: { select: { type: true, role: true, courseId: true } },
+      author: {
+        select: { fullName: true, role: true },
+      },
+      attachment: {
+        select: { url: true, name: true, mimeType: true },
+      },
+      targets: {
+        select: { type: true, role: true, courseId: true },
+      },
     },
   });
 
   return posts;
 }
 
-
 export async function getCoursesForPostTargetsAction() {
-  const user = await stackServerApp.getUser({ or: "redirect" });
+  const { appUser } = await requireAppUser({ requireProfileCompleted: true });
 
-  const appUser = await prisma.appUser.findUnique({
-    where: { authUserId: user.id },
-    select: {
-      id: true,
-      role: true,
-      institutionId: true,
-      isSuperAdmin: true,
-    },
-  });
-
-  if (!appUser) throw new Error("No existe perfil interno asociado a esta sesión.");
-
-  // Admin: todos los cursos activos de la institución
   if (appUser.role === "ADMINISTRATIVE" || appUser.isSuperAdmin) {
     const courses = await prisma.course.findMany({
-      where: { institutionId: appUser.institutionId, isActive: true },
-      select: { id: true, name: true, isActive: true },
+      where: {
+        institutionId: appUser.institutionId,
+        isActive: true,
+      },
+      select: {
+        id: true,
+        name: true,
+        isActive: true,
+      },
       orderBy: { name: "asc" },
     });
 
     return { courses };
   }
 
-  // Teacher: cursos donde enseña (TeacherCourse) o donde es jefe (chiefTeacherId)
   if (appUser.role === "TEACHER") {
     const courses = await prisma.course.findMany({
       where: {
@@ -150,13 +142,16 @@ export async function getCoursesForPostTargetsAction() {
           { teacherCourses: { some: { teacherId: appUser.id } } },
         ],
       },
-      select: { id: true, name: true, isActive: true },
+      select: {
+        id: true,
+        name: true,
+        isActive: true,
+      },
       orderBy: { name: "asc" },
     });
 
     return { courses };
   }
 
-  // Student (si no deberían publicar)
   return { courses: [] };
 }

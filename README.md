@@ -141,3 +141,6 @@ Se ha otorgado acceso al instructor para su respectiva revisión académica.
 Nicolás Romero Carrillo
 Tecnólogo en Análisis y Desarrollo de Software
 Proyecto Académico – ADSO
+
+
+arreglar el trayecto de la curva en las muestra graficas de materias para docentes - la curva de significar algo y poder comunicar el promedio o la poryeccion mas claramente

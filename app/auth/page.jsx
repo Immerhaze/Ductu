@@ -6,14 +6,16 @@ import AuthClient from "./components/AuthClient";
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
+// app/auth/page.jsx
 export default async function AuthPage({ searchParams }) {
-  // Si ya está logueado, NO lo dejes en auth (evita loops)
   const user = await stackServerApp.getUser({ or: "return-null" });
-  if (user) redirect("/post-auth");
+  if (user) redirect("/api/auth/post-auth");
 
   const sp = await searchParams;
-  const raw = Array.isArray(sp?.login) ? sp.login[0] : sp?.login;
-  const isLoginDefault = String(raw ?? "true") === "true";
+  const mode = Array.isArray(sp?.mode) ? sp.mode[0] : sp?.mode;
+
+  // "login" → isLoginDefault: true | "register" → false | default: true
+  const isLoginDefault = mode !== "register";
 
   return <AuthClient isLoginDefault={isLoginDefault} />;
 }

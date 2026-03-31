@@ -19,13 +19,6 @@ enum UserRole {
   STUDENT
 }
 
-/**
- * Targets de visibilidad para publicaciones
- * - ALL: visible para toda la institución
- * - ROLE: visible para uno o más roles
- * - COURSE: visible para uno o más cursos (ALUMNOS del curso + PROFESOR JEFE del curso)
- * Nota: "Profesor jefe" se determina por TeacherCourse.isChief=true (no por Course.chiefTeacherId).
- */
 enum PostTargetType {
   ALL
   ROLE
@@ -43,9 +36,39 @@ enum SectionNaming {
 }
 
 enum CourseNameFormat {
-  CHILE_TRADITIONAL // 7° A, 1° Medio B
-  COMPACT // 7A, 1MA / 4MB
-  HUNDREDS // 101/102/103 para 1M; 201/202 para 2M; etc.
+  CHILE_TRADITIONAL
+  COMPACT
+  HUNDREDS
+}
+
+enum AcademicRegime {
+  SEMESTER
+  TRIMESTER
+  QUARTER
+}
+
+enum CalendarEventType {
+  GENERAL
+  EXAM
+  ASSIGNMENT
+  HOLIDAY
+  MEETING
+  OTHER
+}
+
+enum GradeCategory {
+  EXAM
+  QUIZ
+  ASSIGNMENT
+  PROJECT
+  ORAL
+  OTHER
+}
+
+enum AnnotationType {
+  POSITIVE
+  NEGATIVE
+  OBSERVATION
 }
 
 model Institution {
@@ -61,11 +84,24 @@ model Institution {
   invitations  Invitation[]
   courses      Course[]
   posts        Post[]
+  grades       Grade[]
+
   courseConfig InstitutionCourseConfig?
 
-  // Relaciones inversas
   teacherCourses              TeacherCourse[]
   invitationCourseAssignments InvitationCourseAssignment[]
+
+  academicPolicy      InstitutionAcademicPolicy?
+  academicYears       AcademicYear[]
+  academicPeriods     AcademicPeriod[]
+  subjects            Subject[]
+  courseSubjects      CourseSubject[]
+  teachingAssignments TeachingAssignment[]
+  calendarEvents      CalendarEvent[]
+
+  studentAnnotations   StudentAnnotation[]
+  studentAchievements  StudentAchievement[]
+  improvementPlans     StudentImprovementPlan[]
 
   @@index([status])
 }
@@ -73,25 +109,17 @@ model Institution {
 model AppUser {
   id String @id @default(uuid()) @db.Uuid
 
-  // Únicos globales (simplicidad)
   authUserId String @unique
   email      String @unique
 
-  fullName String?
-  role     UserRole
-
+  fullName      String?
+  role          UserRole
   positionTitle String?
   isSuperAdmin  Boolean @default(false)
 
-  // Pertenece a 1 institución
   institutionId String      @db.Uuid
   institution   Institution @relation(fields: [institutionId], references: [id], onDelete: Cascade)
 
-  /**
-   * Curso principal:
-   * - STUDENT: normalmente requerido a nivel app
-   * - TEACHER/ADMIN: normalmente null
-   */
   courseId String? @db.Uuid
   course   Course? @relation("StudentCourse", fields: [courseId], references: [id], onDelete: SetNull)
 
@@ -100,14 +128,20 @@ model AppUser {
   createdAt          DateTime  @default(now())
   updatedAt          DateTime  @updatedAt
 
-  // Invitaciones creadas por este usuario
-  invitationsCreated Invitation[] @relation("InvitationCreatedBy")
+  invitationsCreated    Invitation[]    @relation("InvitationCreatedBy")
+  posts                 Post[]          @relation("PostsByAuthor")
+  teacherCourses        TeacherCourse[]
+  teachingAssignments   TeachingAssignment[]
+  grades                Grade[]         @relation("StudentGrades")
+  calendarEventsCreated CalendarEvent[] @relation("EventsCreatedBy")
 
-  // Publicaciones creadas por este usuario
-  posts Post[] @relation("PostsByAuthor")
-
-  // Cursos donde enseña / y opcionalmente donde es jefe (isChief=true)
-  teacherCourses TeacherCourse[]
+  // Perfil del alumno
+  studentAnnotations       StudentAnnotation[]      @relation("StudentAnnotations")
+  annotationsAuthored      StudentAnnotation[]      @relation("AnnotationAuthor")
+  studentAchievements      StudentAchievement[]     @relation("StudentAchievements")
+  achievementsAuthored     StudentAchievement[]     @relation("AchievementAuthor")
+  improvementPlans         StudentImprovementPlan[] @relation("ImprovementPlans")
+  improvementPlansAuthored StudentImprovementPlan[] @relation("ImprovementPlanAuthor")
 
   @@index([institutionId, role])
   @@index([institutionId, courseId])
@@ -122,19 +156,9 @@ model Invitation {
   role          UserRole
   positionTitle String?
 
-  /**
-   * Asignación inicial:
-   * - role=STUDENT => courseId requerido por lógica (en server action)
-   * - role=TEACHER/ADMIN => normalmente null
-   */
   courseId String? @db.Uuid
   course   Course? @relation("InvitationCourse", fields: [courseId], references: [id], onDelete: SetNull)
 
-  /**
-   * Para TEACHER: pre-asignación de cursos (y jefaturas) con isChief
-   * - role=TEACHER => 1..N (recomendado) filas aquí
-   * - role=ADMINISTRATIVE/STUDENT => normalmente vacío
-   */
   courseAssignments InvitationCourseAssignment[]
 
   institutionId      String @db.Uuid
@@ -158,9 +182,11 @@ model InvitationCourseAssignment {
   invitationId  String @db.Uuid
   courseId      String @db.Uuid
   institutionId String @db.Uuid
+  isChief       Boolean @default(false)
 
-  // Si es jefe del curso
-  isChief Boolean @default(false)
+  // NUEVO
+  subjectId     String? @db.Uuid
+  subject       Subject? @relation(fields: [subjectId], references: [id], onDelete: SetNull)
 
   invitation  Invitation  @relation(fields: [invitationId], references: [id], onDelete: Cascade)
   course      Course      @relation(fields: [courseId], references: [id], onDelete: Cascade)
@@ -170,6 +196,7 @@ model InvitationCourseAssignment {
   @@index([institutionId])
   @@index([courseId])
   @@index([courseId, isChief])
+  @@index([subjectId])
 }
 
 model InstitutionCourseConfig {
@@ -177,14 +204,10 @@ model InstitutionCourseConfig {
   institutionId String      @unique @db.Uuid
   institution   Institution @relation(fields: [institutionId], references: [id], onDelete: Cascade)
 
-  activeLevels String[] @default([])
-
-  // Paralelos
+  activeLevels  String[]      @default([])
   sectionNaming SectionNaming @default(LETTERS)
   sectionCount  Int           @default(2)
-
-  // Formato nombre visible
-  nameFormat CourseNameFormat @default(CHILE_TRADITIONAL)
+  nameFormat    CourseNameFormat @default(CHILE_TRADITIONAL)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -197,38 +220,25 @@ model Course {
   institutionId String      @db.Uuid
   institution   Institution @relation(fields: [institutionId], references: [id], onDelete: Cascade)
 
-  // Código estable: B1..B8, M1..M4
-  levelCode String
-
-  // Tipo + número para consultas
+  levelCode   String
   levelType   AcademicLevelType
   levelNumber Int
-
-  // Sección estable: A/B/C o 1/2/3
-  section String
-
-  // Nombre visible (se puede recalcular si cambia el formato)
-  name String
-
-  isActive Boolean @default(true)
+  section     String
+  name        String
+  isActive    Boolean @default(true)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  // Estudiantes asignados a este curso (AppUser.courseId)
-  students AppUser[] @relation("StudentCourse")
-
-  // Profesores asignados a este curso (y jefe si isChief=true)
-  teacherCourses TeacherCourse[]
-
-  // Visibilidad de publicaciones por curso
-  postTargets PostTarget[]
-
-  // Invitaciones cuyo courseId apunta a este curso (p.ej. STUDENT)
-  invitations Invitation[] @relation("InvitationCourse")
-
-  // Pre-asignaciones en invitaciones (para TEACHER)
+  students                    AppUser[]                    @relation("StudentCourse")
+  teacherCourses              TeacherCourse[]
+  courseSubjects              CourseSubject[]
+  teachingAssignments         TeachingAssignment[]
+  postTargets                 PostTarget[]
+  invitations                 Invitation[]                 @relation("InvitationCourse")
   invitationCourseAssignments InvitationCourseAssignment[]
+  calendarEventTargets        CalendarEventTarget[]
+  studentAnnotations          StudentAnnotation[]
 
   @@unique([institutionId, levelCode, section])
   @@unique([institutionId, name])
@@ -257,6 +267,174 @@ model TeacherCourse {
   @@index([courseId, isChief])
 }
 
+model InstitutionAcademicPolicy {
+  id            String      @id @default(uuid()) @db.Uuid
+  institutionId String      @unique @db.Uuid
+  institution   Institution @relation(fields: [institutionId], references: [id], onDelete: Cascade)
+
+  academicRegime           AcademicRegime @default(SEMESTER)
+  gradingScaleMin          Decimal        @db.Decimal(3, 1) @default(1.0)
+  gradingScaleMax          Decimal        @db.Decimal(3, 1) @default(7.0)
+  passingGrade             Decimal        @db.Decimal(3, 1) @default(4.0)
+  gradeDecimals            Int            @default(1)
+  useAttendanceForPromotion Boolean       @default(true)
+  minimumAttendancePercent  Decimal?      @db.Decimal(5, 2)
+
+  activeAcademicYearId String?       @db.Uuid
+  activeAcademicYear   AcademicYear? @relation("ActiveAcademicYear", fields: [activeAcademicYearId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([institutionId])
+}
+
+model AcademicYear {
+  id            String      @id @default(uuid()) @db.Uuid
+  institutionId String      @db.Uuid
+  institution   Institution @relation(fields: [institutionId], references: [id], onDelete: Cascade)
+
+  year      Int
+  name      String
+  startDate DateTime
+  endDate   DateTime
+  isActive  Boolean @default(false)
+
+  periods             AcademicPeriod[]
+  teachingAssignments TeachingAssignment[]
+  activeForPolicy     InstitutionAcademicPolicy[] @relation("ActiveAcademicYear")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([institutionId, year])
+  @@index([institutionId, isActive])
+}
+
+model AcademicPeriod {
+  id            String      @id @default(uuid()) @db.Uuid
+  institutionId String      @db.Uuid
+  institution   Institution @relation(fields: [institutionId], references: [id], onDelete: Cascade)
+
+  academicYearId String       @db.Uuid
+  academicYear   AcademicYear @relation(fields: [academicYearId], references: [id], onDelete: Cascade)
+
+  name         String
+  periodNumber Int
+  startDate    DateTime
+  endDate      DateTime
+  isActive     Boolean @default(false)
+
+  grades Grade[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([academicYearId, periodNumber])
+  @@index([institutionId])
+  @@index([academicYearId, isActive])
+}
+
+model Subject {
+  id            String      @id @default(uuid()) @db.Uuid
+  institutionId String      @db.Uuid
+  institution   Institution @relation(fields: [institutionId], references: [id], onDelete: Cascade)
+
+  name     String
+  code     String?
+  isActive Boolean @default(true)
+
+  courseSubjects      CourseSubject[]
+  teachingAssignments TeachingAssignment[]
+  // En model Subject agregar:
+invitationCourseAssignments InvitationCourseAssignment[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([institutionId, name])
+  @@unique([institutionId, code])
+  @@index([institutionId, isActive])
+}
+
+model CourseSubject {
+  id            String      @id @default(uuid()) @db.Uuid
+  institutionId String      @db.Uuid
+  institution   Institution @relation(fields: [institutionId], references: [id], onDelete: Cascade)
+
+  courseId  String  @db.Uuid
+  course    Course  @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  subjectId String  @db.Uuid
+  subject   Subject @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  @@unique([courseId, subjectId])
+  @@index([institutionId])
+  @@index([courseId])
+  @@index([subjectId])
+}
+
+model TeachingAssignment {
+  id            String      @id @default(uuid()) @db.Uuid
+  institutionId String      @db.Uuid
+  institution   Institution @relation(fields: [institutionId], references: [id], onDelete: Cascade)
+
+  academicYearId String       @db.Uuid
+  academicYear   AcademicYear @relation(fields: [academicYearId], references: [id], onDelete: Cascade)
+
+  teacherId String  @db.Uuid
+  teacher   AppUser @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+
+  courseId String @db.Uuid
+  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  subjectId String  @db.Uuid
+  subject   Subject @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+
+  grades Grade[]
+
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([academicYearId, teacherId, courseId, subjectId])
+  @@index([institutionId])
+  @@index([teacherId])
+  @@index([courseId])
+  @@index([subjectId])
+}
+
+model Grade {
+  id            String      @id @default(uuid()) @db.Uuid
+  institutionId String      @db.Uuid
+  institution   Institution @relation(fields: [institutionId], references: [id], onDelete: Cascade)
+
+  studentId String  @db.Uuid
+  student   AppUser @relation("StudentGrades", fields: [studentId], references: [id], onDelete: Cascade)
+
+  teachingAssignmentId String             @db.Uuid
+  teachingAssignment   TeachingAssignment @relation(fields: [teachingAssignmentId], references: [id], onDelete: Cascade)
+
+  academicPeriodId String         @db.Uuid
+  academicPeriod   AcademicPeriod @relation(fields: [academicPeriodId], references: [id], onDelete: Cascade)
+
+  value    Decimal       @db.Decimal(3, 1)
+  title    String?
+  weight   Decimal       @db.Decimal(4, 2) @default(1.0)
+  category GradeCategory @default(OTHER)
+  comment  String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([institutionId])
+  @@index([studentId])
+  @@index([teachingAssignmentId])
+  @@index([academicPeriodId])
+}
+
 model Post {
   id String @id @default(uuid()) @db.Uuid
 
@@ -268,13 +446,11 @@ model Post {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  institution Institution @relation(fields: [institutionId], references: [id], onDelete: Cascade)
-  author      AppUser     @relation("PostsByAuthor", fields: [authorId], references: [id], onDelete: Cascade)
-
+  institution  Institution @relation(fields: [institutionId], references: [id], onDelete: Cascade)
+  author       AppUser     @relation("PostsByAuthor", fields: [authorId], references: [id], onDelete: Cascade)
   attachmentId String?     @db.Uuid
   attachment   Attachment? @relation(fields: [attachmentId], references: [id], onDelete: SetNull)
-
-  targets PostTarget[]
+  targets      PostTarget[]
 
   @@index([institutionId, createdAt])
   @@index([authorId, createdAt])
@@ -285,14 +461,10 @@ model PostTarget {
   postId String         @db.Uuid
   type   PostTargetType
 
-  // ROLE target
-  role UserRole?
-
-  // COURSE target
-  courseId String? @db.Uuid
-  course   Course? @relation(fields: [courseId], references: [id], onDelete: Cascade)
-
-  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  role     UserRole?
+  courseId String?  @db.Uuid
+  course   Course?  @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  post     Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
 
   @@index([postId])
   @@index([type, role])
@@ -308,4 +480,116 @@ model Attachment {
   createdAt DateTime @default(now())
 
   posts Post[]
+}
+
+model CalendarEvent {
+  id            String      @id @default(uuid()) @db.Uuid
+  institutionId String      @db.Uuid
+  institution   Institution @relation(fields: [institutionId], references: [id], onDelete: Cascade)
+
+  createdByUserId String  @db.Uuid
+  createdBy       AppUser @relation("EventsCreatedBy", fields: [createdByUserId], references: [id], onDelete: Cascade)
+
+  title       String
+  description String?
+  type        CalendarEventType @default(GENERAL)
+  date        DateTime
+  endDate     DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  targets CalendarEventTarget[]
+
+  @@index([institutionId, date])
+  @@index([createdByUserId])
+}
+
+model CalendarEventTarget {
+  id      String        @id @default(uuid()) @db.Uuid
+  eventId String        @db.Uuid
+  event   CalendarEvent @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  type     PostTargetType
+  role     UserRole?
+  courseId String?  @db.Uuid
+  course   Course?  @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@index([eventId])
+  @@index([type, courseId])
+}
+
+model StudentAnnotation {
+  id            String      @id @default(uuid()) @db.Uuid
+  institutionId String      @db.Uuid
+  institution   Institution @relation(fields: [institutionId], references: [id], onDelete: Cascade)
+
+  studentId String  @db.Uuid
+  student   AppUser @relation("StudentAnnotations", fields: [studentId], references: [id], onDelete: Cascade)
+
+  authorId String  @db.Uuid
+  author   AppUser @relation("AnnotationAuthor", fields: [authorId], references: [id], onDelete: Cascade)
+
+  courseId String? @db.Uuid
+  course   Course? @relation(fields: [courseId], references: [id], onDelete: SetNull)
+
+  type        AnnotationType
+  title       String
+  description String
+  date        DateTime       @default(now())
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([institutionId])
+  @@index([studentId])
+  @@index([authorId])
+  @@index([studentId, type])
+}
+
+model StudentAchievement {
+  id            String      @id @default(uuid()) @db.Uuid
+  institutionId String      @db.Uuid
+  institution   Institution @relation(fields: [institutionId], references: [id], onDelete: Cascade)
+
+  studentId String  @db.Uuid
+  student   AppUser @relation("StudentAchievements", fields: [studentId], references: [id], onDelete: Cascade)
+
+  authorId String  @db.Uuid
+  author   AppUser @relation("AchievementAuthor", fields: [authorId], references: [id], onDelete: Cascade)
+
+  title       String
+  description String?
+  date        DateTime
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([institutionId])
+  @@index([studentId])
+}
+
+model StudentImprovementPlan {
+  id            String      @id @default(uuid()) @db.Uuid
+  institutionId String      @db.Uuid
+  institution   Institution @relation(fields: [institutionId], references: [id], onDelete: Cascade)
+
+  studentId String  @db.Uuid
+  student   AppUser @relation("ImprovementPlans", fields: [studentId], references: [id], onDelete: Cascade)
+
+  authorId String  @db.Uuid
+  author   AppUser @relation("ImprovementPlanAuthor", fields: [authorId], references: [id], onDelete: Cascade)
+
+  goal        String
+  description String?
+  dueDate     DateTime?
+  isCompleted Boolean   @default(false)
+  completedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([institutionId])
+  @@index([studentId])
+  @@index([studentId, isCompleted])
 }

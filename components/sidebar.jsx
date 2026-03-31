@@ -30,7 +30,8 @@ function SignOutButton() {
     ],
     STUDENT: [
       { icon: "icon-[lineicons--home]", path: "/dashboard", label: "Inicio" },
-      { icon: "icon-[carbon--certificate]", path: "/dashboard/grades", label: "Calificaciones" },
+            { icon: "icon-[fluent--data-pie-32-regular]", path: "/dashboard/data", label: "Datos" },
+      // { icon: "icon-[carbon--certificate]", path: "/dashboard/grades", label: "Calificaciones" },
       { icon: "icon-[feather--settings]", path: "/dashboard/settings", label: "Ajustes" },
     ],
     TEACHER: [

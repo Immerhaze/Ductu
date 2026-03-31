@@ -1,211 +1,258 @@
-// src/components/AdminDashboard.jsx
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { BarChartComponent } from './BarChartComponent'; // Corrected import path
-import { LineChartComponent, MultiLineChartComponent } from './LineChartComponent'; // Now using this for multi-line
+// src/components/AdminPerformanceDashboard.jsx
+"use client";
 
-import {
-    ALL_SUBJECTS,
-    ALL_GRADES,
-    getAdminOverallStudentPassFailCounts,
-    getAdminSubjectAveragesAcrossAllCourses,
-    getAdminOverallSubjectPerformance,
-    getAdminCourseSubjectOverallAverages, // New import
-    getAdminTeacherCourseAverages, // New import
-} from '@/lib/DummyPerformanceOverallData'; // Corrected import path from '@/DummyPerformanceOverallData' to '@/lib/dummyPerformanceData'
+import React, { useState, useEffect } from "react";
+import { BarChartComponent } from "./BarChartComponent";
 
+function StatCard({ label, value, sub, accent }) {
+  return (
+    <div
+      style={{
+        background: "#fff",
+        border: "1px solid #e8e8e3",
+        borderRadius: 16,
+        padding: "28px 32px",
+        display: "flex",
+        flexDirection: "column",
+        gap: 6,
+        position: "relative",
+        overflow: "hidden",
+      }}
+    >
+      <div
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: 4,
+          height: "100%",
+          background: accent,
+          borderRadius: "16px 0 0 16px",
+        }}
+      />
+      <span
+        style={{
+          fontSize: 13,
+          fontWeight: 500,
+          color: "#888",
+          letterSpacing: "0.06em",
+          textTransform: "uppercase",
+        }}
+      >
+        {label}
+      </span>
+      <span style={{ fontSize: 42, fontWeight: 700, color: "#1a1a1a", lineHeight: 1 }}>
+        {value}
+      </span>
+      <span style={{ fontSize: 13, color: "#aaa" }}>{sub}</span>
+    </div>
+  );
+}
 
-const AdminDashboard = () => {
-    const [selectedSubjectId, setSelectedSubjectId] = useState(ALL_SUBJECTS[0]?.id || '');
-    const [selectedCourseForSubjectAverages, setSelectedCourseForSubjectAverages] = useState(ALL_GRADES[0] || ''); // For new Line Chart
-    const [teacherPerformanceData, setTeacherPerformanceData] = useState([]); // For new Teacher Bar Chart
+function ChartCard({ title, description, children }) {
+  return (
+    <div
+      style={{
+        background: "#fff",
+        border: "1px solid #e8e8e3",
+        borderRadius: 16,
+        padding: "28px 32px",
+      }}
+    >
+      <div style={{ marginBottom: 20 }}>
+        <div style={{ fontSize: 15, fontWeight: 600, color: "#1a1a1a" }}>{title}</div>
+        <div style={{ fontSize: 13, color: "#aaa", marginTop: 4 }}>{description}</div>
+      </div>
+      {children}
+    </div>
+  );
+}
 
-    const [totalStudents, setTotalStudents] = useState(0);
-    const [passingStudents, setPassingStudents] = useState(0);
-    const [failingStudents, setFailingStudents] = useState(0);
-    const [courseSubjectAverages, setCourseSubjectAverages] = useState([]); // Data for existing Bar Chart 1
-    const [overallSubjectAverages, setOverallSubjectAverages] = useState([]); // Data for existing Bar Chart 2
-    const [courseSubjectLineData, setCourseSubjectLineData] = useState([]); // Data for new Line Chart (Avg per course per subject)
-
-
-    useEffect(() => {
-        // --- ADMIN DASHBOARD DATA LOADING ---
-
-        // KPI Data
-        const kpiData = getAdminOverallStudentPassFailCounts();
-        setTotalStudents(kpiData.total);
-        setPassingStudents(kpiData.passing);
-        setFailingStudents(kpiData.failing);
-
-        // Chart 1 Data: "Average per Subject across all Courses" (Bar Chart)
-        setCourseSubjectAverages(getAdminSubjectAveragesAcrossAllCourses(selectedSubjectId));
-
-        // Chart 2 Data: "Overall School Average per Subject" (Bar Chart)
-        setOverallSubjectAverages(getAdminOverallSubjectPerformance());
-
-        // New Chart 3 Data: "Average per Course per Subject" (Line Chart)
-        if (selectedCourseForSubjectAverages) {
-            setCourseSubjectLineData(getAdminCourseSubjectOverallAverages(selectedCourseForSubjectAverages));
-        }
-
-        // New Chart 4 Data: "Teacher Performance Averages" (Bar Chart)
-        setTeacherPerformanceData(getAdminTeacherCourseAverages());
-
-    }, [selectedSubjectId, selectedCourseForSubjectAverages]); // Re-run effect when selectors change
-
-    // Dynamically get the data keys for the LineChartComponent
-    // These are the subject IDs
-    const lineChartDataKeys = ALL_SUBJECTS.map(subject => subject.id);
-    const lineChartStrokes = ALL_SUBJECTS.map(subject => subject.chartColor); // Use chartColor from ALL_SUBJECTS
-
-    return (
-        <div className="p-4 space-y-6">
-            <h1 className="text-3xl font-bold mb-6">Panel de Administración</h1>
-
-            {/* KPI Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">
-                            Total de Estudiantes
-                        </CardTitle>
-                        <span className="text-2xl text-gray-500">🧑‍🎓</span>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">{totalStudents}</div>
-                        <p className="text-xs text-gray-500">
-                            Estudiantes registrados en la escuela
-                        </p>
-                    </CardContent>
-                </Card>
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">
-                            Estudiantes Aprobados
-                        </CardTitle>
-                        <span className="text-2xl text-green-500">✅</span>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">{passingStudents}</div>
-                        <p className="text-xs text-gray-500">
-                            Basado en el rendimiento del último año
-                        </p>
-                    </CardContent>
-                </Card>
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">
-                            Estudiantes No Aprobados
-                        </CardTitle>
-                        <span className="text-2xl text-red-500">❌</span>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">{failingStudents}</div>
-                        <p className="text-xs text-gray-500">
-                            Necesitan refuerzo o repiten el año
-                        </p>
-                    </CardContent>
-                </Card>
-            </div>
-
-            {/* Charts Section */}
-            <div className="grid grid-cols-1 gap-6">
-                {/* Chart 1: Average per Subject across all Courses (Bar Chart) */}
-                <Card className="p-4">
-                    <CardHeader className="flex flex-row justify-between items-center pb-2">
-                        <CardTitle className="text-lg">Promedio por Materia en Todos los Cursos</CardTitle>
-                        <Select value={selectedSubjectId} onValueChange={setSelectedSubjectId}>
-                            <SelectTrigger className="w-[180px]">
-                                <SelectValue placeholder="Seleccionar Materia" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {ALL_SUBJECTS.map(subject => (
-                                    <SelectItem key={subject.id} value={subject.id}>
-                                        {subject.name}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </CardHeader>
-                    <CardContent>
-                        <BarChartComponent
-                            data={courseSubjectAverages}
-                            xAxisDataKey="name"
-                            barDataKey="avgGrade"
-                            title={`Promedio de ${ALL_SUBJECTS.find(s => s.id === selectedSubjectId)?.name || 'Materia'} por Curso`}
-                            description="Muestra el promedio de una materia específica en todos los cursos del colegio."
-                            fill="#60a5fa"
-                        />
-                    </CardContent>
-                </Card>
-
-                {/* Chart 2: Overall School Average per Subject (Bar Chart) */}
-                <Card className="p-4">
-                    <CardHeader>
-                        <CardTitle className="text-lg">Promedio General del Colegio por Asignatura</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <BarChartComponent
-                            data={overallSubjectAverages}
-                            xAxisDataKey="name"
-                            barDataKey="avgGrade"
-                            title="Promedio General del Colegio por Asignatura"
-                            description="Muestra el promedio general de cada asignatura en todo el colegio."
-                            fill="#84cc16"
-                        />
-                    </CardContent>
-                </Card>
-
-                {/* NEW CHART 3: Average per Course per Subject (Line Chart with multiple lines) */}
-                <Card className="p-4">
-                    <CardHeader className="flex flex-row justify-between items-center pb-2">
-                        <CardTitle className="text-lg">Rendimiento Detallado por Alumno en Curso</CardTitle>
-                        <Select value={selectedCourseForSubjectAverages} onValueChange={setSelectedCourseForSubjectAverages}>
-                            <SelectTrigger className="w-[180px]">
-                                <SelectValue placeholder="Seleccionar Curso" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {ALL_GRADES.map(grade => (
-                                    <SelectItem key={grade} value={grade}>
-                                        {grade}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </CardHeader>
-                    <CardContent>
-                        <MultiLineChartComponent
-                            data={courseSubjectLineData}
-                            xAxisDataKey="name" // Student name will be on X-axis
-                            lineDataKeys={lineChartDataKeys} // All subject IDs as individual lines
-                            strokes={lineChartStrokes} // Colors for each subject line
-                            title={`Promedio de Materias por Alumno en Curso ${selectedCourseForSubjectAverages}`}
-                            description="Muestra el promedio de cada materia para los alumnos del curso seleccionado."
-                        />
-                    </CardContent>
-                </Card>
-
-                {/* NEW CHART 4: Teacher Performance Averages (Bar Chart) */}
-                <Card className="p-4">
-                    <CardHeader>
-                        <CardTitle className="text-lg">Rendimiento Promedio de Cursos por Profesor</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <BarChartComponent
-                            data={teacherPerformanceData}
-                            xAxisDataKey="name" // Teacher name
-                            barDataKey="avgGrade" // Average grade of courses/subjects they teach
-                            title="Promedio de Cursos Impartidos por Profesor"
-                            description="Muestra el promedio general de los cursos que cada profesor imparte en sus asignaturas."
-                            fill="#ef4444" // Tailwind red-500
-                        />
-                    </CardContent>
-                </Card>
-
-            </div>
+function EmptyBanner() {
+  return (
+    <div
+      style={{
+        background: "linear-gradient(135deg, #f0f4ff 0%, #fafafa 100%)",
+        border: "1px solid #dde3f5",
+        borderRadius: 16,
+        padding: "32px 40px",
+        display: "flex",
+        alignItems: "center",
+        gap: 24,
+        marginBottom: 32,
+      }}
+    >
+      <div
+        style={{
+          width: 52,
+          height: 52,
+          borderRadius: 14,
+          background: "#e0e8ff",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          fontSize: 26,
+          flexShrink: 0,
+        }}
+      >
+        📊
+      </div>
+      <div>
+        <div style={{ fontSize: 16, fontWeight: 600, color: "#1a1a1a", marginBottom: 4 }}>
+          Aún no hay datos de notas registrados
         </div>
-    );
-};
+        <div style={{ fontSize: 14, color: "#888", lineHeight: 1.6 }}>
+          Los gráficos y métricas aparecerán aquí una vez que los docentes comiencen a ingresar calificaciones en el sistema.
+        </div>
+      </div>
+    </div>
+  );
+}
 
-export default AdminDashboard;
+export default function AdminPerformanceDashboard() {
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [passFailCounts, setPassFailCounts] = useState({ total: 0, passing: 0, failing: 0 });
+  const [subjectAverages, setSubjectAverages] = useState([]);
+  const [teacherAverages, setTeacherAverages] = useState([]);
+
+  const hasData = subjectAverages.length > 0 || teacherAverages.length > 0;
+
+  useEffect(() => {
+    async function fetchStats() {
+      try {
+        setLoading(true);
+        const res = await fetch("/api/admin/stats");
+        if (!res.ok) throw new Error(`Error ${res.status}`);
+        const data = await res.json();
+        setPassFailCounts(data.passFailCounts);
+        setSubjectAverages(data.subjectAverages);
+        setTeacherAverages(data.teacherAverages);
+      } catch (err) {
+        console.error(err);
+        setError("No se pudieron cargar los datos.");
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchStats();
+  }, []);
+
+  if (loading) {
+    return (
+      <div
+        style={{
+          minHeight: "60vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          color: "#aaa",
+          fontSize: 15,
+          gap: 12,
+        }}
+      >
+        <span style={{ fontSize: 20 }}>⏳</span> Cargando datos del panel...
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div
+        style={{
+          minHeight: "60vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          color: "#e55",
+          fontSize: 15,
+          gap: 12,
+        }}
+      >
+        <span style={{ fontSize: 20 }}>⚠️</span> {error}
+      </div>
+    );
+  }
+
+  return (
+    <div
+      style={{
+        padding: "40px 48px",
+        background: "#f7f7f5",
+        minHeight: "100vh",
+        fontFamily: "'DM Sans', sans-serif",
+      }}
+    >
+      {/* Header */}
+      <div style={{ marginBottom: 36 }}>
+        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.12em", color: "#aaa", textTransform: "uppercase", marginBottom: 8 }}>
+          Panel de administración
+        </div>
+        <h1 style={{ fontSize: 32, fontWeight: 700, color: "#1a1a1a", margin: 0 }}>
+          Rendimiento académico
+        </h1>
+      </div>
+
+      {/* Banner sin datos */}
+      {!hasData && <EmptyBanner />}
+
+      {/* KPI Cards — siempre visibles */}
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(3, 1fr)",
+          gap: 20,
+          marginBottom: 32,
+        }}
+      >
+        <StatCard
+          label="Total estudiantes"
+          value={passFailCounts.total}
+          sub="con notas registradas"
+          accent="#3b5bdb"
+        />
+        <StatCard
+          label="Aprobados"
+          value={passFailCounts.passing}
+          sub="promedio ≥ nota mínima"
+          accent="#2f9e44"
+        />
+        <StatCard
+          label="No aprobados"
+          value={passFailCounts.failing}
+          sub="requieren atención"
+          accent="#e03131"
+        />
+      </div>
+
+      {/* Charts — solo si hay datos */}
+      {hasData && (
+        <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+          <ChartCard
+            title="Promedio general por asignatura"
+            description="Nota promedio de cada materia en toda la institución"
+          >
+            <BarChartComponent
+              data={subjectAverages}
+              xAxisDataKey="name"
+              barDataKey="avgGrade"
+              fill="#3b5bdb"
+            />
+          </ChartCard>
+
+          <ChartCard
+            title="Rendimiento por docente"
+            description="Promedio de las notas registradas por cada profesor"
+          >
+            <BarChartComponent
+              data={teacherAverages}
+              xAxisDataKey="name"
+              barDataKey="avgGrade"
+              fill="#2f9e44"
+            />
+          </ChartCard>
+        </div>
+      )}
+    </div>
+  );
+}

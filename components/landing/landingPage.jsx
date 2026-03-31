@@ -84,7 +84,7 @@ export default function LandingPageContent() {
   asChild
 >
   <Link
-    href="/post-auth"
+    href="/api/auth/post-auth"
     title={user?.primaryEmail ?? ""}
     className="flex items-center gap-2  min-w-0"
   >

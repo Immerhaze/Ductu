@@ -1,16 +1,19 @@
-// app/dashboard/userManagment/page.js
+// app/dashboard/grades/page.jsx
+import { redirect } from "next/navigation";
+import { requireAppUser } from "@/lib/authz";
+import GradesClient from "./components/GradesClient";
 
-// Si usas hooks de React, siempre usa 'use client'
-'use client' 
+export const dynamic = "force-dynamic";
 
-import React from 'react';
-import GradesPage from './components/GradesDashboard';
-
-export default function DataPage() {
-  return (
-    <div className="h-screen w-full flex flex-col overflow-hidden">
-      <GradesPage/>
-    </div>
-
-  );
+export default async function GradesPage() {
+  try {
+    await requireAppUser({ requireProfileCompleted: true });
+    return <GradesClient />;
+  } catch (e) {
+    const code = e?.message;
+    if (code === "PROFILE_INCOMPLETE") redirect("/complete-profile");
+    if (code === "APP_USER_NOT_FOUND") redirect("/post-auth");
+    if (code === "NO_INSTITUTION") redirect("/onboarding");
+    redirect("/auth?mode=login");
+  }
 }

@@ -66,7 +66,7 @@ export default function PostItem({ post }) {
     : null;
 
   return (
-    <div className="w-full max-w-5xl h-auto bg-white flex flex-col rounded-xl border-2 p-4 shadow-sm my-4">
+    <div className="w-full max-w-5xl h-auto bg-white flex flex-col rounded-xl border- p-4  my-4">
 
       <div className="w-full min-h-16 max-h-24 flex flex-row items-center justify-between gap-4 pb-4 border-b border-gray-200 mb-4">
         <div className="flex flex-row items-center gap-4 flex-grow">

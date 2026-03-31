@@ -15,7 +15,7 @@ export default async function CompleteProfilePage() {
   });
 
   // Si no existe AppUser, el flujo correcto es volver a post-auth
-  if (!appUser) return redirect("/post-auth");
+  if (!appUser) return redirect("/api/auth/post-auth");
 
   // Si ya completó, no tiene sentido estar aquí
   if (appUser.profileCompletedAt) return redirect("/dashboard");
