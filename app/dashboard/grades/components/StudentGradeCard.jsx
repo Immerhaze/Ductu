@@ -59,7 +59,7 @@ export default function StudentGradeCard({
             + Nota
           </button>
           <button
-            onClick={() => router.push(`/dashboard/grades/student/${student.id}`)}
+            onClick={() => router.push(`/dashboard/grades/${student.id}`)}
             className="bg-gray-100 hover:bg-gray-200 text-gray-600 text-xs font-medium px-3 py-1.5 rounded-lg transition-colors cursor-pointer"
           >
             Ver perfil

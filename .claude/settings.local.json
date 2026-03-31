@@ -1,6 +1,11 @@
 {
+  "enableAllProjectMcpServers": true,
   "enabledMcpjsonServers": [
     "stack-auth"
   ],
-  "enableAllProjectMcpServers": true
+  "permissions": {
+    "allow": [
+      "Bash(grep -r \"from.*loading\\\\|import.*loading\" --include=*.js --include=*.jsx --include=*.ts --include=*.tsx ! -path */.next/* ! -path */node_modules/* app/)"
+    ]
+  }
 }
