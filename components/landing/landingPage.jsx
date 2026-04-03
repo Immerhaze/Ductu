@@ -1,11 +1,10 @@
+// components/landing/landingPage.jsx
 "use client";
 
 import React, { useState } from "react";
-import { Button } from "../ui/button";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useUser, useStackApp } from "@stackframe/stack";
-
 import { MacbookScroll } from "../ui/macbook-scroll";
 import { TypewriterEffectSmooth } from "../ui/typewriter-effect";
 import FeaturesSection from "./featureSection";
@@ -14,30 +13,24 @@ import FooterSection from "./footer";
 
 export default function LandingPageContent() {
   const router = useRouter();
-  const user = useUser();              // null/undefined if not signed in
-  const stackApp = useStackApp();      // gives you signOut()
+  const user = useUser();
+  const stackApp = useStackApp();
   const [isSwitching, setIsSwitching] = useState(false);
 
-  const logoClasses = `text-blue-950 tracking-widest text-2xl font-semibold absolute`;
-
-  function NavItem({ children }) {
-    return <li className="cursor-pointer hover:text-blue-950">{children}</li>;
-  }
-
   const words = [
-    { text: "Conexion" },
-    { text: "real", className: "text-blue-500 dark:text-blue-500" },
+    { text: "Conexión" },
+    { text: "real", className: "text-blue-400" },
     { text: "con" },
     { text: "el" },
     { text: "ambiente" },
     { text: "educativo." },
   ];
 
-  async function handleSwitchAccount(target = "register") {
+  async function handleSwitchAccount() {
     try {
       setIsSwitching(true);
-      await stackApp.signOut(); // clears Stack session cookie
-      router.push(`/auth?mode=${target}`);
+      await stackApp.signOut();
+      router.push("/auth?mode=register");
     } finally {
       setIsSwitching(false);
     }
@@ -46,79 +39,71 @@ export default function LandingPageContent() {
   const isAuthed = !!user;
 
   return (
-    <div className="relative w-full min-h-screen h-auto">
-      {/* HEADER */}
-      <div className="w-full h-16 flex flex-row">
-        <div className="w-1/3 h-16 flex justify-start items-center pl-8">
-          <h1 className={logoClasses}>DUCTU</h1>
-        </div>
+    <div className="relative w-full min-h-screen bg-white">
 
-        <div className="w-2/3 h-16 flex flex-row justify-center items-end">
-          <div className="w-1/2 min-h-16 flex justify-center items-center">
-            <ul className="w-full text-gray-400 tracking-wide flex flex-row justify-around text-sm">
-              <NavItem>Características</NavItem>
-              <NavItem>Precios</NavItem>
-              <NavItem>Contacto</NavItem>
-            </ul>
-          </div>
+      {/* NAV */}
+      <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
+        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+          <span className="text-xl font-bold tracking-widest text-blue-950">DUCTU</span>
 
-          <div className="w-1/2 min-h-16 flex justify-center items-center space-x-8">
+          <nav className="hidden md:flex items-center gap-8">
+            {["Características", "Precios", "Contacto"].map(item => (
+              <span key={item} className="text-sm text-gray-500 hover:text-blue-950 cursor-pointer transition-colors">
+                {item}
+              </span>
+            ))}
+          </nav>
+
+          <div className="flex items-center gap-3">
             {!isAuthed ? (
               <>
-                <Button className="bg-blue-950 cursor-pointer" asChild>
-                  <Link href="/auth?mode=login">Ingresar</Link>
-                </Button>
-
-                <Button
-                  className="bg-blue-500 text-white hover:text-blue-950 cursor-pointer"
-                  variant="outline"
-                  asChild
+                <Link
+                  href="/auth?mode=login"
+                  className="text-sm font-medium text-gray-600 hover:text-blue-950 transition-colors px-4 py-2"
                 >
-                  <Link href="/auth?mode=register">Registrarse</Link>
-                </Button>
+                  Ingresar
+                </Link>
+                <Link
+                  href="/auth?mode=register"
+                  className="text-sm font-semibold bg-blue-950 text-white px-4 py-2 rounded-lg hover:bg-blue-900 transition-colors"
+                >
+                  Registrarse
+                </Link>
               </>
             ) : (
               <>
-   <Button
-  className="bg-blue-950 h-9  md:w-[100px] px-3 text-xs flex items-center gap-2 overflow-hidden"
-  asChild
->
-  <Link
-    href="/api/auth/post-auth"
-    title={user?.primaryEmail ?? ""}
-    className="flex items-center gap-2  min-w-0"
-  >
-    <span className="icon-[material-symbols--arrow-circle-right-outline] shrink-0 text-base" />
-    <span className="truncate min-w-0">{user?.primaryEmail}</span>
-  </Link>
-</Button>
-
-
-                <Button
-                  className="bg-blue-500 text-white hover:text-blue-950 cursor-pointer"
-                  variant="outline"
+                <Link
+                  href="/post-auth"
+                  className="text-sm font-medium text-gray-600 hover:text-blue-950 transition-colors px-4 py-2 flex items-center gap-2"
+                >
+                  <span className="icon-[material-symbols--arrow-circle-right-outline] text-base" />
+                  <span className="truncate max-w-[140px]">{user?.primaryEmail}</span>
+                </Link>
+                <button
+                  onClick={handleSwitchAccount}
                   disabled={isSwitching}
-                  onClick={() => handleSwitchAccount("register")}
+                  className="text-sm font-semibold bg-blue-950 text-white px-4 py-2 rounded-lg hover:bg-blue-900 transition-colors disabled:opacity-50"
                 >
                   {isSwitching ? "Cambiando..." : "Cambiar cuenta"}
-                </Button>
+                </button>
               </>
             )}
           </div>
         </div>
-      </div>
+      </header>
 
-      {/* MAIN */}
-      <div className="animate-fade-in duration-300 overflow-hidden">
+      {/* HERO */}
+      <div className="pt-16 overflow-hidden">
         <MacbookScroll
           title={<TypewriterEffectSmooth words={words} />}
-          src={"/screenshot.png"}
+          src="/screenshot.png"
           showGradient={false}
         />
       </div>
 
       <FeaturesSection />
-      <div className="w-full min-h-[100vh] h-screen">
+
+      <div className="w-full">
         <CallToActionSection />
         <FooterSection />
       </div>

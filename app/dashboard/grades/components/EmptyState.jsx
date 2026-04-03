@@ -66,21 +66,27 @@ export function EmptySearchState({ search }) {
   );
 }
 
-export function EmptyAssignmentsState() {
+export function EmptyAssignmentsState({ isAdmin = false }) {
   return (
     <div className="bg-white border border-gray-200 rounded-2xl py-16 px-8 flex flex-col items-center text-center gap-4">
       <div className="w-16 h-16 rounded-2xl bg-indigo-50 flex items-center justify-center text-3xl">
         📋
       </div>
       <div>
-        <p className="text-base font-semibold text-gray-700 mb-1">No tienes asignaciones activas</p>
+        <p className="text-base font-semibold text-gray-700 mb-1">
+          {isAdmin ? "No hay asignaciones configuradas" : "No tienes asignaciones activas"}
+        </p>
         <p className="text-sm text-gray-400 max-w-xs">
-          Aún no tienes cursos ni asignaturas asignadas para el año académico activo. Contacta a tu administrador para que configure tus asignaciones.
+          {isAdmin
+            ? "Aún no hay docentes con asignaturas asignadas en el año académico activo. Configura las asignaciones desde Ajustes."
+            : "Aún no tienes cursos ni asignaturas asignadas para el año académico activo. Contacta a tu administrador."}
         </p>
       </div>
-      <div className="bg-indigo-50 border border-indigo-100 rounded-xl px-4 py-3 text-xs text-indigo-700 max-w-xs">
-        💡 Las asignaciones las configura el administrador de tu institución en el año académico activo.
-      </div>
+      {isAdmin && (
+        <div className="bg-indigo-50 border border-indigo-100 rounded-xl px-4 py-3 text-xs text-indigo-700 max-w-xs">
+          💡 Ve a <strong>Ajustes → Asignaciones docentes</strong> para configurar qué profesor enseña qué asignatura.
+        </div>
+      )}
     </div>
   );
 }

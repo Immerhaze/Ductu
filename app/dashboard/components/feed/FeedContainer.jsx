@@ -1,3 +1,4 @@
+// app/dashboard/components/feed/FeedContainer.jsx
 "use client";
 
 import React, { useEffect, useState } from "react";
@@ -8,8 +9,7 @@ import { createPostAction, getFeedAction } from "@/lib/server/actions/posts";
 import { useAppUser } from "@/components/providers/AppUserContext";
 
 export default function FeedContainer() {
-  const { me, isLoading: meLoading, error: meError } = useAppUser();
-
+  const { me, isLoading: meLoading } = useAppUser();
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -23,9 +23,7 @@ export default function FeedContainer() {
         if (mounted) setLoading(false);
       }
     })();
-    return () => {
-      mounted = false;
-    };
+    return () => { mounted = false; };
   }, []);
 
   const handlePublish = async ({ content, targets, attachment }) => {
@@ -33,48 +31,59 @@ export default function FeedContainer() {
     setPosts((prev) => [created, ...prev]);
   };
 
-  const displayName = me?.fullName || me?.email || "Usuario";
-
   return (
-    <section className="flex-grow flex flex-col items-center overflow-y-auto p-4 bg-gray-50">
-      <div className="w-full max-w-5xl mb-6">
-       <h1 className="text-4xl my-5 text-gray-800">
-        {meLoading ? (
-          "Cargando..."
-        ) : meError ? (
-          "Bienvenido"
-        ) : (
-          <>
-          <span className="text-gray-800  font-semibold">Novedades</span>
-          </>
+    <section className="flex-1 flex flex-col items-center overflow-y-auto px-6 py-8 bg-gray-50">
+      <div className="w-full max-w-3xl">
 
-          // 
+        {/* Header del feed */}
+        <div className="mb-6">
+          <h2 className="text-xl font-bold text-gray-900">Novedades</h2>
+          <p className="text-sm text-gray-400 mt-0.5">
+            Publicaciones y avisos recientes de tu institución.
+          </p>
+        </div>
+
+        {/* Form de publicación — solo teachers y admins */}
+        {!meLoading && me?.role !== "STUDENT" && (
+          <div className="mb-6">
+            <CreatePostForm onPublish={handlePublish} currentUser={me} />
+          </div>
         )}
-      </h1>
-       <p className="text-sm text-gray-500 mt-1">
-         Publicaciones y avisos recientes de tu institución.
-       </p>
-     </div>
 
-      {/* // Solo cambia esta parte en FeedContainer */}
-{me?.role !== "STUDENT" && (
-  <div className="w-full max-w-5xl mb-8">
-    <CreatePostForm onPublish={handlePublish} currentUser={me} />
-  </div>
-)}
-
-      <div className="w-full max-w-5xl flex flex-col space-y-6">
-        <TooltipProvider>
-          {loading ? (
-            <p className="text-gray-500">Cargando...</p>
-          ) : posts.length > 0 ? (
-            posts.map((post) => <PostItem key={post.id} post={post} />)
-          ) : (
-            <p className="text-gray-500 text-lg mt-10 text-center">
-              No hay publicaciones para mostrar.
-            </p>
-          )}
-        </TooltipProvider>
+        {/* Posts */}
+        <div className="flex flex-col gap-4">
+          <TooltipProvider>
+            {loading ? (
+              <div className="flex flex-col gap-4">
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="bg-white rounded-2xl border border-gray-100 p-5 animate-pulse">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="w-10 h-10 rounded-full bg-gray-200" />
+                      <div className="space-y-1.5">
+                        <div className="h-3 w-32 bg-gray-200 rounded" />
+                        <div className="h-2.5 w-20 bg-gray-100 rounded" />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="h-3 w-full bg-gray-100 rounded" />
+                      <div className="h-3 w-3/4 bg-gray-100 rounded" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : posts.length > 0 ? (
+              posts.map((post) => <PostItem key={post.id} post={post} />)
+            ) : (
+              <div className="text-center py-16">
+                <p className="text-4xl mb-3">📭</p>
+                <p className="text-sm font-semibold text-gray-700">Sin publicaciones</p>
+                <p className="text-xs text-gray-400 mt-1">
+                  Las novedades de tu institución aparecerán aquí.
+                </p>
+              </div>
+            )}
+          </TooltipProvider>
+        </div>
       </div>
     </section>
   );

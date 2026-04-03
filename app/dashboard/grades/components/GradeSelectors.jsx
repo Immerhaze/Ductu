@@ -16,6 +16,7 @@ export default function GradeSelectors({
   onAssignmentChange,
   onPeriodChange,
   onSearchChange,
+  isAdmin = false,
 }) {
   return (
     <div className="flex gap-3 mb-7 flex-wrap">
@@ -31,6 +32,7 @@ export default function GradeSelectors({
             {assignments.map((a) => (
               <SelectItem key={a.id} value={a.id}>
                 {a.course.name} · {a.subject.name}
+                {isAdmin && a.teacher ? ` (${a.teacher.fullName})` : ""}
               </SelectItem>
             ))}
           </SelectContent>

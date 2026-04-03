@@ -182,7 +182,7 @@ function AnnotationsTab({ studentId, annotations, onAdded }) {
     if (!title.trim() || !description.trim()) { setError('Título y descripción son requeridos.'); return; }
     setSaving(true); setError('');
     try {
-      const res = await fetch(`/api/grades/${studentId}/annotations`, {
+      const res = await fetch(`/api/students/${studentId}/annotations`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ type, title, description, date }),
@@ -315,7 +315,7 @@ function AchievementsTab({ studentId, achievements, onAdded }) {
     if (!title.trim()) { setError('El título es requerido.'); return; }
     setSaving(true); setError('');
     try {
-      const res = await fetch(`/api/grades/${studentId}/achievements`, {
+      const res = await fetch(`/api/students/${studentId}/achievements`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ title, description, date }),
@@ -411,7 +411,7 @@ function PlansTab({ studentId, plans, onAdded, onCompleted }) {
     if (!goal.trim()) { setError('El objetivo es requerido.'); return; }
     setSaving(true); setError('');
     try {
-      const res = await fetch(`/api/grades/${studentId}/improvement-plans`, {
+      const res = await fetch(`/api/students/${studentId}/improvement-plans`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ goal, description, dueDate: dueDate || null }),
@@ -427,7 +427,7 @@ function PlansTab({ studentId, plans, onAdded, onCompleted }) {
   const handleComplete = async (planId) => {
     setCompleting(planId);
     try {
-      const res = await fetch(`/api/grades/${studentId}/improvement-plans/${planId}`, { method: 'PATCH' });
+      const res = await fetch(`/api/students/${studentId}/improvement-plans/${planId}`, { method: 'PATCH' });
       if (res.ok) onCompleted(planId);
     } finally { setCompleting(null); }
   };
@@ -554,7 +554,7 @@ export default function AdminStudentDetail({ studentId }) {
   useEffect(() => {
     async function load() {
       try {
-        const res = await fetch(`/api/grades/${studentId}/profile`);
+        const res = await fetch(`/api/students/${studentId}/profile`);
         if (!res.ok) throw new Error(`Error ${res.status}`);
         setData(await res.json());
       } catch { setError('No se pudo cargar el perfil del alumno.'); }

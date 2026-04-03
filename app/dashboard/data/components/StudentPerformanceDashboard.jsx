@@ -1,4 +1,4 @@
-// src/components/StudentPerformanceDashboard.jsx
+// app/dashboard/data/components/StudentPerformanceDashboard.jsx
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -6,76 +6,49 @@ import {
   LineChart, Line, XAxis, YAxis, CartesianGrid,
   Tooltip, ReferenceLine, ResponsiveContainer,
 } from "recharts";
-import {
-  Table, TableBody, TableCell,
-  TableHead, TableHeader, TableRow,
-} from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 function StatCard({ label, value, sub, accent }) {
   return (
-    <div style={{ background: "#fff", border: "1px solid #e8e8e3", borderRadius: 16, padding: "28px 32px", display: "flex", flexDirection: "column", gap: 6, position: "relative", overflow: "hidden" }}>
-      <div style={{ position: "absolute", top: 0, left: 0, width: 4, height: "100%", background: accent, borderRadius: "16px 0 0 16px" }} />
-      <span style={{ fontSize: 13, fontWeight: 500, color: "#888", letterSpacing: "0.06em", textTransform: "uppercase" }}>{label}</span>
-      <span style={{ fontSize: 42, fontWeight: 700, color: "#1a1a1a", lineHeight: 1 }}>{value}</span>
-      <span style={{ fontSize: 13, color: "#aaa" }}>{sub}</span>
-    </div>
-  );
-}
-
-function SectionTitle({ children }) {
-  return (
-    <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.12em", color: "#aaa", textTransform: "uppercase", marginBottom: 16 }}>
-      {children}
-    </div>
-  );
-}
-
-function EmptyBanner() {
-  return (
-    <div style={{ background: "linear-gradient(135deg, #f0f4ff 0%, #fafafa 100%)", border: "1px solid #dde3f5", borderRadius: 16, padding: "32px 40px", display: "flex", alignItems: "center", gap: 24, marginBottom: 32 }}>
-      <div style={{ width: 52, height: 52, borderRadius: 14, background: "#e0e8ff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 26, flexShrink: 0 }}>📚</div>
-      <div>
-        <div style={{ fontSize: 16, fontWeight: 600, color: "#1a1a1a", marginBottom: 4 }}>Aún no tienes notas registradas</div>
-        <div style={{ fontSize: 14, color: "#888", lineHeight: 1.6 }}>Tu progreso académico aparecerá aquí una vez que tus profesores comiencen a ingresar calificaciones.</div>
-      </div>
+    <div className="bg-white border border-gray-200 rounded-2xl p-6 flex flex-col gap-2 relative overflow-hidden">
+      <div className="absolute top-0 left-0 w-1 h-full rounded-l-2xl" style={{ background: accent }} />
+      <span className="text-xs font-semibold text-gray-400 uppercase tracking-widest">{label}</span>
+      <span className="text-4xl font-bold text-gray-900 leading-none">{value}</span>
+      <span className="text-xs text-gray-400">{sub}</span>
     </div>
   );
 }
 
 function SubjectCard({ subject, passingGrade }) {
   const [open, setOpen] = useState(false);
-  const statusColor = subject.passing ? "#2f9e44" : "#e03131";
-  const statusBg = subject.passing ? "#ebfbee" : "#fff5f5";
-  const statusLabel = subject.passing ? "Aprobado" : "Reprobado";
+  const passing = subject.passing;
 
   return (
-    <div style={{ background: "#fff", border: "1px solid #e8e8e3", borderRadius: 16, overflow: "hidden" }}>
+    <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden">
       <div
         onClick={() => setOpen((v) => !v)}
-        style={{ padding: "20px 28px", display: "flex", alignItems: "center", justifyContent: "space-between", cursor: "pointer", userSelect: "none" }}
+        className="flex items-center gap-4 px-6 py-4 cursor-pointer hover:bg-gray-50 transition-colors"
       >
-        <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-          <div style={{ width: 48, height: 48, borderRadius: 12, background: statusBg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22 }}>
-            {subject.passing ? "✅" : "⚠️"}
-          </div>
-          <div>
-            <div style={{ fontSize: 15, fontWeight: 600, color: "#1a1a1a" }}>{subject.name}</div>
-            <div style={{ fontSize: 13, color: "#aaa", marginTop: 2 }}>{subject.gradesCount} {subject.gradesCount === 1 ? "nota registrada" : "notas registradas"}</div>
-          </div>
+        <div className={`w-3 h-3 rounded-full shrink-0 ${passing ? "bg-green-500" : "bg-red-500"}`} />
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-semibold text-gray-900">{subject.name}</p>
+          <p className="text-xs text-gray-400 mt-0.5">
+            {subject.gradesCount} {subject.gradesCount === 1 ? "nota registrada" : "notas registradas"}
+          </p>
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-          <div style={{ textAlign: "right" }}>
-            <div style={{ fontSize: 28, fontWeight: 700, color: statusColor, lineHeight: 1 }}>{subject.avgGrade}</div>
-            <div style={{ fontSize: 12, fontWeight: 500, color: statusColor, background: statusBg, borderRadius: 6, padding: "2px 8px", marginTop: 4, display: "inline-block" }}>
-              {statusLabel}
-            </div>
-          </div>
-          <div style={{ color: "#ccc", fontSize: 18, transition: "transform 0.2s", transform: open ? "rotate(180deg)" : "rotate(0deg)" }}>▼</div>
+        <div className="text-right shrink-0 mr-4">
+          <p className={`text-2xl font-bold leading-none ${passing ? "text-green-600" : "text-red-500"}`}>
+            {subject.avgGrade}
+          </p>
+          <p className={`text-xs mt-1 font-medium ${passing ? "text-green-500" : "text-red-400"}`}>
+            {passing ? "Aprobado" : "Reprobado"}
+          </p>
         </div>
+        <span className={`text-gray-400 text-sm transition-transform ${open ? "rotate-180" : ""}`}>▼</span>
       </div>
 
       {open && (
-        <div style={{ borderTop: "1px solid #f0f0ec", padding: "16px 28px 24px" }}>
+        <div className="border-t border-gray-100 px-6 pb-4 pt-2">
           <Table>
             <TableHeader>
               <TableRow>
@@ -88,16 +61,18 @@ function SubjectCard({ subject, passingGrade }) {
             <TableBody>
               {subject.grades.map((g) => (
                 <TableRow key={g.id}>
-                  <TableCell style={{ fontWeight: 500 }}>{g.title}</TableCell>
-                  <TableCell style={{ fontWeight: 700, color: g.value >= passingGrade ? "#2f9e44" : "#e03131" }}>
+                  <TableCell className="font-medium text-sm">{g.title}</TableCell>
+                  <TableCell className={`font-bold text-sm ${g.value >= passingGrade ? "text-green-600" : "text-red-500"}`}>
                     {g.value}
                   </TableCell>
                   <TableCell>
-                    <span style={{ fontSize: 12, fontWeight: 500, padding: "2px 10px", borderRadius: 6, background: g.value >= passingGrade ? "#ebfbee" : "#fff5f5", color: g.value >= passingGrade ? "#2f9e44" : "#e03131" }}>
+                    <span className={`text-xs font-medium px-2 py-0.5 rounded-lg ${
+                      g.value >= passingGrade ? "bg-green-50 text-green-700" : "bg-red-50 text-red-600"
+                    }`}>
                       {g.value >= passingGrade ? "Aprobado" : "Reprobado"}
                     </span>
                   </TableCell>
-                  <TableCell style={{ color: "#aaa", fontSize: 13 }}>
+                  <TableCell className="text-xs text-gray-400">
                     {new Date(g.date).toLocaleDateString("es-CL", { day: "2-digit", month: "short", year: "numeric" })}
                   </TableCell>
                 </TableRow>
@@ -111,13 +86,13 @@ function SubjectCard({ subject, passingGrade }) {
 }
 
 export default function StudentPerformanceDashboard() {
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [kpis, setKpis] = useState({ overallAvg: 0, totalSubjects: 0, passingSubjects: 0, failingSubjects: 0 });
+  const [loading, setLoading]               = useState(true);
+  const [error, setError]                   = useState(null);
+  const [kpis, setKpis]                     = useState({ overallAvg: 0, totalSubjects: 0, passingSubjects: 0, failingSubjects: 0 });
   const [subjectSummaries, setSubjectSummaries] = useState([]);
-  const [atRiskSubjects, setAtRiskSubjects] = useState([]);
-  const [gradeHistory, setGradeHistory] = useState([]);
-  const [passingGrade, setPassingGrade] = useState(4.0);
+  const [atRiskSubjects, setAtRiskSubjects]   = useState([]);
+  const [gradeHistory, setGradeHistory]       = useState([]);
+  const [passingGrade, setPassingGrade]       = useState(4.0);
 
   const hasData = subjectSummaries.length > 0;
 
@@ -128,12 +103,12 @@ export default function StudentPerformanceDashboard() {
         if (!res.ok) throw new Error(`Error ${res.status}`);
         const data = await res.json();
         setKpis(data.kpis);
-        setSubjectSummaries(data.subjectSummaries);
-        setAtRiskSubjects(data.atRiskSubjects);
-        setGradeHistory(data.gradeHistory);
-        setPassingGrade(data.passingGrade);
+        // Ordenar asignaturas de menor a mayor para ver las que están en riesgo primero
+        setSubjectSummaries([...(data.subjectSummaries ?? [])].sort((a, b) => a.avgGrade - b.avgGrade));
+        setAtRiskSubjects(data.atRiskSubjects ?? []);
+        setGradeHistory(data.gradeHistory ?? []);
+        setPassingGrade(data.passingGrade ?? 4.0);
       } catch (err) {
-        console.error(err);
         setError("No se pudieron cargar tus datos académicos.");
       } finally {
         setLoading(false);
@@ -144,56 +119,64 @@ export default function StudentPerformanceDashboard() {
 
   if (loading) {
     return (
-      <div style={{ minHeight: "60vh", display: "flex", alignItems: "center", justifyContent: "center", color: "#aaa", fontSize: 15, gap: 12 }}>
-        <span style={{ fontSize: 20 }}>⏳</span> Cargando tu rendimiento académico...
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-10 h-10 border-4 border-blue-100 border-t-blue-950 rounded-full animate-spin" />
+          <p className="text-sm text-gray-400">Cargando tu rendimiento académico...</p>
+        </div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div style={{ minHeight: "60vh", display: "flex", alignItems: "center", justifyContent: "center", color: "#e55", fontSize: 15, gap: 12 }}>
-        <span style={{ fontSize: 20 }}>⚠️</span> {error}
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <p className="text-sm text-red-500">{error}</p>
       </div>
     );
   }
 
   return (
-    <div style={{ padding: "40px 48px", background: "#f7f7f5", minHeight: "100vh", fontFamily: "'DM Sans', sans-serif" }}>
+    <div className="px-12 py-9 bg-gray-50 min-h-screen">
 
       {/* Header */}
-      <div style={{ marginBottom: 36 }}>
-        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.12em", color: "#aaa", textTransform: "uppercase", marginBottom: 8 }}>
-          Panel del estudiante
-        </div>
-        <h1 style={{ fontSize: 32, fontWeight: 700, color: "#1a1a1a", margin: 0 }}>
-          Mi rendimiento académico
-        </h1>
+      <div className="mb-8">
+        <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-1">Panel del estudiante</p>
+        <h1 className="text-3xl font-bold text-gray-900">Mi rendimiento académico</h1>
       </div>
-
-      {!hasData && <EmptyBanner />}
 
       {/* KPIs */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 20, marginBottom: 40 }}>
-        <StatCard label="Promedio general" value={kpis.overallAvg} sub="todas las asignaturas" accent="#3b5bdb" />
-        <StatCard label="Asignaturas" value={kpis.totalSubjects} sub="este año académico" accent="#1c7ed6" />
-        <StatCard label="Aprobadas" value={kpis.passingSubjects} sub={`promedio ≥ ${passingGrade}`} accent="#2f9e44" />
-        <StatCard label="Reprobadas" value={kpis.failingSubjects} sub="requieren atención" accent="#e03131" />
+      <div className="grid grid-cols-4 gap-4 mb-8">
+        <StatCard label="Promedio general"  value={kpis.overallAvg}      sub="todas las asignaturas"    accent="#3b5bdb" />
+        <StatCard label="Asignaturas"       value={kpis.totalSubjects}   sub="este año académico"       accent="#1c7ed6" />
+        <StatCard label="Aprobadas"         value={kpis.passingSubjects} sub={`promedio ≥ ${passingGrade}`} accent="#2f9e44" />
+        <StatCard label="Reprobadas"        value={kpis.failingSubjects} sub="requieren atención"        accent="#e03131" />
       </div>
 
-      {hasData && (
-        <>
-          {/* Alerta de materias en riesgo */}
+      {!hasData ? (
+        <div className="bg-white border border-gray-200 rounded-2xl py-16 px-8 flex flex-col items-center text-center gap-4">
+          <div className="w-16 h-16 rounded-2xl bg-blue-50 flex items-center justify-center text-3xl">📚</div>
+          <div>
+            <p className="text-sm font-semibold text-gray-700 mb-1">Sin notas registradas aún</p>
+            <p className="text-xs text-gray-400 max-w-xs">
+              Tu progreso aparecerá aquí cuando tus profesores comiencen a ingresar calificaciones.
+            </p>
+          </div>
+        </div>
+      ) : (
+        <div className="flex flex-col gap-6">
+
+          {/* Alerta materias en riesgo */}
           {atRiskSubjects.length > 0 && (
-            <div style={{ background: "#fff5f5", border: "1px solid #ffc9c9", borderRadius: 16, padding: "20px 28px", marginBottom: 32, display: "flex", alignItems: "flex-start", gap: 16 }}>
-              <div style={{ fontSize: 24, flexShrink: 0 }}>🚨</div>
+            <div className="bg-red-50 border border-red-200 rounded-2xl px-6 py-4 flex items-start gap-4">
+              <span className="text-2xl shrink-0">🚨</span>
               <div>
-                <div style={{ fontSize: 15, fontWeight: 600, color: "#c92a2a", marginBottom: 6 }}>
-                  Tienes {atRiskSubjects.length} {atRiskSubjects.length === 1 ? "asignatura en riesgo" : "asignaturas en riesgo"}
-                </div>
-                <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                <p className="text-sm font-semibold text-red-700 mb-2">
+                  {atRiskSubjects.length} {atRiskSubjects.length === 1 ? "asignatura en riesgo" : "asignaturas en riesgo"}
+                </p>
+                <div className="flex flex-wrap gap-2">
                   {atRiskSubjects.map((s) => (
-                    <span key={s.id} style={{ fontSize: 13, fontWeight: 500, padding: "4px 12px", borderRadius: 8, background: "#ffe3e3", color: "#c92a2a" }}>
+                    <span key={s.id} className="text-xs font-medium bg-red-100 text-red-700 px-3 py-1 rounded-lg">
                       {s.name} — {s.avgGrade}
                     </span>
                   ))}
@@ -202,42 +185,51 @@ export default function StudentPerformanceDashboard() {
             </div>
           )}
 
-          {/* Historial cronológico de notas */}
+          {/* Historial cronológico */}
           {gradeHistory.length > 0 && (
-            <div style={{ marginBottom: 40 }}>
-              <SectionTitle>Historial de notas</SectionTitle>
-              <div style={{ background: "#fff", border: "1px solid #e8e8e3", borderRadius: 16, padding: "28px 32px" }}>
-                <div style={{ fontSize: 15, fontWeight: 600, color: "#1a1a1a", marginBottom: 4 }}>Evolución de calificaciones</div>
-                <div style={{ fontSize: 13, color: "#aaa", marginBottom: 20 }}>Todas tus notas en orden cronológico</div>
-                <ResponsiveContainer width="100%" height={260}>
-                  <LineChart data={gradeHistory} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#f0f0ec" />
-                    <XAxis dataKey="subject" tick={{ fontSize: 11, fill: "#aaa" }} />
-                    <YAxis domain={[1, 7]} tick={{ fontSize: 11, fill: "#aaa" }} />
-                    <Tooltip
-                      formatter={(value, _, props) => [`${value} — ${props.payload.title}`, "Nota"]}
-                      contentStyle={{ borderRadius: 10, border: "1px solid #e8e8e3", fontSize: 13 }}
-                    />
-                    <ReferenceLine y={passingGrade} stroke="#e03131" strokeDasharray="4 4" label={{ value: `Mínimo (${passingGrade})`, fill: "#e03131", fontSize: 11 }} />
-                    <Line type="monotone" dataKey="value" stroke="#3b5bdb" strokeWidth={2} dot={{ r: 4, fill: "#3b5bdb" }} activeDot={{ r: 6 }} />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
+            <div className="bg-white border border-gray-200 rounded-2xl p-6">
+              <p className="text-sm font-semibold text-gray-900 mb-1">Evolución de calificaciones</p>
+              <p className="text-xs text-gray-400 mb-5">Todas tus notas en orden cronológico</p>
+              <ResponsiveContainer width="100%" height={260}>
+                <LineChart data={gradeHistory} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#f0f0ec" />
+                  <XAxis dataKey="subject" tick={{ fontSize: 11, fill: "#aaa" }} />
+                  <YAxis domain={[1, 7]} tick={{ fontSize: 11, fill: "#aaa" }} />
+                  <Tooltip
+                    formatter={(value, _, props) => [`${value} — ${props.payload.title}`, "Nota"]}
+                    contentStyle={{ borderRadius: 10, border: "1px solid #e8e8e3", fontSize: 13 }}
+                  />
+                  <ReferenceLine
+                    y={passingGrade}
+                    stroke="#e03131"
+                    strokeDasharray="4 4"
+                    label={{ value: `Mínimo (${passingGrade})`, fill: "#e03131", fontSize: 11 }}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="value"
+                    stroke="#3b5bdb"
+                    strokeWidth={2}
+                    dot={{ r: 4, fill: "#3b5bdb" }}
+                    activeDot={{ r: 6 }}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
             </div>
           )}
 
-          {/* Detalle por asignatura (expandible) */}
+          {/* Detalle por asignatura */}
           <div>
-            <SectionTitle>Detalle por asignatura</SectionTitle>
-            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-              {subjectSummaries
-                .sort((a, b) => a.avgGrade - b.avgGrade)
-                .map((subject) => (
-                  <SubjectCard key={subject.id} subject={subject} passingGrade={passingGrade} />
-                ))}
+            <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-3">
+              Detalle por asignatura · ordenado de menor a mayor
+            </p>
+            <div className="flex flex-col gap-3">
+              {subjectSummaries.map((subject) => (
+                <SubjectCard key={subject.id} subject={subject} passingGrade={passingGrade} />
+              ))}
             </div>
           </div>
-        </>
+        </div>
       )}
     </div>
   );

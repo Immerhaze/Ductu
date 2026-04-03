@@ -2,6 +2,7 @@
 "use client";
 
 import { useEffect, useState, useMemo, useCallback } from "react";
+import { useAppUser } from "@/components/providers/AppUserContext";
 import GradeSelectors from "./GradeSelectors";
 import GradeStats from "./GradeStats";
 import StudentGradeCard from "./StudentGradeCard";
@@ -15,6 +16,9 @@ import {
 } from "./EmptyState";
 
 export default function GradesClient() {
+  const { me } = useAppUser();
+  const isAdmin = me?.role === "ADMINISTRATIVE";
+
   const [assignments, setAssignments]                   = useState([]);
   const [periods, setPeriods]                           = useState([]);
   const [loadingSetup, setLoadingSetup]                 = useState(true);
@@ -29,10 +33,17 @@ export default function GradesClient() {
   const [selectedStudent, setSelectedStudent]           = useState(null);
   const [editingGrade, setEditingGrade]                 = useState(null);
 
+  // Esperar a que me cargue antes de hacer fetch
   useEffect(() => {
+    if (!me?.role) return;
+
     async function load() {
+      setLoadingSetup(true);
       try {
-        const res = await fetch("/api/grades/my-assignments");
+        const url = isAdmin
+          ? "/api/grades/admin-overview"
+          : "/api/grades/my-assignments";
+        const res = await fetch(url);
         if (!res.ok) return;
         const data = await res.json();
         setAssignments(data.assignments ?? []);
@@ -45,8 +56,9 @@ export default function GradesClient() {
         setLoadingSetup(false);
       }
     }
+
     load();
-  }, []);
+  }, [me?.role]); // eslint-disable-line
 
   useEffect(() => {
     if (!selectedAssignmentId || !selectedPeriodId) return;
@@ -96,7 +108,13 @@ export default function GradesClient() {
       ? Math.round((avgs.reduce((a, b) => a + b, 0) / avgs.length) * 10) / 10
       : "—";
 
-    return { total: students.length, withGrades: avgs.length, passing, failing: avgs.length - passing, avg };
+    return {
+      total: students.length,
+      withGrades: avgs.length,
+      passing,
+      failing: avgs.length - passing,
+      avg,
+    };
   }, [students, gradesByStudent, policy]);
 
   const selectedAssignment = useMemo(
@@ -124,31 +142,49 @@ export default function GradesClient() {
 
   const handleGradeSaved = useCallback((grade, isEdit) => {
     setGrades((prev) =>
-      isEdit ? prev.map((g) => g.id === grade.id ? { ...g, ...grade } : g) : [...prev, grade]
+      isEdit
+        ? prev.map((g) => (g.id === grade.id ? { ...g, ...grade } : g))
+        : [...prev, grade]
     );
   }, []);
 
   const ready = selectedAssignmentId && selectedPeriodId;
 
-  if (loadingSetup) return <LoadingState message="Cargando tus asignaciones..." />;
+  // Mientras el usuario no carga
+  if (!me) return <LoadingState message="Cargando..." />;
+
+  // Mientras cargan las asignaciones
+  if (loadingSetup) return <LoadingState message="Cargando asignaciones..." />;
 
   return (
     <div className="px-12 py-9 bg-gray-50 min-h-screen font-sans">
 
       {/* Header */}
       <div className="mb-7">
-        <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-1">Calificaciones</p>
+        <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-1">
+          Calificaciones
+        </p>
         <h1 className="text-3xl font-bold text-gray-900">Libro de notas</h1>
-        {selectedAssignment && (
-          <p className="text-sm text-gray-400 mt-1">
-            {selectedAssignment.course.name} · {selectedAssignment.subject.name}
-          </p>
-        )}
+        <div className="flex items-center gap-3 mt-1 flex-wrap">
+          {selectedAssignment && (
+            <p className="text-sm text-gray-400">
+              {selectedAssignment.course.name} · {selectedAssignment.subject.name}
+              {isAdmin && selectedAssignment.teacher && (
+                <span className="text-gray-300"> · {selectedAssignment.teacher.fullName}</span>
+              )}
+            </p>
+          )}
+          {isAdmin && (
+            <span className="text-xs font-medium bg-purple-50 text-purple-700 border border-purple-100 px-2.5 py-0.5 rounded-full">
+              Vista administrador · solo lectura
+            </span>
+          )}
+        </div>
       </div>
 
       {/* Sin asignaciones */}
       {assignments.length === 0 ? (
-        <EmptyAssignmentsState />
+        <EmptyAssignmentsState isAdmin={isAdmin} />
       ) : (
         <>
           <GradeSelectors
@@ -160,6 +196,7 @@ export default function GradesClient() {
             onAssignmentChange={setSelectedAssignmentId}
             onPeriodChange={setSelectedPeriodId}
             onSearchChange={setSearch}
+            isAdmin={isAdmin}
           />
 
           {students.length > 0 && (
@@ -188,6 +225,7 @@ export default function GradesClient() {
                   onAddGrade={openAddGrade}
                   onEditGrade={openEditGrade}
                   onDeleteGrade={handleDeleteGrade}
+                  readOnly={isAdmin}
                 />
               ))}
             </div>
@@ -195,16 +233,19 @@ export default function GradesClient() {
         </>
       )}
 
-      <AddGradeModal
-        open={modalOpen}
-        onClose={() => setModalOpen(false)}
-        onSaved={handleGradeSaved}
-        assignmentId={selectedAssignmentId}
-        periodId={selectedPeriodId}
-        student={selectedStudent}
-        policy={policy}
-        editingGrade={editingGrade}
-      />
+      {/* Modal solo para teachers */}
+      {!isAdmin && (
+        <AddGradeModal
+          open={modalOpen}
+          onClose={() => setModalOpen(false)}
+          onSaved={handleGradeSaved}
+          assignmentId={selectedAssignmentId}
+          periodId={selectedPeriodId}
+          student={selectedStudent}
+          policy={policy}
+          editingGrade={editingGrade}
+        />
+      )}
     </div>
   );
 }

@@ -2,24 +2,17 @@
 "use client";
 
 const CATEGORY_LABEL = {
-  EXAM:       "Prueba",
-  QUIZ:       "Control",
-  ASSIGNMENT: "Trabajo",
-  PROJECT:    "Proyecto",
-  ORAL:       "Presentación oral",
-  OTHER:      "Otro",
+  EXAM: "Prueba", QUIZ: "Control", ASSIGNMENT: "Trabajo",
+  PROJECT: "Proyecto", ORAL: "Presentación oral", OTHER: "Otro",
 };
 
 const CATEGORY_CLASSES = {
-  EXAM:       "bg-red-50 text-red-700",
-  QUIZ:       "bg-yellow-50 text-yellow-700",
-  ASSIGNMENT: "bg-indigo-50 text-indigo-700",
-  PROJECT:    "bg-purple-50 text-purple-700",
-  ORAL:       "bg-green-50 text-green-700",
-  OTHER:      "bg-gray-100 text-gray-600",
+  EXAM: "bg-red-50 text-red-700", QUIZ: "bg-yellow-50 text-yellow-700",
+  ASSIGNMENT: "bg-indigo-50 text-indigo-700", PROJECT: "bg-purple-50 text-purple-700",
+  ORAL: "bg-green-50 text-green-700", OTHER: "bg-gray-100 text-gray-600",
 };
 
-export default function GradeChip({ grade, passingGrade, onEdit, onDelete }) {
+export default function GradeChip({ grade, passingGrade, onEdit, onDelete, readOnly = false }) {
   const passing = Number(grade.value) >= passingGrade;
 
   return (
@@ -42,22 +35,25 @@ export default function GradeChip({ grade, passingGrade, onEdit, onDelete }) {
         {Number(grade.value).toFixed(1)}
       </span>
 
-      <div className="flex gap-1 shrink-0">
-        <button
-          onClick={() => onEdit(grade)}
-          className="text-gray-300 hover:text-blue-500 transition-colors text-xs px-1.5 py-0.5 rounded"
-          title="Editar"
-        >
-          ✏️
-        </button>
-        <button
-          onClick={() => onDelete(grade.id)}
-          className="text-gray-300 hover:text-red-500 transition-colors text-xs px-1.5 py-0.5 rounded"
-          title="Eliminar"
-        >
-          🗑️
-        </button>
-      </div>
+      {/* Solo teachers pueden editar/eliminar */}
+      {!readOnly && (
+        <div className="flex gap-1 shrink-0">
+          <button
+            onClick={() => onEdit(grade)}
+            className="text-gray-300 hover:text-blue-500 transition-colors text-xs px-1.5 py-0.5 rounded"
+            title="Editar"
+          >
+            ✏️
+          </button>
+          <button
+            onClick={() => onDelete(grade.id)}
+            className="text-gray-300 hover:text-red-500 transition-colors text-xs px-1.5 py-0.5 rounded"
+            title="Eliminar"
+          >
+            🗑️
+          </button>
+        </div>
+      )}
     </div>
   );
 }

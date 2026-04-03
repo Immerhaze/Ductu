@@ -1,60 +1,77 @@
-// components/FooterSection.jsx
 "use client";
+
 import { TextHoverEffect } from "../ui/text-hover-effect";
 import { useEffect, useState } from "react";
+
+const LINKS = {
+  Producto: ["Características", "Precios", "Solicitar demo", "Novedades"],
+  Soporte: ["Documentación", "Centro de ayuda", "Contacto", "Estado del sistema"],
+  Legal: ["Privacidad", "Términos de uso", "Cookies"],
+};
 
 export default function FooterSection() {
   const [year, setYear] = useState(new Date().getFullYear());
 
   useEffect(() => {
-    const now = new Date();
-    setYear(now.getFullYear());
+    setYear(new Date().getFullYear());
   }, []);
 
   return (
-    <footer className="bg-blue-950 w-full h-1/2 flex flex-col justify-around text-white px-6  border-t border-neutral-700">
-      <div className="max-w-8xl w-full mx-auto flex flex-row justify-between gap-12">
-        {/* Brand / Logo */}
-        <div className="w-1/3 ">
-            <TextHoverEffect text="DUCTU" duration={0.4} />
-          <p className="text-sm text-neutral-200  text-center">
-            Simplifica la gestión académica con estilo y tecnología.
-          </p>
-        </div>
+    <footer className="bg-blue-950 text-white w-full">
 
-        {/* Links */}
-        <div className="flex-1 flex flex-col items-start justify-center ">
-          <h3 className="text-lg font-semibold mb-4">Explora</h3>
-          <ul className="space-y-2 text-neutral-300 text-sm">
-            <li><a href="#features" className="hover:text-white transition">Características</a></li>
-            <li><a href="#pricing" className="hover:text-white transition">Precios</a></li>
-            <li><a href="#demo" className="hover:text-white transition">Solicitar demo</a></li>
-            <li><a href="#support" className="hover:text-white transition">Soporte</a></li>
-          </ul>
-        </div>
+      <div className="max-w-7xl mx-auto px-8 pt-20 pb-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12">
 
-        {/* Contact */}
-        <div className="flex-1 flex flex-col items-center  justify-center">
-          <h3 className="text-lg font-semibold mb-4">Contacto</h3>
-          <p className="text-sm text-neutral-400 mb-2 text-center md:text-left">
-            ¿Preguntas? Escríbenos a:
-          </p>
-          <a
-            href="mailto:contacto@ductu.app"
-            className="text-blue-400 hover:underline text-sm"
-          >
-            contacto@ductu.app
-          </a>
+          <div className="lg:col-span-2 space-y-5">
+            <div className="w-36 -ml-2">
+              <TextHoverEffect text="DUCTU" duration={0.4} />
+            </div>
+            <p className="text-sm text-blue-200 leading-relaxed max-w-xs">
+              Plataforma de gestión académica diseñada para colegios modernos. Simple, poderosa y segura.
+            </p>
+            
+             <a  href="mailto:contacto@ductu.app"
+              className="inline-flex items-center gap-2 text-sm text-blue-300 hover:text-white transition-colors">
+              <span className="icon-[material-symbols--mail-outline] text-base" />
+              contacto@ductu.app
+            </a>
+          </div>
+
+          {Object.entries(LINKS).map(([category, items]) => (
+            <div key={category} className="space-y-4">
+              <h4 className="text-xs font-semibold tracking-[0.15em] uppercase text-blue-300">
+                {category}
+              </h4>
+              <ul className="space-y-2.5">
+                {items.map((item) => (
+                  <li key={item}>
+                    <a href="#" className="text-sm text-blue-200 hover:text-white transition-colors">
+                      {item}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+
         </div>
       </div>
 
-      {/* Divider */}
-      <div className="w-full border-t border-white my-8"></div>
+      <div className="border-t border-white/10" />
 
-      {/* Copyright */}
-      <div className=" text-center text-sm text-white">
-        &copy; {year} DUCTU. Todos los derechos reservados.
+      <div className="max-w-7xl mx-auto px-8 py-6 flex flex-col md:flex-row items-center justify-between gap-4">
+        <p className="text-xs text-blue-400">
+          © {year} DUCTU. Todos los derechos reservados.
+        </p>
+        <div className="flex items-center gap-6">
+          {["Privacidad", "Términos", "Cookies"].map((item) => (
+            <a key={item} href="#" className="text-xs text-blue-400 hover:text-white transition-colors">
+              {item}
+            </a>
+          ))}
+        </div>
       </div>
+
     </footer>
   );
 }

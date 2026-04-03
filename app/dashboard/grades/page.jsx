@@ -7,8 +7,10 @@ export const dynamic = "force-dynamic";
 
 export default async function GradesPage() {
   try {
-    await requireAppUser({ requireProfileCompleted: true });
-    return <GradesClient />;
+    const { appUser } = await requireAppUser({ requireProfileCompleted: true });
+
+    // Pasar el rol como prop para que GradesClient no dependa de useAppUser en el primer render
+    return <GradesClient userRole={appUser.role} />;
   } catch (e) {
     const code = e?.message;
     if (code === "PROFILE_INCOMPLETE") redirect("/complete-profile");

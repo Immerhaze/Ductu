@@ -1,33 +1,20 @@
-// components/charts/BarChartComponent.jsx
+// app/dashboard/data/components/BarChartComponent.jsx
 import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
-export function BarChartComponent({ data, xAxisDataKey, barDataKey, title, description, fill = "#8884d8" }) {
+export function BarChartComponent({ data, xAxisDataKey, barDataKey, fill = "#3b5bdb" }) {
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{title}</CardTitle>
-        <p className="text-sm text-muted-foreground">{description}</p>
-      </CardHeader>
-      <CardContent>
-        <ResponsiveContainer width="100%" height={300}>
-          <BarChart data={data} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey={xAxisDataKey} />
-            <YAxis domain={[0, 10]} /> {/* Assuming grades are 0-10 */}
-             <Tooltip 
-             formatter={(value, name) => {
-              if (name === barDataKey) {
-               return [value, 'Nota Promedio']; // Custom label on hover
-                 }
-                 return [value, name];
-                 }}
-                />
-            <Bar dataKey={barDataKey} fill={fill} />
-          </BarChart>
-        </ResponsiveContainer>
-      </CardContent>
-    </Card>
+    <ResponsiveContainer width="100%" height={300}>
+      <BarChart data={data} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+        <CartesianGrid strokeDasharray="3 3" stroke="#f0f0ec" />
+        <XAxis dataKey={xAxisDataKey} tick={{ fontSize: 12, fill: "#aaa" }} />
+        <YAxis domain={[0, 7]} tick={{ fontSize: 12, fill: "#aaa" }} />
+        <Tooltip
+          formatter={(value, name) => [value, "Promedio"]}
+          contentStyle={{ borderRadius: 10, border: "1px solid #e8e8e3", fontSize: 13 }}
+        />
+        <Bar dataKey={barDataKey} fill={fill} radius={[6, 6, 0, 0]} />
+      </BarChart>
+    </ResponsiveContainer>
   );
 }

@@ -11,6 +11,7 @@ export default function StudentGradeCard({
   onAddGrade,
   onEditGrade,
   onDeleteGrade,
+  readOnly = false,
 }) {
   const router = useRouter();
 
@@ -21,20 +22,16 @@ export default function StudentGradeCard({
 
   return (
     <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden">
-      {/* Header del alumno */}
       <div className="flex items-center gap-4 px-6 py-4">
-        {/* Avatar */}
         <div className="w-10 h-10 rounded-full bg-indigo-50 flex items-center justify-center text-base font-bold text-blue-950 shrink-0">
           {student.fullName?.charAt(0) ?? "?"}
         </div>
 
-        {/* Nombre + email */}
         <div className="flex-1 min-w-0">
           <p className="text-sm font-semibold text-gray-900 truncate">{student.fullName ?? "Sin nombre"}</p>
           <p className="text-xs text-gray-400 truncate">{student.email}</p>
         </div>
 
-        {/* Promedio */}
         <div className="text-right shrink-0">
           {avg !== null ? (
             <>
@@ -50,14 +47,16 @@ export default function StudentGradeCard({
           )}
         </div>
 
-        {/* Acciones */}
         <div className="flex gap-2 shrink-0">
-          <button
-            onClick={() => onAddGrade(student)}
-            className="bg-blue-950 hover:bg-blue-900 text-white text-xs font-medium px-3 py-1.5 rounded-lg transition-colors cursor-pointer"
-          >
-            + Nota
-          </button>
+          {/* Solo teachers pueden agregar notas */}
+          {!readOnly && (
+            <button
+              onClick={() => onAddGrade(student)}
+              className="bg-blue-950 hover:bg-blue-900 text-white text-xs font-medium px-3 py-1.5 rounded-lg transition-colors cursor-pointer"
+            >
+              + Nota
+            </button>
+          )}
           <button
             onClick={() => router.push(`/dashboard/grades/${student.id}`)}
             className="bg-gray-100 hover:bg-gray-200 text-gray-600 text-xs font-medium px-3 py-1.5 rounded-lg transition-colors cursor-pointer"
@@ -67,7 +66,6 @@ export default function StudentGradeCard({
         </div>
       </div>
 
-      {/* Notas del alumno */}
       {grades.length > 0 && (
         <div className="border-t border-gray-50 px-6 pb-3 pt-2">
           {grades.map((grade) => (
@@ -77,6 +75,7 @@ export default function StudentGradeCard({
               passingGrade={passingGrade}
               onEdit={onEditGrade}
               onDelete={onDeleteGrade}
+              readOnly={readOnly}
             />
           ))}
         </div>

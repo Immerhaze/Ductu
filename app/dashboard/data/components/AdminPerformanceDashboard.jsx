@@ -1,4 +1,4 @@
-// src/components/AdminPerformanceDashboard.jsx
+// app/dashboard/data/components/AdminPerformanceDashboard.jsx
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -6,112 +6,30 @@ import { BarChartComponent } from "./BarChartComponent";
 
 function StatCard({ label, value, sub, accent }) {
   return (
-    <div
-      style={{
-        background: "#fff",
-        border: "1px solid #e8e8e3",
-        borderRadius: 16,
-        padding: "28px 32px",
-        display: "flex",
-        flexDirection: "column",
-        gap: 6,
-        position: "relative",
-        overflow: "hidden",
-      }}
-    >
-      <div
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          width: 4,
-          height: "100%",
-          background: accent,
-          borderRadius: "16px 0 0 16px",
-        }}
-      />
-      <span
-        style={{
-          fontSize: 13,
-          fontWeight: 500,
-          color: "#888",
-          letterSpacing: "0.06em",
-          textTransform: "uppercase",
-        }}
-      >
-        {label}
-      </span>
-      <span style={{ fontSize: 42, fontWeight: 700, color: "#1a1a1a", lineHeight: 1 }}>
-        {value}
-      </span>
-      <span style={{ fontSize: 13, color: "#aaa" }}>{sub}</span>
+    <div className="bg-white border border-gray-200 rounded-2xl p-6 flex flex-col gap-2 relative overflow-hidden">
+      <div className="absolute top-0 left-0 w-1 h-full rounded-l-2xl" style={{ background: accent }} />
+      <span className="text-xs font-semibold text-gray-400 uppercase tracking-widest">{label}</span>
+      <span className="text-4xl font-bold text-gray-900 leading-none">{value}</span>
+      <span className="text-xs text-gray-400">{sub}</span>
     </div>
   );
 }
 
 function ChartCard({ title, description, children }) {
   return (
-    <div
-      style={{
-        background: "#fff",
-        border: "1px solid #e8e8e3",
-        borderRadius: 16,
-        padding: "28px 32px",
-      }}
-    >
-      <div style={{ marginBottom: 20 }}>
-        <div style={{ fontSize: 15, fontWeight: 600, color: "#1a1a1a" }}>{title}</div>
-        <div style={{ fontSize: 13, color: "#aaa", marginTop: 4 }}>{description}</div>
+    <div className="bg-white border border-gray-200 rounded-2xl p-6">
+      <div className="mb-5">
+        <p className="text-sm font-semibold text-gray-900">{title}</p>
+        {description && <p className="text-xs text-gray-400 mt-0.5">{description}</p>}
       </div>
       {children}
     </div>
   );
 }
 
-function EmptyBanner() {
-  return (
-    <div
-      style={{
-        background: "linear-gradient(135deg, #f0f4ff 0%, #fafafa 100%)",
-        border: "1px solid #dde3f5",
-        borderRadius: 16,
-        padding: "32px 40px",
-        display: "flex",
-        alignItems: "center",
-        gap: 24,
-        marginBottom: 32,
-      }}
-    >
-      <div
-        style={{
-          width: 52,
-          height: 52,
-          borderRadius: 14,
-          background: "#e0e8ff",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          fontSize: 26,
-          flexShrink: 0,
-        }}
-      >
-        📊
-      </div>
-      <div>
-        <div style={{ fontSize: 16, fontWeight: 600, color: "#1a1a1a", marginBottom: 4 }}>
-          Aún no hay datos de notas registrados
-        </div>
-        <div style={{ fontSize: 14, color: "#888", lineHeight: 1.6 }}>
-          Los gráficos y métricas aparecerán aquí una vez que los docentes comiencen a ingresar calificaciones en el sistema.
-        </div>
-      </div>
-    </div>
-  );
-}
-
 export default function AdminPerformanceDashboard() {
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [loading, setLoading]             = useState(true);
+  const [error, setError]                 = useState(null);
   const [passFailCounts, setPassFailCounts] = useState({ total: 0, passing: 0, failing: 0 });
   const [subjectAverages, setSubjectAverages] = useState([]);
   const [teacherAverages, setTeacherAverages] = useState([]);
@@ -121,15 +39,14 @@ export default function AdminPerformanceDashboard() {
   useEffect(() => {
     async function fetchStats() {
       try {
-        setLoading(true);
         const res = await fetch("/api/admin/stats");
         if (!res.ok) throw new Error(`Error ${res.status}`);
         const data = await res.json();
         setPassFailCounts(data.passFailCounts);
-        setSubjectAverages(data.subjectAverages);
-        setTeacherAverages(data.teacherAverages);
+        // Ordenar de menor a mayor para identificar asignaturas en riesgo
+        setSubjectAverages([...(data.subjectAverages ?? [])].sort((a, b) => a.avgGrade - b.avgGrade));
+        setTeacherAverages([...(data.teacherAverages ?? [])].sort((a, b) => b.avgGrade - a.avgGrade));
       } catch (err) {
-        console.error(err);
         setError("No se pudieron cargar los datos.");
       } finally {
         setLoading(false);
@@ -140,97 +57,55 @@ export default function AdminPerformanceDashboard() {
 
   if (loading) {
     return (
-      <div
-        style={{
-          minHeight: "60vh",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          color: "#aaa",
-          fontSize: 15,
-          gap: 12,
-        }}
-      >
-        <span style={{ fontSize: 20 }}>⏳</span> Cargando datos del panel...
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-10 h-10 border-4 border-blue-100 border-t-blue-950 rounded-full animate-spin" />
+          <p className="text-sm text-gray-400">Cargando datos del panel...</p>
+        </div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div
-        style={{
-          minHeight: "60vh",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          color: "#e55",
-          fontSize: 15,
-          gap: 12,
-        }}
-      >
-        <span style={{ fontSize: 20 }}>⚠️</span> {error}
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <p className="text-sm text-red-500">{error}</p>
       </div>
     );
   }
 
   return (
-    <div
-      style={{
-        padding: "40px 48px",
-        background: "#f7f7f5",
-        minHeight: "100vh",
-        fontFamily: "'DM Sans', sans-serif",
-      }}
-    >
+    <div className="px-12 py-9 bg-gray-50 min-h-screen">
+
       {/* Header */}
-      <div style={{ marginBottom: 36 }}>
-        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.12em", color: "#aaa", textTransform: "uppercase", marginBottom: 8 }}>
-          Panel de administración
+      <div className="mb-8">
+        <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-1">Panel de administración</p>
+        <h1 className="text-3xl font-bold text-gray-900">Rendimiento académico</h1>
+        <p className="text-sm text-gray-400 mt-1">Vista general de la institución</p>
+      </div>
+
+      {/* KPIs */}
+      <div className="grid grid-cols-3 gap-4 mb-8">
+        <StatCard label="Total estudiantes" value={passFailCounts.total} sub="con notas registradas" accent="#3b5bdb" />
+        <StatCard label="Aprobados" value={passFailCounts.passing} sub="promedio ≥ nota mínima" accent="#2f9e44" />
+        <StatCard label="No aprobados" value={passFailCounts.failing} sub="requieren atención" accent="#e03131" />
+      </div>
+
+      {!hasData ? (
+        <div className="bg-white border border-gray-200 rounded-2xl py-16 px-8 flex flex-col items-center text-center gap-4">
+          <div className="w-16 h-16 rounded-2xl bg-blue-50 flex items-center justify-center text-3xl">📊</div>
+          <div>
+            <p className="text-sm font-semibold text-gray-700 mb-1">Aún no hay datos registrados</p>
+            <p className="text-xs text-gray-400 max-w-xs">
+              Los gráficos aparecerán cuando los docentes comiencen a ingresar calificaciones.
+            </p>
+          </div>
         </div>
-        <h1 style={{ fontSize: 32, fontWeight: 700, color: "#1a1a1a", margin: 0 }}>
-          Rendimiento académico
-        </h1>
-      </div>
-
-      {/* Banner sin datos */}
-      {!hasData && <EmptyBanner />}
-
-      {/* KPI Cards — siempre visibles */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(3, 1fr)",
-          gap: 20,
-          marginBottom: 32,
-        }}
-      >
-        <StatCard
-          label="Total estudiantes"
-          value={passFailCounts.total}
-          sub="con notas registradas"
-          accent="#3b5bdb"
-        />
-        <StatCard
-          label="Aprobados"
-          value={passFailCounts.passing}
-          sub="promedio ≥ nota mínima"
-          accent="#2f9e44"
-        />
-        <StatCard
-          label="No aprobados"
-          value={passFailCounts.failing}
-          sub="requieren atención"
-          accent="#e03131"
-        />
-      </div>
-
-      {/* Charts — solo si hay datos */}
-      {hasData && (
-        <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+      ) : (
+        <div className="flex flex-col gap-6">
           <ChartCard
-            title="Promedio general por asignatura"
-            description="Nota promedio de cada materia en toda la institución"
+            title="Promedio por asignatura"
+            description="Ordenado de menor a mayor — las primeras asignaturas requieren más atención"
           >
             <BarChartComponent
               data={subjectAverages}
@@ -242,7 +117,7 @@ export default function AdminPerformanceDashboard() {
 
           <ChartCard
             title="Rendimiento por docente"
-            description="Promedio de las notas registradas por cada profesor"
+            description="Promedio de notas registradas por cada profesor, ordenado de mayor a menor"
           >
             <BarChartComponent
               data={teacherAverages}

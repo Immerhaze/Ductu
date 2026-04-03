@@ -1,79 +1,42 @@
+// app/dashboard/data/components/PerformanceDashboard.jsx
 "use client";
 
-import React, { useEffect, useState } from "react";
+import { useAppUser } from "@/components/providers/AppUserContext";
 import AdminPerformanceDashboard from "./AdminPerformanceDashboard";
 import TeacherPerformanceDashboard from "./TeacherPerformanceDashboard";
 import StudentPerformanceDashboard from "./StudentPerformanceDashboard";
-import { DUMMY_TEACHERS } from "@/lib/DummyPerformanceOverallData";
-import { useAppUser } from "@/components/providers/AppUserContext";
 
 export default function PerformanceDashboard() {
   const { me, isLoading, error } = useAppUser();
 
-  const role =
-    typeof me?.role === "string"
-      ? me.role.trim().toUpperCase()
-      : "";
-
-  const [currentTeacherId, setCurrentTeacherId] = useState("");
-
-  useEffect(() => {
-    if (role === "TEACHER" && DUMMY_TEACHERS?.length > 0) {
-      setCurrentTeacherId(DUMMY_TEACHERS[0].id);
-    }
-  }, [role]);
+  const role = typeof me?.role === "string" ? me.role.trim().toUpperCase() : "";
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 p-6 text-center text-gray-500">
-        Cargando datos...
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-10 h-10 border-4 border-blue-100 border-t-blue-950 rounded-full animate-spin" />
+          <p className="text-sm text-gray-400">Cargando datos...</p>
+        </div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 p-6 text-center text-red-500">
-        Error cargando la información del usuario.
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <p className="text-sm text-red-500">Error cargando la información del usuario.</p>
       </div>
     );
   }
 
-  if (role === "ADMINISTRATIVE") {
-    return (
-      <div className="min-h-screen bg-gray-50 overflow-y-auto">
-        <AdminPerformanceDashboard />
-      </div>
-    );
-  }
-
-  if (role === "TEACHER") {
-    if (!currentTeacherId) {
-      return (
-        <div className="min-h-screen bg-gray-50 p-6 text-center text-gray-500">
-          Cargando datos del docente...
-        </div>
-      );
-    }
-
-    return (
-      <div className="min-h-screen bg-gray-50 overflow-y-auto">
-        <TeacherPerformanceDashboard currentTeacherId={currentTeacherId} />
-      </div>
-    );
-  }
-
-  if (role === "STUDENT") {
-    return (
-      <div className="min-h-screen bg-gray-50 overflow-y-auto">
-        <StudentPerformanceDashboard />
-      </div>
-    );
-  }
+  if (role === "ADMINISTRATIVE") return <AdminPerformanceDashboard />;
+  if (role === "TEACHER") return <TeacherPerformanceDashboard />;
+  if (role === "STUDENT") return <StudentPerformanceDashboard />;
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6 text-center text-gray-500">
-      Rol no soportado.
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <p className="text-sm text-gray-400">Rol no soportado.</p>
     </div>
   );
 }
