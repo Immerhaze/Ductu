@@ -27,7 +27,7 @@ La plataforma está construida con tecnologías modernas de desarrollo web, apli
 
 ## 🧩 Módulo Principal – Administración de Usuarios
 
-Este repositorio incluye la implementación del **Módulo de Administración de Usuarios**, desarrollado como parte de la evidencia académica GA7-220501096-AA4-EV03.
+Este repositorio incluye la implementación del **Módulo de Administración de Usuarios**
 
 ### Funcionalidades Implementadas
 
