@@ -140,6 +140,28 @@ export async function POST(request) {
       },
     });
 
+    // Al final del POST de grades, después de crear la nota:
+try {
+  const { createNotifications } = await import("@/lib/notifications");
+  const student = await prisma.appUser.findUnique({
+    where: { id: body.studentId },
+    select: { id: true, email: true, fullName: true },
+  });
+  if (student) {
+    await createNotifications(
+      [{ userId: student.id, email: student.email, fullName: student.fullName }],
+      {
+        type: "NEW_GRADE",
+        title: "Nueva nota registrada",
+        body: `Se ha registrado una nueva nota en tu perfil académico.`,
+        link: "/dashboard/my-profile",
+      }
+    );
+  }
+} catch (e) {
+  console.error("[notifications] grade error:", e?.message);
+}
+
     return NextResponse.json({ grade }, { status: 201 });
   } catch (e) {
     console.error("[api/grades POST]", e?.message);

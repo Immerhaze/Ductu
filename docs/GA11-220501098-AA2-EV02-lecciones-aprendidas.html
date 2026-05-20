@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>GA11-220501098-AA2-EV02 — Informe de Lecciones Aprendidas — DUCTU</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', Arial, sans-serif; font-size: 11pt; color: #111827; background: #fff; line-height: 1.7; }
+
+    .page { page-break-after: always; }
+    .page:last-child { page-break-after: auto; }
+
+    /* ── PORTADA ── */
+    .cover {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 80px 60px;
+      border-bottom: 4px solid #1d4ed8;
+    }
+    .cover-logo { font-size: 48pt; font-weight: 800; letter-spacing: 0.15em; color: #0f172a; }
+    .cover-sub { font-size: 10pt; color: #6b7280; letter-spacing: 0.1em; margin-bottom: 60px; }
+    .cover-title { font-size: 18pt; font-weight: 700; color: #0f172a; max-width: 580px; line-height: 1.35; margin-bottom: 8px; }
+    .cover-code { font-size: 9pt; font-family: monospace; color: #6b7280; margin-bottom: 60px; }
+    .cover-table { border-collapse: collapse; width: 400px; text-align: left; margin: 0 auto; }
+    .cover-table td { padding: 7px 14px; font-size: 10pt; border-bottom: 1px solid #e5e7eb; color: #374151; }
+    .cover-table td:first-child { font-weight: 600; color: #0f172a; width: 150px; }
+
+    /* ── CONTENIDO ── */
+    .content { padding: 52px 72px; max-width: 820px; margin: 0 auto; }
+
+    /* ── ENCABEZADO ── */
+    .doc-header { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 2px solid #1d4ed8; padding-bottom: 10px; margin-bottom: 32px; }
+    .dh-logo { font-size: 14pt; font-weight: 800; letter-spacing: 0.15em; color: #0f172a; }
+    .dh-meta { font-size: 8pt; color: #6b7280; text-align: right; line-height: 1.6; }
+
+    /* ── TIPOGRAFÍA ── */
+    h1 { font-size: 18pt; font-weight: 700; color: #0f172a; margin-bottom: 18px; }
+    h2 { font-size: 12pt; font-weight: 700; color: #0f172a; margin-top: 28px; margin-bottom: 10px; padding-bottom: 5px; border-bottom: 1px solid #e5e7eb; }
+    h3 { font-size: 11pt; font-weight: 600; color: #1d4ed8; margin-top: 18px; margin-bottom: 7px; }
+    p { margin-bottom: 10px; }
+    ul, ol { margin-left: 20px; margin-bottom: 10px; }
+    li { margin-bottom: 3px; }
+
+    /* ── TABLAS ── */
+    table { width: 100%; border-collapse: collapse; margin: 12px 0 20px; font-size: 10pt; }
+    th { background: #0f172a; color: #fff; font-weight: 600; font-size: 9pt; text-transform: uppercase; letter-spacing: 0.04em; padding: 9px 12px; text-align: left; }
+    th.c { text-align: center; }
+    td { padding: 8px 12px; border-bottom: 1px solid #e5e7eb; vertical-align: top; }
+    tr:nth-child(even) td { background: #f9fafb; }
+    td.c { text-align: center; }
+    td.num { text-align: center; color: #6b7280; font-size: 9pt; font-weight: 600; }
+
+    /* ── BADGES ── */
+    .ok   { display:inline-block; background:#dcfce7; color:#15803d; border-radius:4px; padding:2px 8px; font-size:8.5pt; font-weight:600; }
+    .warn { display:inline-block; background:#fef3c7; color:#92400e; border-radius:4px; padding:2px 8px; font-size:8.5pt; font-weight:600; }
+    .inf  { display:inline-block; background:#eff6ff; color:#1d4ed8; border-radius:4px; padding:2px 8px; font-size:8.5pt; font-weight:600; }
+    .alt  { display:inline-block; background:#fdf4ff; color:#7e22ce; border-radius:4px; padding:2px 8px; font-size:8.5pt; font-weight:600; }
+
+    /* ── CAJAS ── */
+    .note      { background:#f0f9ff; border-left:3px solid #1d4ed8; padding:12px 16px; margin:14px 0; font-size:10.5pt; color:#0c4a6e; }
+    .note-ok   { background:#f0fdf4; border-left:3px solid #16a34a; padding:12px 16px; margin:14px 0; font-size:10.5pt; color:#14532d; }
+    .note-warn { background:#fffbeb; border-left:3px solid #d97706; padding:12px 16px; margin:14px 0; font-size:10.5pt; color:#78350f; }
+
+    /* ── TARJETA DE LECCIÓN ── */
+    .lesson {
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      overflow: hidden;
+      page-break-inside: avoid;
+    }
+    .lesson-head {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 12px 16px;
+      background: #f9fafb;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    .lesson-id {
+      font-size: 9pt;
+      font-weight: 700;
+      font-family: monospace;
+      background: #0f172a;
+      color: #fff;
+      border-radius: 4px;
+      padding: 2px 8px;
+      white-space: nowrap;
+    }
+    .lesson-title { font-size: 11pt; font-weight: 600; color: #0f172a; }
+    .lesson-body { padding: 14px 16px; display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .lesson-body.full { grid-template-columns: 1fr; }
+    .lesson-field-label { font-size: 8pt; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #6b7280; margin-bottom: 4px; }
+    .lesson-field-value { font-size: 10.5pt; color: #111827; line-height: 1.55; }
+
+    /* ── PIE ── */
+    .page-foot { margin-top: 40px; padding-top: 10px; border-top: 1px solid #e5e7eb; text-align: right; font-size: 8pt; color: #9ca3af; }
+
+    /* ── FIRMAS ── */
+    .sigs { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 32px; }
+    .sig { text-align: center; }
+    .sig-line { border-bottom: 1.5px solid #0f172a; height: 44px; margin-bottom: 6px; }
+    .sig-name { font-size: 10.5pt; font-weight: 600; }
+    .sig-role { font-size: 8.5pt; color: #6b7280; }
+  </style>
+</head>
+<body>
+
+<!-- ════════════════════════
+     PORTADA
+════════════════════════ -->
+<div class="page cover">
+  <div class="cover-logo">DUCTU</div>
+  <div class="cover-sub">PLATAFORMA DE GESTIÓN EDUCATIVA</div>
+
+  <div class="cover-title">Informe de Lecciones Aprendidas en el Proceso de Verificación del Software</div>
+  <div class="cover-code">GA11-220501098-AA2-EV02 &nbsp;·&nbsp; GFPI-F-135 V01</div>
+
+  <table class="cover-table">
+    <tr><td>Programa</td><td>Análisis y Desarrollo de Software (ADSO)</td></tr>
+    <tr><td>Competencia</td><td>220501098 — Asegurar la calidad del software</td></tr>
+    <tr><td>Resultado AA</td><td>AA2 — Aplicar pruebas de software</td></tr>
+    <tr><td>Aprendices</td><td>Nicolás Romero Carrillo<br>Marwin Gaviria</td></tr>
+    <tr><td>Instructor</td><td>SENA — Centro de Formación</td></tr>
+    <tr><td>Fecha</td><td>20 de mayo de 2026</td></tr>
+    <tr><td>Documentos de referencia</td><td>GA11-220501098-AA1-EV04 (Bitácora)<br>GA11-220501098-AA2-EV01 (Informe de resultados)</td></tr>
+  </table>
+</div>
+
+
+<!-- ════════════════════════
+     INTRODUCCIÓN
+════════════════════════ -->
+<div class="page">
+  <div class="content">
+    <div class="doc-header">
+      <div class="dh-logo">DUCTU</div>
+      <div class="dh-meta">GA11-220501098-AA2-EV02 &nbsp;·&nbsp; Lecciones Aprendidas &nbsp;·&nbsp; Mayo 2026</div>
+    </div>
+
+    <h1>Introducción</h1>
+
+    <p>
+      El presente documento corresponde a la evidencia <strong>GA11-220501098-AA2-EV02</strong>
+      del programa de formación <em>Análisis y Desarrollo de Software</em> del SENA. Su propósito
+      es registrar, analizar y socializar las lecciones aprendidas a lo largo del proceso de
+      verificación del software <strong>DUCTU</strong>, tomando como base la bitácora de procesos
+      documentados (GA11-220501098-AA1-EV04) y los resultados de las pruebas (GA11-220501098-AA2-EV01).
+    </p>
+
+    <p>
+      Una lección aprendida es el conocimiento adquirido a partir de una experiencia —positiva o
+      negativa— durante el ciclo de vida del proyecto. Su registro formal tiene dos propósitos:
+      primero, servir como memoria institucional que evite repetir los mismos errores; segundo,
+      compartir las prácticas que funcionaron bien para que puedan replicarse en proyectos futuros.
+    </p>
+
+    <p>
+      Las lecciones que se presentan en este informe provienen de 12 sesiones de trabajo
+      distribuidas entre julio de 2025 y mayo de 2026, 51 pruebas ejecutadas sobre 6 módulos
+      del sistema y 8 defectos detectados y gestionados. Se organizan por categoría temática
+      y se acompañan de su origen, el impacto observado y la acción recomendada para proyectos
+      futuros.
+    </p>
+
+    <h2>Marco de Referencia</h2>
+    <p>Las lecciones aprendidas se relacionan con las siguientes buenas prácticas y estándares:</p>
+    <table>
+      <thead>
+        <tr><th>Marco / Estándar</th><th>Aspecto Cubierto</th><th>Aplicación en DUCTU</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>ISO/IEC 25010</strong></td>
+          <td>Características de calidad del producto: funcionalidad, seguridad, rendimiento, usabilidad, mantenibilidad, portabilidad.</td>
+          <td>Marco central de evaluación para las 51 pruebas ejecutadas.</td>
+        </tr>
+        <tr>
+          <td><strong>OWASP Top 10</strong></td>
+          <td>Riesgos de seguridad más frecuentes en aplicaciones web.</td>
+          <td>Guía para el diseño de los 8 casos de prueba de seguridad.</td>
+        </tr>
+        <tr>
+          <td><strong>Principios SOLID</strong></td>
+          <td>Diseño de software mantenible y con bajo acoplamiento.</td>
+          <td>Aplicado en la separación de capas y responsabilidad de módulos.</td>
+        </tr>
+        <tr>
+          <td><strong>Metodología ágil</strong></td>
+          <td>Iteraciones cortas, entrega continua, registro de retrospectivas.</td>
+          <td>Las lecciones aprendidas funcionan como retrospectiva formal del proyecto.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>Estructura del Informe</h2>
+    <ol>
+      <li>Lecciones aprendidas en diseño y arquitectura.</li>
+      <li>Lecciones aprendidas en seguridad.</li>
+      <li>Lecciones aprendidas en rendimiento.</li>
+      <li>Lecciones aprendidas en el proceso de pruebas.</li>
+      <li>Lecciones aprendidas en usabilidad y equipo.</li>
+      <li>Análisis de defectos: qué enseñó cada uno.</li>
+      <li>Consolidado y plan de socialización.</li>
+      <li>Conclusiones.</li>
+    </ol>
+
+    <div class="page-foot">Página 1</div>
+  </div>
+</div>
+
+
+<!-- ════════════════════════
+     SECCIÓN 1 — DISEÑO Y ARQUITECTURA
+════════════════════════ -->
+<div class="page">
+  <div class="content">
+    <div class="doc-header">
+      <div class="dh-logo">DUCTU</div>
+      <div class="dh-meta">GA11-220501098-AA2-EV02 &nbsp;·&nbsp; Sección 1 y 2: Diseño / Seguridad</div>
+    </div>
+
+    <h1>1. Lecciones en Diseño y Arquitectura</h1>
+
+    <div class="lesson">
+      <div class="lesson-head">
+        <span class="lesson-id">LA-01</span>
+        <span class="lesson-title">Separar capas desde el inicio evita refactorizaciones costosas</span>
+        <span class="inf" style="margin-left:auto">Diseño</span>
+      </div>
+      <div class="lesson-body">
+        <div>
+          <div class="lesson-field-label">Contexto (bitácora sesión 01)</div>
+          <div class="lesson-field-value">Desde la primera sesión se definió una estructura de carpetas con separación clara: <code>app/</code> para vistas y rutas, <code>lib/</code> para lógica de negocio y <code>components/</code> para la interfaz reutilizable.</div>
+        </div>
+        <div>
+          <div class="lesson-field-label">Impacto observado</div>
+          <div class="lesson-field-value">En la sesión 9, al reestructurar las rutas del App Router, solo hubo que mover archivos entre carpetas sin tocar la lógica interna de cada módulo. El tiempo de refactoring fue mínimo.</div>
+        </div>
+        <div>
+          <div class="lesson-field-label">Acción recomendada</div>
+          <div class="lesson-field-value">Definir y documentar la arquitectura de carpetas en el primer commit de cualquier proyecto. Respetar la separación durante todo el ciclo de vida.</div>
+        </div>
+        <div>
+          <div class="lesson-field-label">Buena práctica relacionada</div>
+          <div class="lesson-field-value">ISO/IEC 25010 — Mantenibilidad. Principio SOLID de Responsabilidad Única.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="lesson">
+      <div class="lesson-head">
+        <span class="lesson-id">LA-02</span>
+        <span class="lesson-title">El aislamiento multi-tenant debe garantizarse en la capa de datos, no solo en la lógica</span>
+        <span class="inf" style="margin-left:auto">Arquitectura</span>
+      </div>
+      <div class="lesson-body">
+        <div>
+          <div class="lesson-field-label">Contexto (bitácora sesión 05 / prueba S-03)</div>
+          <div class="lesson-field-value">Al probar si era posible manipular el <code>institutionId</code> en el query para acceder a datos de otra institución, el sistema devolvió correctamente solo los datos de la institución autenticada.</div>
+        </div>
+        <div>
+          <div class="lesson-field-label">Impacto observado</div>
+          <div class="lesson-field-value">La prueba S-03 pasó porque el <code>institutionId</code> se toma siempre del token de sesión, nunca del cuerpo de la solicitud. El input del cliente no puede alterar el filtro de institución.</div>
+        </div>
+        <div>
+          <div class="lesson-field-label">Acción recomendada</div>
+          <div class="lesson-field-value">En sistemas multi-tenant, siempre obtener el identificador del tenant del token autenticado del servidor, nunca del input del cliente. Incluir una prueba de acceso cruzado en el plan de pruebas de seguridad de todo proyecto con este patrón.</div>
+        </div>
+        <div>
+          <div class="lesson-field-label">Buena práctica relacionada</div>
+          <div class="lesson-field-value">OWASP A01 — Control de acceso roto. ISO/IEC 25010 — Seguridad.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="lesson">
+      <div class="lesson-head">
+        <span class="lesson-id">LA-03</span>
+        <span class="lesson-title">Los índices de base de datos deben definirse en el diseño del esquema, no como optimización posterior</span>
+        <span class="inf" style="margin-left:auto">Rendimiento</span>
+      </div>
+      <div class="lesson-body">
+        <div>
+          <div class="lesson-field-label">Contexto (bitácora sesión 07)</div>
+          <div class="lesson-field-value">Al diseñar el núcleo académico se definieron índices en todas las columnas usadas en cláusulas <code>WHERE</code> y en las claves foráneas de los modelos principales.</div>
+        </div>
+        <div>
+          <div class="lesson-field-label">Impacto observado</div>
+          <div class="lesson-field-value">Los tiempos de respuesta de todos los endpoints se mantuvieron por debajo de 250 ms incluso con datos de prueba representativos, sin necesidad de optimizaciones adicionales.</div>
+        </div>
+        <div>
+          <div class="lesson-field-label">Acción recomendada</div>
+          <div class="lesson-field-value">Al diseñar cada modelo de datos, identificar las consultas más frecuentes y definir los índices correspondientes en esa misma sesión. No esperar a que el sistema sea lento para indexar.</div>
+        </div>
+        <div>
+          <div class="lesson-field-label">Buena práctica relacionada</div>
+          <div class="lesson-field-value">ISO/IEC 25010 — Eficiencia de desempeño.</div>
+        </div>
+      </div>
+    </div>
+
+    <h1>2. Lecciones en Seguridad</h1>
+
+    <div class="lesson">
+      <div class="lesson-head">
+        <span class="lesson-id">LA-04</span>
+        <span class="lesson-title">Delegar la autenticación a un proveedor especializado elimina toda una categoría de vulnerabilidades</span>
+        <span class="alt" style="margin-left:auto">Seguridad</span>
+      </div>
+      <div class="lesson-body">
+        <div>
+          <div class="lesson-field-label">Contexto (bitácora sesión 03 y 04)</div>
+          <div class="lesson-field-value">Se eligió Stack Auth como proveedor de identidad en lugar de implementar autenticación con contraseñas de forma manual.</div>
+        </div>
+        <div>
+          <div class="lesson-field-label">Impacto observado</div>
+          <div class="lesson-field-value">Los riesgos de OWASP A02 (fallos criptográficos) y A07 (fallos de autenticación) quedaron fuera del alcance de la implementación propia. El tiempo ahorrado se invirtió en la lógica de negocio del sistema.</div>
+        </div>
+        <div>
+          <div class="lesson-field-label">Acción recomendada</div>
+          <div class="lesson-field-value">Evaluar proveedores de identidad establecidos (Auth.js, Stack Auth, Clerk, Supabase Auth) antes de implementar autenticación propia. La autenticación manual solo se justifica cuando los requisitos no pueden cubrirse con ninguna solución existente.</div>
+        </div>
+        <div>
+          <div class="lesson-field-label">Buena práctica relacionada</div>
+          <div class="lesson-field-value">OWASP A02 y A07. ISO/IEC 25010 — Seguridad.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="lesson">
+      <div class="lesson-head">
+        <span class="lesson-id">LA-05</span>
+        <span class="lesson-title">El monitoreo automático de dependencias es esencial para detectar CVEs a tiempo</span>
+        <span class="alt" style="margin-left:auto">Seguridad</span>
+      </div>
+      <div class="lesson-body">
+        <div>
+          <div class="lesson-field-label">Contexto (bitácora sesión 06)</div>
+          <div class="lesson-field-value">Dependabot alertó sobre un CVE en React Server Components. Se resolvió mediante Pull Request revisado antes de que afectara a usuarios.</div>
+        </div>
+        <div>
+          <div class="lesson-field-label">Impacto observado</div>
+          <div class="lesson-field-value">Sin el monitoreo automático, la vulnerabilidad habría pasado desapercibida. El proceso de revisión formal mediante PR garantizó que el parche no introdujera regresiones.</div>
+        </div>
+        <div>
+          <div class="lesson-field-label">Acción recomendada</div>
+          <div class="lesson-field-value">Activar Dependabot o herramientas equivalentes (Snyk, npm audit) en todo proyecto desde su creación. Tratar las alertas de seguridad con la misma prioridad que los bugs de producción.</div>
+        </div>
+        <div>
+          <div class="lesson-field-label">Buena práctica relacionada</div>
+          <div class="lesson-field-value">OWASP A06 — Componentes desactualizados o vulnerables.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="lesson">
+      <div class="lesson-head">
+        <span class="lesson-id">LA-06</span>
+        <span class="lesson-title">Los campos internos también requieren validación aunque no los llene el usuario directamente</span>
+        <span class="alt" style="margin-left:auto">Seguridad</span>
+      </div>
+      <div class="lesson-body">
+        <div>
+          <div class="lesson-field-label">Contexto (prueba S-08 — hallazgo DEF-05)</div>
+          <div class="lesson-field-value">El campo <code>link</code> del modelo <code>Notification</code> es llenado por código del servidor, pero no se valida el formato de la URL almacenada.</div>
+        </div>
+        <div>
+          <div class="lesson-field-label">Impacto observado</div>
+          <div class="lesson-field-value">El riesgo actual es bajo porque el campo no es accesible por el usuario final. Sin embargo, si en una iteración futura se permite que el usuario defina el enlace de una notificación personalizada, la ausencia de validación se convertiría en una vulnerabilidad de open redirect.</div>
+        </div>
+        <div>
+          <div class="lesson-field-label">Acción recomendada</div>
+          <div class="lesson-field-value">Validar el formato de cualquier campo que contenga URLs en el momento de almacenarlo, independientemente de si su origen es el usuario o el propio sistema. La validación preventiva cuesta menos que corregir una vulnerabilidad en producción.</div>
+        </div>
+        <div>
+          <div class="lesson-field-label">Buena práctica relacionada</div>
+          <div class="lesson-field-value">OWASP A10 — SSRF. Principio de defensa en profundidad.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-foot">Página 2</div>
+  </div>
+</div>
+
+
+<!-- ════════════════════════
+     SECCIÓN 3, 4, 5
+════════════════════════ -->
+<div class="page">
+  <div class="content">
+    <div class="doc-header">
+      <div class="dh-logo">DUCTU</div>
+      <div class="dh-meta">GA11-220501098-AA2-EV02 &nbsp;·&nbsp; Secciones 3, 4 y 5</div>
+    </div>
+
+    <h1>3. Lecciones en el Proceso de Pruebas</h1>
+
+    <div class="lesson">
+      <div class="lesson-head">
+        <span class="lesson-id">LA-07</span>
+        <span class="lesson-title">Los casos de prueba de borde son más valiosos que los casos del camino feliz</span>
+        <span class="inf" style="margin-left:auto">Pruebas</span>
+      </div>
+      <div class="lesson-body">
+        <div>
+          <div class="lesson-field-label">Contexto (pruebas F-08, F-10, F-11, S-02, S-04)</div>
+          <div class="lesson-field-value">Se diseñaron casos de prueba específicos para entradas inválidas: nota fuera de rango, columna faltante en Excel, valor no numérico en fila 5, token de invitación consumido, código de acceso expirado.</div>
+        </div>
+        <div>
+          <div class="lesson-field-label">Impacto observado</div>
+          <div class="lesson-field-value">Todos los casos de borde pasaron, confirmando que las validaciones de la API no solo funcionan con datos correctos. Esto habría sido imposible de verificar probando solo el flujo exitoso.</div>
+        </div>
+        <div>
+          <div class="lesson-field-label">Acción recomendada</div>
+          <div class="lesson-field-value">Por cada función nueva, diseñar al menos un caso de prueba con datos inválidos y uno con condición de límite, además del caso del camino feliz. La relación recomendada es 1 caso exitoso por cada 2 casos de error o borde.</div>
+        </div>
+        <div>
+          <div class="lesson-field-label">Buena práctica relacionada</div>
+          <div class="lesson-field-value">ISO/IEC 25010 — Fiabilidad. Pruebas de caja negra — partición de equivalencias y análisis de valores límite.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="lesson">
+      <div class="lesson-head">
+        <span class="lesson-id">LA-08</span>
+        <span class="lesson-title">Las pruebas de regresión deben ejecutarse siempre tras cualquier corrección, no solo revisarse visualmente</span>
+        <span class="inf" style="margin-left:auto">Pruebas</span>
+      </div>
+      <div class="lesson-body">
+        <div>
+          <div class="lesson-field-label">Contexto (bitácora sesión 11 — corrección DEF-03)</div>
+          <div class="lesson-field-value">Al corregir el formulario de publicación (DEF-03), se volvió a ejecutar el conjunto completo de pruebas del módulo de feed, no solo se verificó visualmente que el formulario limpiaba el campo.</div>
+        </div>
+        <div>
+          <div class="lesson-field-label">Impacto observado</div>
+          <div class="lesson-field-value">No se detectaron regresiones en ninguno de los 4 módulos corregidos. La verificación formal confirmó que los cambios eran seguros, algo que la revisión visual no podría garantizar.</div>
+        </div>
+        <div>
+          <div class="lesson-field-label">Acción recomendada</div>
+          <div class="lesson-field-value">Mantener una lista de casos de prueba de regresión por módulo. Ejecutarlos completos tras cada corrección de defecto, incluso cuando el cambio parezca trivial.</div>
+        </div>
+        <div>
+          <div class="lesson-field-label">Buena práctica relacionada</div>
+          <div class="lesson-field-value">ISO/IEC 25010 — Fiabilidad. Gestión de defectos ágil.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="lesson">
+      <div class="lesson-head">
+        <span class="lesson-id">LA-09</span>
+        <span class="lesson-title">Preparar múltiples archivos de prueba con errores distintos maximiza la cobertura del parser</span>
+        <span class="inf" style="margin-left:auto">Pruebas</span>
+      </div>
+      <div class="lesson-body">
+        <div>
+          <div class="lesson-field-label">Contexto (pruebas F-09, F-10, F-11 — importación Excel)</div>
+          <div class="lesson-field-value">Se prepararon tres archivos Excel distintos: uno correcto, uno sin la columna "Nota" y uno con un valor no numérico en la fila 5. Cada uno activó un camino diferente del parser.</div>
+        </div>
+        <div>
+          <div class="lesson-field-label">Impacto observado</div>
+          <div class="lesson-field-value">Se verificó que el sistema maneja cada tipo de error de forma independiente y con mensajes distintos, lo que no habría sido posible con un único archivo de prueba de error genérico.</div>
+        </div>
+        <div>
+          <div class="lesson-field-label">Acción recomendada</div>
+          <div class="lesson-field-value">Para cualquier función de importación de datos, crear una carpeta de archivos de prueba versionados con al menos 5 escenarios: datos correctos, columna faltante, tipo incorrecto, fila vacía y archivo vacío.</div>
+        </div>
+        <div>
+          <div class="lesson-field-label">Buena práctica relacionada</div>
+          <div class="lesson-field-value">ISO/IEC 25010 — Fiabilidad. Pruebas de integración de datos.</div>
+        </div>
+      </div>
+    </div>
+
+    <h1>4. Lecciones en Usabilidad y Trabajo en Equipo</h1>
+
+    <div class="lesson">
+      <div class="lesson-head">
+        <span class="lesson-id">LA-10</span>
+        <span class="lesson-title">Incluir un evaluador externo al desarrollo en las pruebas de usabilidad revela problemas invisibles para el programador</span>
+        <span class="ok" style="margin-left:auto; background:#eff6ff; color:#1d4ed8">Usabilidad</span>
+      </div>
+      <div class="lesson-body">
+        <div>
+          <div class="lesson-field-label">Contexto (bitácora sesión 11 — evaluación Marwin Gaviria)</div>
+          <div class="lesson-field-value">Marwin Gaviria ejecutó las pruebas de usabilidad del onboarding y del módulo de calificaciones sin haber participado en su desarrollo.</div>
+        </div>
+        <div>
+          <div class="lesson-field-label">Impacto observado</div>
+          <div class="lesson-field-value">Se identificó que el mensaje de error en el campo de contraseña durante el registro no era suficientemente descriptivo para un usuario sin perfil técnico. El desarrollador no había detectado este problema porque conocía de antemano los requisitos del campo.</div>
+        </div>
+        <div>
+          <div class="lesson-field-label">Acción recomendada</div>
+          <div class="lesson-field-value">Asignar siempre al menos una persona ajena al desarrollo para las pruebas de usabilidad de cada módulo nuevo. Su perspectiva de usuario novato es irremplazable.</div>
+        </div>
+        <div>
+          <div class="lesson-field-label">Buena práctica relacionada</div>
+          <div class="lesson-field-value">ISO/IEC 25010 — Usabilidad. Pruebas de aceptación de usuario (UAT).</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="lesson">
+      <div class="lesson-head">
+        <span class="lesson-id">LA-11</span>
+        <span class="lesson-title">Registrar los resultados de prueba en el momento de ejecutarlas garantiza fidelidad en el informe</span>
+        <span class="ok" style="margin-left:auto; background:#eff6ff; color:#1d4ed8">Proceso</span>
+      </div>
+      <div class="lesson-body">
+        <div>
+          <div class="lesson-field-label">Contexto (sesión 11 — registro de casos de prueba)</div>
+          <div class="lesson-field-value">Durante la sesión de pruebas, cada resultado se registró inmediatamente en la tabla de casos de prueba, incluyendo el comportamiento observado cuando difería del esperado.</div>
+        </div>
+        <div>
+          <div class="lesson-field-label">Impacto observado</div>
+          <div class="lesson-field-value">El informe de resultados (EV01) refleja exactamente lo que ocurrió durante las pruebas, no una reconstrucción posterior. Esto le da validez documental a la evidencia.</div>
+        </div>
+        <div>
+          <div class="lesson-field-label">Acción recomendada</div>
+          <div class="lesson-field-value">No ejecutar pruebas "en borrador" para documentarlas después. El registro simultáneo es la única forma de garantizar que el informe refleje la realidad de la sesión.</div>
+        </div>
+        <div>
+          <div class="lesson-field-label">Buena práctica relacionada</div>
+          <div class="lesson-field-value">Gestión de calidad ágil. Trazabilidad de pruebas.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="lesson">
+      <div class="lesson-head">
+        <span class="lesson-id">LA-12</span>
+        <span class="lesson-title">La documentación almacenada en el repositorio del proyecto nunca se desvincula del código</span>
+        <span class="ok" style="margin-left:auto; background:#eff6ff; color:#1d4ed8">Proceso</span>
+      </div>
+      <div class="lesson-body">
+        <div>
+          <div class="lesson-field-label">Contexto (sesión 12 — almacenamiento en <code>docs/</code>)</div>
+          <div class="lesson-field-value">Todos los documentos de evidencia se almacenaron en la carpeta <code>docs/</code> del repositorio Git junto con el código fuente del proyecto.</div>
+        </div>
+        <div>
+          <div class="lesson-field-label">Impacto observado</div>
+          <div class="lesson-field-value">Cualquier persona que clone el repositorio obtiene tanto el código como toda la documentación de calidad y proceso. No existe el riesgo de que los documentos queden desactualizados o perdidos en otra plataforma.</div>
+        </div>
+        <div>
+          <div class="lesson-field-label">Acción recomendada</div>
+          <div class="lesson-field-value">Versionar los documentos de proceso junto con el código. Actualizar la documentación en el mismo commit que el cambio de código al que se refiere.</div>
+        </div>
+        <div>
+          <div class="lesson-field-label">Buena práctica relacionada</div>
+          <div class="lesson-field-value">ISO/IEC 25010 — Mantenibilidad. Docs as Code.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-foot">Página 3</div>
+  </div>
+</div>
+
+
+<!-- ════════════════════════
+     SECCIÓN 5 — ANÁLISIS DE DEFECTOS
+════════════════════════ -->
+<div class="page">
+  <div class="content">
+    <div class="doc-header">
+      <div class="dh-logo">DUCTU</div>
+      <div class="dh-meta">GA11-220501098-AA2-EV02 &nbsp;·&nbsp; Sección 5: Análisis de Defectos</div>
+    </div>
+
+    <h1>5. Qué Enseñó Cada Defecto</h1>
+
+    <p>
+      Los 8 defectos registrados durante el proceso de desarrollo y verificación de DUCTU no son
+      solo fallas a corregir: cada uno revela un patrón de riesgo que puede repetirse en proyectos
+      futuros. Esta sección analiza la causa raíz de cada defecto y la lección específica que generó.
+    </p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Descripción del Defecto</th>
+          <th>Causa Raíz</th>
+          <th>Lección Aprendida</th>
+          <th class="c">Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>DEF-01</strong></td>
+          <td style="font-size:9.5pt">Dashboard mostraba datos ficticios en lugar de APIs reales.</td>
+          <td style="font-size:9.5pt">Los archivos de datos de prueba (<code>generateDummyData.js</code>) no se eliminaron al pasar del prototipo al sistema real.</td>
+          <td style="font-size:9.5pt">Establecer desde el inicio una política de "datos ficticios solo en rama de prototipo". Nunca mezclar datos de prueba con código de producción.</td>
+          <td class="c"><span class="ok">Cerrado</span></td>
+        </tr>
+        <tr>
+          <td><strong>DEF-02</strong></td>
+          <td style="font-size:9.5pt">API de asignaciones no verificaba que el docente perteneciera a la misma institución.</td>
+          <td style="font-size:9.5pt">Omisión del filtro de <code>institutionId</code> en la validación previa a la escritura, a diferencia de las APIs de consulta donde sí estaba implementado.</td>
+          <td style="font-size:9.5pt">Crear un checklist de seguridad para APIs que incluya explícitamente la verificación de pertenencia institucional en operaciones de escritura, no solo de lectura.</td>
+          <td class="c"><span class="ok">Cerrado</span></td>
+        </tr>
+        <tr>
+          <td><strong>DEF-03</strong></td>
+          <td style="font-size:9.5pt">Formulario de post no limpiaba el campo de texto si la respuesta tardaba más de 2 segundos.</td>
+          <td style="font-size:9.5pt">El efecto de limpieza del estado estaba condicionado a una respuesta exitosa inmediata, sin considerar respuestas lentas o timeouts.</td>
+          <td style="font-size:9.5pt">Diseñar el manejo de estado de los formularios para cubrir tres escenarios: éxito, error y respuesta lenta. No asumir que la red siempre responde en menos de 1 segundo.</td>
+          <td class="c"><span class="ok">Cerrado</span></td>
+        </tr>
+        <tr>
+          <td><strong>DEF-04</strong></td>
+          <td style="font-size:9.5pt">La importación Excel no indicaba el número de fila con el error.</td>
+          <td style="font-size:9.5pt">El parser iteraba las filas pero no trasladaba el índice al objeto de error devuelto a la capa de respuesta.</td>
+          <td style="font-size:9.5pt">En cualquier función que procese colecciones de datos, el mensaje de error debe incluir el identificador del elemento que falló (número de fila, ID, nombre). Los mensajes genéricos no sirven para que el usuario corrija su entrada.</td>
+          <td class="c"><span class="ok">Cerrado</span></td>
+        </tr>
+        <tr>
+          <td><strong>DEF-05</strong></td>
+          <td style="font-size:9.5pt">Campo <code>link</code> de notificaciones no sanitiza la URL.</td>
+          <td style="font-size:9.5pt">El campo fue implementado como string sin restricciones porque se asumió que solo sería llenado por el servidor. No se consideró el escenario de evolución futura del sistema.</td>
+          <td style="font-size:9.5pt">Validar el formato de los campos desde su creación, no cuando el riesgo se materializa. La restricción de tipo "URL relativa interna" cuesta muy poco implementar y previene una categoría de vulnerabilidades.</td>
+          <td class="c"><span class="warn">Abierto</span></td>
+        </tr>
+        <tr>
+          <td><strong>DEF-06</strong></td>
+          <td style="font-size:9.5pt">Listado de calificaciones carga todos los períodos sin paginación.</td>
+          <td style="font-size:9.5pt">Durante el desarrollo con pocos datos de prueba el problema no fue perceptible. Solo se manifestaría con volumen real de datos.</td>
+          <td style="font-size:9.5pt">Probar el rendimiento con volúmenes de datos representativos del uso real esperado, no solo con los datos mínimos de desarrollo. Implementar paginación o carga diferida desde el diseño de cualquier lista.</td>
+          <td class="c"><span class="warn">Abierto</span></td>
+        </tr>
+        <tr>
+          <td><strong>DEF-07</strong></td>
+          <td style="font-size:9.5pt">No existe reintento automático si falla la creación de una notificación.</td>
+          <td style="font-size:9.5pt">Las notificaciones se crean de forma "fire and forget" sin mecanismo de recuperación ante fallos transitorios de red o BD.</td>
+          <td style="font-size:9.5pt">Las operaciones de escritura secundarias (logs, notificaciones, auditoría) deben tener al menos una estrategia básica de reintento o encolamiento para sistemas en producción.</td>
+          <td class="c"><span class="warn">Abierto</span></td>
+        </tr>
+        <tr>
+          <td><strong>DEF-08</strong></td>
+          <td style="font-size:9.5pt">Página de perfil mostraba pantalla en blanco para roles no estudiante.</td>
+          <td style="font-size:9.5pt">La condición de rol no se evaluaba antes de intentar renderizar los componentes de perfil del estudiante, generando una excepción no manejada.</td>
+          <td style="font-size:9.5pt">Toda página que depende del rol del usuario debe verificar el rol al inicio del componente antes de renderizar cualquier elemento. Agregar siempre un estado de "acceso no permitido" o redirección explícita para roles no contemplados.</td>
+          <td class="c"><span class="ok">Cerrado</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>Patrón General de los Defectos</h2>
+    <p>
+      Al analizar los 8 defectos en conjunto, se identifican dos causas raíz dominantes:
+    </p>
+    <ul>
+      <li>
+        <strong>Omisión de escenarios alternativos (DEF-01, DEF-03, DEF-08):</strong> el código
+        funciona correctamente en el flujo exitoso pero no contempla variaciones como respuestas
+        lentas, roles inesperados o estados de datos ficticios mezclados con reales. La solución
+        es diseñar siempre con la pregunta "¿qué pasa si esto no funciona como espero?"
+      </li>
+      <li>
+        <strong>Falta de contexto en los mensajes de error (DEF-04) y ausencia de validación
+        preventiva (DEF-02, DEF-05, DEF-06, DEF-07):</strong> se implementa la funcionalidad
+        feliz sin diseñar simultáneamente sus mecanismos de protección. La solución es incluir
+        validación, mensajes de error descriptivos y mecanismos de recuperación como parte
+        del diseño inicial de cada función, no como corrección posterior.
+      </li>
+    </ul>
+
+    <div class="page-foot">Página 4</div>
+  </div>
+</div>
+
+
+<!-- ════════════════════════
+     SECCIÓN 6 — CONSOLIDADO Y SOCIALIZACIÓN
+════════════════════════ -->
+<div class="page">
+  <div class="content">
+    <div class="doc-header">
+      <div class="dh-logo">DUCTU</div>
+      <div class="dh-meta">GA11-220501098-AA2-EV02 &nbsp;·&nbsp; Sección 6: Consolidado y Socialización</div>
+    </div>
+
+    <h1>6. Consolidado de Lecciones Aprendidas</h1>
+
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Lección Aprendida</th>
+          <th>Categoría</th>
+          <th>Marco de Referencia</th>
+          <th class="c">Prioridad de Aplicación</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>LA-01</strong></td>
+          <td style="font-size:9.5pt">Separar capas desde el inicio evita refactorizaciones costosas.</td>
+          <td>Arquitectura</td>
+          <td>ISO 25010 — Mantenibilidad · SOLID</td>
+          <td class="c"><span class="ok">Alta</span></td>
+        </tr>
+        <tr>
+          <td><strong>LA-02</strong></td>
+          <td style="font-size:9.5pt">En multi-tenant, el identificador del tenant siempre del token del servidor, nunca del cliente.</td>
+          <td>Arquitectura / Seguridad</td>
+          <td>OWASP A01 · ISO 25010 — Seguridad</td>
+          <td class="c"><span class="ok">Alta</span></td>
+        </tr>
+        <tr>
+          <td><strong>LA-03</strong></td>
+          <td style="font-size:9.5pt">Definir índices de BD en el diseño del esquema, no como optimización posterior.</td>
+          <td>Rendimiento</td>
+          <td>ISO 25010 — Eficiencia</td>
+          <td class="c"><span class="ok">Alta</span></td>
+        </tr>
+        <tr>
+          <td><strong>LA-04</strong></td>
+          <td style="font-size:9.5pt">Usar proveedores de identidad establecidos en lugar de autenticación propia.</td>
+          <td>Seguridad</td>
+          <td>OWASP A02, A07</td>
+          <td class="c"><span class="ok">Alta</span></td>
+        </tr>
+        <tr>
+          <td><strong>LA-05</strong></td>
+          <td style="font-size:9.5pt">Mantener el monitoreo automático de dependencias activo desde el inicio del proyecto.</td>
+          <td>Seguridad</td>
+          <td>OWASP A06</td>
+          <td class="c"><span class="ok">Alta</span></td>
+        </tr>
+        <tr>
+          <td><strong>LA-06</strong></td>
+          <td style="font-size:9.5pt">Validar el formato de cualquier campo URL al almacenarlo, incluso si es llenado por el servidor.</td>
+          <td>Seguridad</td>
+          <td>OWASP A10</td>
+          <td class="c"><span class="warn">Media</span></td>
+        </tr>
+        <tr>
+          <td><strong>LA-07</strong></td>
+          <td style="font-size:9.5pt">Diseñar casos de prueba de borde y de error en la misma sesión que los casos de camino feliz.</td>
+          <td>Pruebas</td>
+          <td>ISO 25010 — Fiabilidad</td>
+          <td class="c"><span class="ok">Alta</span></td>
+        </tr>
+        <tr>
+          <td><strong>LA-08</strong></td>
+          <td style="font-size:9.5pt">Ejecutar pruebas de regresión completas tras cualquier corrección de defecto.</td>
+          <td>Pruebas</td>
+          <td>ISO 25010 — Fiabilidad</td>
+          <td class="c"><span class="ok">Alta</span></td>
+        </tr>
+        <tr>
+          <td><strong>LA-09</strong></td>
+          <td style="font-size:9.5pt">Preparar múltiples archivos de prueba con errores distintos para cada función de importación.</td>
+          <td>Pruebas</td>
+          <td>ISO 25010 — Fiabilidad</td>
+          <td class="c"><span class="warn">Media</span></td>
+        </tr>
+        <tr>
+          <td><strong>LA-10</strong></td>
+          <td style="font-size:9.5pt">Incluir un evaluador externo al desarrollo en las pruebas de usabilidad de cada módulo.</td>
+          <td>Usabilidad / Equipo</td>
+          <td>ISO 25010 — Usabilidad</td>
+          <td class="c"><span class="ok">Alta</span></td>
+        </tr>
+        <tr>
+          <td><strong>LA-11</strong></td>
+          <td style="font-size:9.5pt">Registrar los resultados de prueba en el momento de ejecutarlas, no después.</td>
+          <td>Proceso</td>
+          <td>Trazabilidad de pruebas</td>
+          <td class="c"><span class="ok">Alta</span></td>
+        </tr>
+        <tr>
+          <td><strong>LA-12</strong></td>
+          <td style="font-size:9.5pt">Versionar la documentación de proceso junto con el código en el mismo repositorio.</td>
+          <td>Proceso</td>
+          <td>ISO 25010 — Mantenibilidad</td>
+          <td class="c"><span class="warn">Media</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h1>7. Plan de Socialización de las Lecciones Aprendidas</h1>
+
+    <p>
+      Las lecciones aprendidas tienen valor real solo si se comparten y se integran a los procesos
+      futuros. A continuación se describe cómo se socializarán las lecciones de este proyecto.
+    </p>
+
+    <table>
+      <thead>
+        <tr><th>Canal de Socialización</th><th>Audiencia</th><th>Lecciones Priorizadas</th><th>Responsable</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Presentación al grupo SENA</strong></td>
+          <td>Compañeros de ficha del programa ADSO</td>
+          <td>LA-02, LA-04, LA-07, LA-10 — las de mayor impacto práctico en cualquier proyecto web</td>
+          <td>Nicolás Romero Carrillo</td>
+        </tr>
+        <tr>
+          <td><strong>Documento EV02 (este informe)</strong></td>
+          <td>Instructor SENA, evaluadores</td>
+          <td>Todas (LA-01 a LA-12)</td>
+          <td>Nicolás Romero Carrillo<br>Marwin Gaviria</td>
+        </tr>
+        <tr>
+          <td><strong>README del repositorio GitHub</strong></td>
+          <td>Futuros colaboradores del proyecto DUCTU</td>
+          <td>LA-01, LA-03, LA-05, LA-12 — decisiones de arquitectura y proceso que afectan a quien contribuya al código</td>
+          <td>Nicolás Romero Carrillo</td>
+        </tr>
+        <tr>
+          <td><strong>Checklist de inicio de proyecto</strong></td>
+          <td>El equipo en futuros proyectos</td>
+          <td>LA-01, LA-03, LA-04, LA-05, LA-07 — buenas prácticas que deben estar presentes desde el primer sprint</td>
+          <td>Nicolás Romero Carrillo<br>Marwin Gaviria</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>Checklist de Inicio de Proyecto (derivado de las lecciones)</h2>
+    <p>
+      Como producto concreto de la socialización, se propone el siguiente checklist para el inicio
+      de cualquier proyecto de desarrollo de software del equipo:
+    </p>
+    <table>
+      <thead>
+        <tr><th>Ítem</th><th>Lección de Origen</th><th class="c">Verificar antes de primer commit</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Definir estructura de carpetas por capa (app, lib, components)</td><td>LA-01</td><td class="c">☐</td></tr>
+        <tr><td>Configurar <code>.gitignore</code> para excluir <code>.env.local</code> y credenciales</td><td>LA-04</td><td class="c">☐</td></tr>
+        <tr><td>Activar Dependabot o <code>npm audit</code> en el repositorio</td><td>LA-05</td><td class="c">☐</td></tr>
+        <tr><td>Definir índices de BD en el primer borrador del esquema</td><td>LA-03</td><td class="c">☐</td></tr>
+        <tr><td>Crear carpeta <code>docs/</code> para almacenar documentación de proceso</td><td>LA-12</td><td class="c">☐</td></tr>
+        <tr><td>En sistemas multi-tenant: verificar que el tenant ID venga del token, no del input</td><td>LA-02</td><td class="c">☐</td></tr>
+        <tr><td>Para cada módulo nuevo: diseñar casos de prueba de borde además del camino feliz</td><td>LA-07</td><td class="c">☐</td></tr>
+        <tr><td>Designar un evaluador externo para las pruebas de usabilidad</td><td>LA-10</td><td class="c">☐</td></tr>
+      </tbody>
+    </table>
+
+    <div class="page-foot">Página 5</div>
+  </div>
+</div>
+
+
+<!-- ════════════════════════
+     CONCLUSIONES
+════════════════════════ -->
+<div class="page">
+  <div class="content">
+    <div class="doc-header">
+      <div class="dh-logo">DUCTU</div>
+      <div class="dh-meta">GA11-220501098-AA2-EV02 &nbsp;·&nbsp; Conclusiones</div>
+    </div>
+
+    <h1>Conclusiones</h1>
+
+    <p>
+      El presente informe documenta 12 lecciones aprendidas y el análisis de 8 defectos detectados
+      durante el proceso de verificación del software DUCTU. Las lecciones se derivan directamente
+      de experiencias concretas registradas en la bitácora (GA11-220501098-AA1-EV04) y en los
+      resultados de pruebas (GA11-220501098-AA2-EV01), y se articulan con los marcos de referencia
+      ISO/IEC 25010 y OWASP Top 10.
+    </p>
+
+    <h2>Las lecciones aprendidas más impactantes</h2>
+    <p>
+      De las 12 lecciones registradas, cinco tienen prioridad alta y consecuencias inmediatas en la
+      calidad del producto: separar capas desde el inicio (LA-01), garantizar el aislamiento del
+      tenant en la capa de datos (LA-02), usar proveedores de identidad establecidos (LA-04),
+      mantener el monitoreo de dependencias activo (LA-05) y diseñar casos de prueba de borde desde
+      el inicio de cada módulo (LA-07). Estas cinco lecciones, aplicadas juntas desde el primer sprint
+      de un proyecto, pueden prevenir la mayoría de los defectos más frecuentes encontrados en DUCTU.
+    </p>
+
+    <h2>El valor de documentar los defectos como oportunidades de aprendizaje</h2>
+    <p>
+      El análisis de causa raíz de los 8 defectos reveló que todos comparten dos patrones: omisión
+      de escenarios alternativos y ausencia de validación preventiva. Este hallazgo es más valioso
+      que la corrección individual de cada defecto, porque permite actuar sobre la causa y no solo
+      sobre el síntoma. En proyectos futuros, preguntar "¿qué pasa si esto falla?" durante el diseño
+      de cada función puede evitar que estos patrones se repitan.
+    </p>
+
+    <h2>La socialización como cierre del ciclo de calidad</h2>
+    <p>
+      Una lección aprendida que no se comparte es conocimiento que se pierde con la rotación del
+      equipo. El plan de socialización propuesto en la sección 7 —que incluye presentación al grupo,
+      documentación en el repositorio y un checklist de inicio de proyecto— garantiza que el
+      conocimiento generado en DUCTU trascienda este proyecto y sirva como base para los siguientes.
+    </p>
+
+    <h2>Relación con los criterios de evaluación</h2>
+    <ul>
+      <li>
+        <strong>Evaluación de comportamientos según requisitos no funcionales:</strong> las lecciones
+        LA-02, LA-03, LA-04, LA-05 y LA-06 se derivan directamente de la evaluación de seguridad y
+        rendimiento documentada en EV01.
+      </li>
+      <li>
+        <strong>Informe de evaluación de calidad:</strong> el consolidado de la sección 6 integra los
+        resultados de verificación con las buenas prácticas de ISO/IEC 25010 y OWASP.
+      </li>
+      <li>
+        <strong>Bitácora de lecciones aprendidas:</strong> cada lección está vinculada a una sesión
+        específica de la bitácora EV04, garantizando trazabilidad entre el proceso y el aprendizaje.
+      </li>
+    </ul>
+
+    <div class="note-ok" style="margin-top:20px">
+      <strong>Conclusión final:</strong> El proceso de verificación de DUCTU generó 12 lecciones
+      aprendidas concretas, aplicables y socializables. Su documentación formal cumple los criterios
+      de la evidencia GA11-220501098-AA2-EV02 y contribuye a la mejora continua del equipo más allá
+      de los límites de este proyecto.
+    </div>
+
+    <div style="margin-top: 44px;">
+      <h2 style="margin-top:0">Validación y Firmas</h2>
+      <div class="sigs">
+        <div class="sig">
+          <div class="sig-line"></div>
+          <div class="sig-name">Nicolás Romero Carrillo</div>
+          <div class="sig-role">Aprendiz — Programa ADSO</div>
+          <div class="sig-role">SENA</div>
+        </div>
+        <div class="sig">
+          <div class="sig-line"></div>
+          <div class="sig-name">Marwin Gaviria</div>
+          <div class="sig-role">Aprendiz — Programa ADSO</div>
+          <div class="sig-role">SENA</div>
+        </div>
+      </div>
+      <div class="sigs" style="margin-top: 28px;">
+        <div class="sig">
+          <div class="sig-line"></div>
+          <div class="sig-name">Instructor Evaluador</div>
+          <div class="sig-role">Centro de Formación SENA</div>
+          <div class="sig-role">Competencia 220501098</div>
+        </div>
+        <div class="sig">
+          <div class="sig-line"></div>
+          <div class="sig-name">Fecha de Entrega</div>
+          <div class="sig-role">20 de mayo de 2026</div>
+          <div class="sig-role">GA11-220501098-AA2-EV02</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-foot">Página 6</div>
+  </div>
+</div>
+
+</body>
+</html>

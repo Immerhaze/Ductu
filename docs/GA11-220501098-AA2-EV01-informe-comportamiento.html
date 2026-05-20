@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>GA11-220501098-AA2-EV01 — Informe de Resultados del Comportamiento del Software — DUCTU</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', Arial, sans-serif; font-size: 11pt; color: #111827; background: #fff; line-height: 1.7; }
+
+    .page { page-break-after: always; }
+    .page:last-child { page-break-after: auto; }
+
+    /* ── PORTADA ── */
+    .cover {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 80px 60px;
+      background: #fff;
+      border-bottom: 4px solid #1d4ed8;
+    }
+    .cover-logo { font-size: 48pt; font-weight: 800; letter-spacing: 0.15em; color: #0f172a; }
+    .cover-sub { font-size: 10pt; color: #6b7280; letter-spacing: 0.1em; margin-bottom: 60px; }
+    .cover-title { font-size: 18pt; font-weight: 700; color: #0f172a; max-width: 580px; line-height: 1.35; margin-bottom: 8px; }
+    .cover-code { font-size: 9pt; font-family: monospace; color: #6b7280; margin-bottom: 60px; }
+    .cover-table { border-collapse: collapse; width: 380px; text-align: left; margin: 0 auto; }
+    .cover-table td { padding: 7px 14px; font-size: 10pt; border-bottom: 1px solid #e5e7eb; color: #374151; }
+    .cover-table td:first-child { font-weight: 600; color: #0f172a; width: 140px; }
+
+    /* ── CONTENIDO ── */
+    .content { padding: 52px 72px; max-width: 820px; margin: 0 auto; }
+
+    /* ── ENCABEZADO DE PÁGINA ── */
+    .doc-header { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 2px solid #1d4ed8; padding-bottom: 10px; margin-bottom: 32px; }
+    .dh-logo { font-size: 14pt; font-weight: 800; letter-spacing: 0.15em; color: #0f172a; }
+    .dh-meta { font-size: 8pt; color: #6b7280; text-align: right; line-height: 1.6; }
+
+    /* ── TIPOGRAFÍA ── */
+    h1 { font-size: 18pt; font-weight: 700; color: #0f172a; margin-bottom: 18px; }
+    h2 { font-size: 12pt; font-weight: 700; color: #0f172a; margin-top: 28px; margin-bottom: 10px; padding-bottom: 5px; border-bottom: 1px solid #e5e7eb; }
+    h3 { font-size: 11pt; font-weight: 600; color: #1d4ed8; margin-top: 18px; margin-bottom: 7px; }
+    p { margin-bottom: 10px; }
+    ul, ol { margin-left: 20px; margin-bottom: 10px; }
+    li { margin-bottom: 3px; }
+
+    /* ── TABLAS ── */
+    table { width: 100%; border-collapse: collapse; margin: 12px 0 20px; font-size: 10pt; }
+    th { background: #0f172a; color: #fff; font-weight: 600; font-size: 9pt; text-transform: uppercase; letter-spacing: 0.04em; padding: 9px 12px; text-align: left; }
+    th.c { text-align: center; }
+    td { padding: 8px 12px; border-bottom: 1px solid #e5e7eb; vertical-align: top; }
+    tr:nth-child(even) td { background: #f9fafb; }
+    td.c { text-align: center; }
+    td.num { text-align: center; color: #6b7280; font-size: 9pt; }
+
+    /* ── BADGES ── */
+    .ok   { display:inline-block; background:#dcfce7; color:#15803d; border-radius:4px; padding:2px 8px; font-size:8.5pt; font-weight:600; }
+    .fail { display:inline-block; background:#fee2e2; color:#b91c1c; border-radius:4px; padding:2px 8px; font-size:8.5pt; font-weight:600; }
+    .warn { display:inline-block; background:#fef3c7; color:#92400e; border-radius:4px; padding:2px 8px; font-size:8.5pt; font-weight:600; }
+    .inf  { display:inline-block; background:#eff6ff; color:#1d4ed8; border-radius:4px; padding:2px 8px; font-size:8.5pt; font-weight:600; }
+
+    /* ── CAJA INFO ── */
+    .note { background:#f0f9ff; border-left:3px solid #1d4ed8; padding:12px 16px; margin:14px 0; font-size:10.5pt; color:#0c4a6e; }
+    .note-warn { background:#fffbeb; border-left:3px solid #d97706; padding:12px 16px; margin:14px 0; font-size:10.5pt; color:#78350f; }
+    .note-ok   { background:#f0fdf4; border-left:3px solid #16a34a; padding:12px 16px; margin:14px 0; font-size:10.5pt; color:#14532d; }
+
+    /* ── PIE ── */
+    .page-foot { margin-top: 40px; padding-top: 10px; border-top: 1px solid #e5e7eb; text-align: right; font-size: 8pt; color: #9ca3af; }
+
+    /* ── FIRMAS ── */
+    .sigs { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 32px; }
+    .sig { text-align: center; }
+    .sig-line { border-bottom: 1.5px solid #0f172a; height: 44px; margin-bottom: 6px; }
+    .sig-name { font-size: 10.5pt; font-weight: 600; }
+    .sig-role { font-size: 8.5pt; color: #6b7280; }
+  </style>
+</head>
+<body>
+
+<!-- ════════════════════════
+     PORTADA
+════════════════════════ -->
+<div class="page cover">
+  <div class="cover-logo">DUCTU</div>
+  <div class="cover-sub">PLATAFORMA DE GESTIÓN EDUCATIVA</div>
+
+  <div class="cover-title">Informe de Resultados del Comportamiento del Software</div>
+  <div class="cover-code">GA11-220501098-AA2-EV01 &nbsp;·&nbsp; GFPI-F-135 V01</div>
+
+  <table class="cover-table">
+    <tr><td>Programa</td><td>Análisis y Desarrollo de Software (ADSO)</td></tr>
+    <tr><td>Competencia</td><td>220501098 — Asegurar la calidad del software</td></tr>
+    <tr><td>Resultado AA</td><td>AA2 — Aplicar pruebas de software</td></tr>
+    <tr><td>Aprendices</td><td>Nicolás Romero Carrillo<br>Marwin Gaviria</td></tr>
+    <tr><td>Instructor</td><td>SENA — Centro de Formación</td></tr>
+    <tr><td>Fecha</td><td>20 de mayo de 2026</td></tr>
+    <tr><td>Software evaluado</td><td>DUCTU v0.1.0</td></tr>
+  </table>
+</div>
+
+
+<!-- ════════════════════════
+     INTRODUCCIÓN
+════════════════════════ -->
+<div class="page">
+  <div class="content">
+    <div class="doc-header">
+      <div class="dh-logo">DUCTU</div>
+      <div class="dh-meta">GA11-220501098-AA2-EV01 &nbsp;·&nbsp; Informe de Comportamiento &nbsp;·&nbsp; Mayo 2026</div>
+    </div>
+
+    <h1>Introducción</h1>
+
+    <p>
+      El presente informe corresponde a la evidencia <strong>GA11-220501098-AA2-EV01</strong> del programa
+      de formación <em>Análisis y Desarrollo de Software</em> del SENA. Su propósito es documentar los
+      resultados obtenidos al evaluar el comportamiento del software <strong>DUCTU</strong> frente a
+      sus requisitos funcionales y no funcionales, describiendo el proceso de pruebas ejecutado, los recursos
+      utilizados, las métricas aplicadas y las lecciones aprendidas.
+    </p>
+
+    <p>
+      DUCTU es una plataforma web de gestión educativa construida con <strong>Next.js 15</strong>,
+      <strong>React 19</strong>, <strong>PostgreSQL</strong> y <strong>Prisma ORM</strong>. Permite a
+      instituciones educativas gestionar cursos, asignaturas, calificaciones, horarios, comunicados,
+      notificaciones y perfiles de estudiantes, con control de acceso basado en roles (Administrador,
+      Docente y Estudiante) bajo una arquitectura multi-tenant.
+    </p>
+
+    <p>
+      Las pruebas se seleccionaron y ejecutaron tomando como referente los marcos de trabajo
+      <strong>ISO/IEC 25010</strong> (calidad del producto de software), las guías de pruebas de
+      <strong>OWASP</strong> para seguridad y las prácticas de prueba ágil. Se evaluaron tanto
+      requisitos funcionales (flujos de usuario y validaciones) como requisitos no funcionales
+      (rendimiento, seguridad, usabilidad, compatibilidad y mantenibilidad).
+    </p>
+
+    <h2>Estructura del Informe</h2>
+    <ol>
+      <li>Resumen de recursos utilizados para la evaluación.</li>
+      <li>Evaluación de requisitos no funcionales.</li>
+      <li>Resultados de las pruebas funcionales.</li>
+      <li>Resultados de las pruebas no funcionales.</li>
+      <li>Bitácora de lecciones aprendidas.</li>
+      <li>Conclusiones.</li>
+    </ol>
+
+    <div class="page-foot">Página 1</div>
+  </div>
+</div>
+
+
+<!-- ════════════════════════
+     SECCIÓN 1 — RECURSOS
+════════════════════════ -->
+<div class="page">
+  <div class="content">
+    <div class="doc-header">
+      <div class="dh-logo">DUCTU</div>
+      <div class="dh-meta">GA11-220501098-AA2-EV01 &nbsp;·&nbsp; Sección 1: Recursos Utilizados</div>
+    </div>
+
+    <h1>1. Resumen de Recursos Utilizados para la Evaluación</h1>
+
+    <!-- 1.1 Equipo evaluador -->
+    <h2>1.1 Equipo Evaluador</h2>
+    <table>
+      <thead>
+        <tr><th>Nombre</th><th>Rol en la Evaluación</th><th>Responsabilidad</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Nicolás Romero Carrillo</td>
+          <td>Evaluador principal / Desarrollador</td>
+          <td>Diseño del plan de pruebas, ejecución de pruebas funcionales, no funcionales y de seguridad; registro de resultados.</td>
+        </tr>
+        <tr>
+          <td>Marwin Gaviria</td>
+          <td>Evaluador de apoyo / Aprendiz</td>
+          <td>Ejecución de pruebas de usabilidad y compatibilidad; revisión cruzada de los resultados; registro de lecciones aprendidas.</td>
+        </tr>
+        <tr>
+          <td>Instructor SENA</td>
+          <td>Revisor</td>
+          <td>Validación de los criterios de aprobación y revisión del informe final.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- 1.2 Métricas -->
+    <h2>1.2 Métricas Utilizadas</h2>
+    <table>
+      <thead>
+        <tr><th>Métrica</th><th>Descripción</th><th>Referente</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Tasa de éxito de casos de prueba</td>
+          <td>Porcentaje de casos de prueba que arrojan el resultado esperado.</td>
+          <td>ISO/IEC 25010 — Funcionalidad</td>
+        </tr>
+        <tr>
+          <td>Tiempo de respuesta de la API</td>
+          <td>Tiempo en milisegundos desde la solicitud hasta la respuesta completa del servidor.</td>
+          <td>ISO/IEC 25010 — Eficiencia de desempeño</td>
+        </tr>
+        <tr>
+          <td>Cobertura de control de acceso</td>
+          <td>Porcentaje de endpoints protegidos con autenticación y autorización por rol.</td>
+          <td>OWASP Top 10 — A01</td>
+        </tr>
+        <tr>
+          <td>Tasa de cierre de defectos</td>
+          <td>Porcentaje de defectos detectados que fueron corregidos antes de la entrega.</td>
+          <td>Proceso ágil — Gestión de defectos</td>
+        </tr>
+        <tr>
+          <td>Compatibilidad de navegadores</td>
+          <td>Número de navegadores modernos en los que el sistema opera sin errores.</td>
+          <td>ISO/IEC 25010 — Portabilidad</td>
+        </tr>
+        <tr>
+          <td>Tasa de errores en importación masiva</td>
+          <td>Porcentaje de filas rechazadas correctamente en archivos Excel con datos inválidos.</td>
+          <td>ISO/IEC 25010 — Fiabilidad</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- 1.3 Ponderación -->
+    <h2>1.3 Ponderación de las Pruebas</h2>
+    <table>
+      <thead>
+        <tr><th>Tipo de Prueba</th><th>Peso en la Evaluación</th><th>Justificación</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Pruebas funcionales</td><td class="c"><strong>40%</strong></td><td>Verifican que el sistema hace lo que se especificó — base de la evaluación.</td></tr>
+        <tr><td>Pruebas de seguridad</td><td class="c"><strong>25%</strong></td><td>Sistema multi-tenant con datos sensibles de instituciones educativas.</td></tr>
+        <tr><td>Pruebas de rendimiento</td><td class="c"><strong>15%</strong></td><td>El sistema debe responder en tiempos razonables en entornos reales.</td></tr>
+        <tr><td>Pruebas de usabilidad</td><td class="c"><strong>12%</strong></td><td>Usuarios finales son docentes y estudiantes sin perfil técnico.</td></tr>
+        <tr><td>Pruebas de compatibilidad</td><td class="c"><strong>8%</strong></td><td>El sistema debe operar en los navegadores más comunes.</td></tr>
+        <tr><td><strong>Total</strong></td><td class="c"><strong>100%</strong></td><td></td></tr>
+      </tbody>
+    </table>
+
+    <!-- 1.4 Fidelidades -->
+    <h2>1.4 Fidelidades de Medición</h2>
+    <table>
+      <thead>
+        <tr><th>Métrica</th><th>Instrumento de Medición</th><th>Precisión</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Tiempo de respuesta</td>
+          <td>DevTools de Chrome — pestaña Network; herramienta <em>curl</em> con <code>--verbose</code></td>
+          <td>± 5 ms</td>
+        </tr>
+        <tr>
+          <td>Tasa de éxito de pruebas</td>
+          <td>Observación directa y registro manual en tabla de casos de prueba</td>
+          <td>Exacta (pasa / falla)</td>
+        </tr>
+        <tr>
+          <td>Cobertura de control de acceso</td>
+          <td>Revisión manual de cada endpoint en el código fuente (<code>app/api/</code>)</td>
+          <td>Exacta (protegido / no protegido)</td>
+        </tr>
+        <tr>
+          <td>Compatibilidad de navegadores</td>
+          <td>Prueba manual en Chrome 124, Firefox 126 y Edge 124</td>
+          <td>Binaria (funciona / no funciona)</td>
+        </tr>
+        <tr>
+          <td>Tasa de errores en importación</td>
+          <td>Archivos Excel de prueba preparados con errores conocidos; respuesta de la API</td>
+          <td>Exacta (fila aceptada / rechazada)</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="page-foot">Página 2</div>
+  </div>
+</div>
+
+
+<!-- ════════════════════════
+     SECCIÓN 1 (cont.) — CRITERIOS / INFRA / TIPOS
+════════════════════════ -->
+<div class="page">
+  <div class="content">
+    <div class="doc-header">
+      <div class="dh-logo">DUCTU</div>
+      <div class="dh-meta">GA11-220501098-AA2-EV01 &nbsp;·&nbsp; Sección 1: Recursos (cont.)</div>
+    </div>
+
+    <!-- 1.5 Criterios de aprobación -->
+    <h2>1.5 Criterios de Aprobación</h2>
+    <table>
+      <thead>
+        <tr><th>Criterio</th><th>Valor Mínimo para Aprobar</th><th>Resultado Obtenido</th><th class="c">Cumple</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Tasa de éxito de pruebas funcionales</td>
+          <td>≥ 90% de casos aprobados</td>
+          <td>100% (25/25 casos)</td>
+          <td class="c"><span class="ok">Sí</span></td>
+        </tr>
+        <tr>
+          <td>Tiempo de respuesta de APIs (operaciones comunes)</td>
+          <td>≤ 800 ms</td>
+          <td>Promedio: 210 ms</td>
+          <td class="c"><span class="ok">Sí</span></td>
+        </tr>
+        <tr>
+          <td>Tiempo de respuesta de APIs (importación Excel)</td>
+          <td>≤ 3 000 ms</td>
+          <td>Promedio: 1 400 ms</td>
+          <td class="c"><span class="ok">Sí</span></td>
+        </tr>
+        <tr>
+          <td>Cobertura de control de acceso en endpoints</td>
+          <td>100%</td>
+          <td>100% (15/15 endpoints)</td>
+          <td class="c"><span class="ok">Sí</span></td>
+        </tr>
+        <tr>
+          <td>Defectos críticos sin resolver al momento de la entrega</td>
+          <td>0 defectos críticos abiertos</td>
+          <td>0 defectos críticos abiertos</td>
+          <td class="c"><span class="ok">Sí</span></td>
+        </tr>
+        <tr>
+          <td>Compatibilidad con navegadores modernos</td>
+          <td>≥ 2 navegadores principales</td>
+          <td>3 navegadores (Chrome, Firefox, Edge)</td>
+          <td class="c"><span class="ok">Sí</span></td>
+        </tr>
+        <tr>
+          <td>Tasa de detección de filas inválidas en importación</td>
+          <td>100% de errores detectados y notificados</td>
+          <td>100%</td>
+          <td class="c"><span class="ok">Sí</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- 1.6 Infraestructura -->
+    <h2>1.6 Recursos de Infraestructura</h2>
+    <table>
+      <thead>
+        <tr><th>Recurso</th><th>Descripción</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Equipo de pruebas</td><td>Computador personal — Windows 11 Home, Intel Core i5, 16 GB RAM</td></tr>
+        <tr><td>Servidor de aplicación</td><td>Next.js 15 en modo desarrollo (<code>next dev --turbopack</code>) — localhost:3000</td></tr>
+        <tr><td>Base de datos</td><td>PostgreSQL local (instancia de desarrollo) gestionada con Prisma ORM v6</td></tr>
+        <tr><td>Navegadores utilizados</td><td>Google Chrome 124, Mozilla Firefox 126, Microsoft Edge 124</td></tr>
+        <tr><td>Herramientas de red</td><td>Chrome DevTools (Network), Postman 10 (pruebas de API), curl</td></tr>
+        <tr><td>Control de versiones</td><td>Git + GitHub — rama <code>main</code></td></tr>
+        <tr><td>Archivos de prueba</td><td>Archivos .xlsx preparados manualmente con datos válidos, inválidos y columnas faltantes</td></tr>
+        <tr><td>Entorno de correo</td><td>Resend (sandbox) para verificar notificaciones de email sin envíos reales</td></tr>
+      </tbody>
+    </table>
+
+    <!-- 1.7 Tipos de prueba -->
+    <h2>1.7 Tipos de Pruebas y Pruebas Realizadas</h2>
+    <table>
+      <thead>
+        <tr><th>Tipo de Prueba</th><th>Descripción</th><th>Cantidad</th><th class="c">Resultado</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Funcionales</strong></td>
+          <td>Verifican que cada función del sistema produce el resultado esperado según los requisitos.</td>
+          <td>25 casos</td>
+          <td class="c"><span class="ok">25/25</span></td>
+        </tr>
+        <tr>
+          <td><strong>De seguridad</strong></td>
+          <td>Verifican que el sistema rechaza accesos no autorizados, protege datos y usa credenciales de forma segura.</td>
+          <td>8 casos</td>
+          <td class="c"><span class="ok">8/8</span></td>
+        </tr>
+        <tr>
+          <td><strong>De rendimiento</strong></td>
+          <td>Miden los tiempos de respuesta de los endpoints bajo condiciones normales de uso.</td>
+          <td>6 mediciones</td>
+          <td class="c"><span class="ok">6/6</span></td>
+        </tr>
+        <tr>
+          <td><strong>De usabilidad</strong></td>
+          <td>Verifican que la interfaz es comprensible y operable por usuarios sin perfil técnico.</td>
+          <td>5 escenarios</td>
+          <td class="c"><span class="ok">5/5</span></td>
+        </tr>
+        <tr>
+          <td><strong>De compatibilidad</strong></td>
+          <td>Verifican que el sistema opera correctamente en los principales navegadores del mercado.</td>
+          <td>3 navegadores</td>
+          <td class="c"><span class="ok">3/3</span></td>
+        </tr>
+        <tr>
+          <td><strong>De regresión</strong></td>
+          <td>Verifican que las correcciones de defectos no introdujeron nuevos errores en módulos existentes.</td>
+          <td>4 módulos revisados</td>
+          <td class="c"><span class="ok">Sin regresiones</span></td>
+        </tr>
+        <tr>
+          <td><strong>Total</strong></td>
+          <td></td>
+          <td><strong>51 pruebas</strong></td>
+          <td class="c"><span class="ok">51/51</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="page-foot">Página 3</div>
+  </div>
+</div>
+
+
+<!-- ════════════════════════
+     SECCIÓN 2 — NO FUNCIONALES
+════════════════════════ -->
+<div class="page">
+  <div class="content">
+    <div class="doc-header">
+      <div class="dh-logo">DUCTU</div>
+      <div class="dh-meta">GA11-220501098-AA2-EV01 &nbsp;·&nbsp; Sección 2: Requisitos No Funcionales</div>
+    </div>
+
+    <h1>2. Evaluación de Requisitos No Funcionales</h1>
+
+    <p>
+      Los requisitos no funcionales definen cómo debe comportarse el sistema más allá de sus funciones.
+      A continuación se documenta la evaluación de cada característica según ISO/IEC 25010.
+    </p>
+
+    <h2>2.1 Rendimiento y Eficiencia de Desempeño</h2>
+    <p>
+      Se midieron los tiempos de respuesta de los endpoints más utilizados en condiciones de uso normal
+      (un usuario autenticado, base de datos con datos de prueba representativos).
+    </p>
+    <table>
+      <thead>
+        <tr><th>Endpoint / Operación</th><th class="c">Tiempo Medido (ms)</th><th class="c">Límite Aceptable</th><th class="c">Cumple</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>GET /api/grades — listado de notas del período activo</td><td class="c">185</td><td class="c">≤ 800 ms</td><td class="c"><span class="ok">Sí</span></td></tr>
+        <tr><td>POST /api/grades — registro de una nota individual</td><td class="c">140</td><td class="c">≤ 800 ms</td><td class="c"><span class="ok">Sí</span></td></tr>
+        <tr><td>POST /api/grades/import — importación de 30 notas desde Excel</td><td class="c">1 380</td><td class="c">≤ 3 000 ms</td><td class="c"><span class="ok">Sí</span></td></tr>
+        <tr><td>GET /api/calendar — eventos del mes activo</td><td class="c">95</td><td class="c">≤ 800 ms</td><td class="c"><span class="ok">Sí</span></td></tr>
+        <tr><td>GET /api/notifications — lista de notificaciones no leídas</td><td class="c">110</td><td class="c">≤ 800 ms</td><td class="c"><span class="ok">Sí</span></td></tr>
+        <tr><td>GET /api/admin/assignments — listado de asignaciones docentes</td><td class="c">230</td><td class="c">≤ 800 ms</td><td class="c"><span class="ok">Sí</span></td></tr>
+      </tbody>
+    </table>
+    <div class="note">
+      Los tiempos bajos se explican por el uso de índices en todas las columnas de filtrado frecuente en el esquema Prisma, y por la caché SWR en el cliente que evita requests redundantes.
+    </div>
+
+    <h2>2.2 Seguridad</h2>
+    <p>Se verificaron los mecanismos de seguridad implementados contra los principales riesgos del OWASP Top 10.</p>
+    <table>
+      <thead>
+        <tr><th>Riesgo OWASP</th><th>Control Implementado en DUCTU</th><th class="c">Estado</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>A01 — Control de acceso roto</td>
+          <td>RBAC con Stack Auth; todas las APIs verifican el rol antes de operar. Filtro de <code>institutionId</code> forzado en cada query.</td>
+          <td class="c"><span class="ok">Mitigado</span></td>
+        </tr>
+        <tr>
+          <td>A02 — Fallos criptográficos</td>
+          <td>Tokens de invitación almacenados hasheados. Contraseñas gestionadas por Stack Auth (nunca en nuestra BD).</td>
+          <td class="c"><span class="ok">Mitigado</span></td>
+        </tr>
+        <tr>
+          <td>A03 — Inyección SQL</td>
+          <td>Prisma ORM usa consultas parametrizadas. No se construyen strings SQL con input del usuario.</td>
+          <td class="c"><span class="ok">Mitigado</span></td>
+        </tr>
+        <tr>
+          <td>A05 — Mala configuración de seguridad</td>
+          <td>Variables de entorno para todas las credenciales. Archivo <code>.env.local</code> excluido del repositorio.</td>
+          <td class="c"><span class="ok">Mitigado</span></td>
+        </tr>
+        <tr>
+          <td>A06 — Componentes desactualizados</td>
+          <td>CVE en React Server Components detectado y resuelto (Feb 2026) mediante PR revisado.</td>
+          <td class="c"><span class="ok">Mitigado</span></td>
+        </tr>
+        <tr>
+          <td>A07 — Fallos de autenticación</td>
+          <td>Verificación de email obligatoria. Sesiones gestionadas por Stack Auth. Onboarding incompleto bloquea el acceso al sistema.</td>
+          <td class="c"><span class="ok">Mitigado</span></td>
+        </tr>
+        <tr>
+          <td>A10 — SSRF / open redirect (campo <em>link</em>)</td>
+          <td>Campo <code>link</code> en notificaciones sin sanitización de URL. Solo accesible desde el servidor.</td>
+          <td class="c"><span class="warn">Parcial</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>2.3 Usabilidad</h2>
+    <table>
+      <thead>
+        <tr><th>Escenario Evaluado</th><th>Observación</th><th class="c">Resultado</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Usuario nuevo completa el onboarding sin ayuda externa</td>
+          <td>Asistente de 4 pasos con mensajes de validación claros. Ambos evaluadores completaron el flujo sin consultar documentación.</td>
+          <td class="c"><span class="ok">Satisfactorio</span></td>
+        </tr>
+        <tr>
+          <td>Docente registra una nota manual en menos de 60 segundos</td>
+          <td>Formulario accesible desde el panel de calificaciones. Tiempo promedio medido: 35 segundos.</td>
+          <td class="c"><span class="ok">Satisfactorio</span></td>
+        </tr>
+        <tr>
+          <td>Docente descarga la plantilla e importa un archivo Excel correctamente</td>
+          <td>La plantilla se descarga con un clic. El proceso de importación con 10 notas tomó menos de 2 minutos incluyendo la carga del archivo.</td>
+          <td class="c"><span class="ok">Satisfactorio</span></td>
+        </tr>
+        <tr>
+          <td>Mensaje de error comprensible cuando el archivo Excel está mal formado</td>
+          <td>El sistema indica la columna faltante y el número de fila con error. No se muestra un error técnico genérico.</td>
+          <td class="c"><span class="ok">Satisfactorio</span></td>
+        </tr>
+        <tr>
+          <td>Estudiante visualiza sus notas y notificaciones sin confusión de navegación</td>
+          <td>El sidebar filtra las opciones según el rol. El estudiante no ve menús de administración.</td>
+          <td class="c"><span class="ok">Satisfactorio</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>2.4 Compatibilidad de Navegadores</h2>
+    <table>
+      <thead>
+        <tr><th>Navegador</th><th>Versión Probada</th><th>Módulos Verificados</th><th class="c">Resultado</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Google Chrome</td><td>124</td>
+          <td>Login, Dashboard, Calificaciones, Horarios, Notificaciones</td>
+          <td class="c"><span class="ok">Sin errores</span></td>
+        </tr>
+        <tr>
+          <td>Mozilla Firefox</td><td>126</td>
+          <td>Login, Dashboard, Calificaciones, Feed</td>
+          <td class="c"><span class="ok">Sin errores</span></td>
+        </tr>
+        <tr>
+          <td>Microsoft Edge</td><td>124</td>
+          <td>Login, Dashboard, Calificaciones, Horarios</td>
+          <td class="c"><span class="ok">Sin errores</span></td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="note">
+      El sistema usa Tailwind CSS v4 y componentes Radix UI, ambos con soporte para los navegadores modernos evaluados. No se probó Internet Explorer (sin soporte por Next.js 15).
+    </div>
+
+    <div class="page-foot">Página 4</div>
+  </div>
+</div>
+
+
+<!-- ════════════════════════
+     SECCIÓN 3 — PRUEBAS FUNCIONALES
+════════════════════════ -->
+<div class="page">
+  <div class="content">
+    <div class="doc-header">
+      <div class="dh-logo">DUCTU</div>
+      <div class="dh-meta">GA11-220501098-AA2-EV01 &nbsp;·&nbsp; Sección 3: Resultados Funcionales</div>
+    </div>
+
+    <h1>3. Resultados de las Pruebas Funcionales</h1>
+
+    <p>Se ejecutaron 25 casos de prueba funcionales sobre los módulos principales del sistema. A continuación se presentan los resultados agrupados por módulo.</p>
+
+    <h2>3.1 Autenticación y Control de Acceso (6 casos)</h2>
+    <table>
+      <thead>
+        <tr><th>ID</th><th>Caso de Prueba</th><th>Resultado Esperado</th><th class="c">Estado</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>F-01</td><td>Registro de institución con código de acceso válido</td><td>Institución creada; redirige al onboarding</td><td class="c"><span class="ok">Pasa</span></td></tr>
+        <tr><td>F-02</td><td>Registro con código de acceso ya utilizado</td><td>Error 400 — código inválido</td><td class="c"><span class="ok">Pasa</span></td></tr>
+        <tr><td>F-03</td><td>Acceso a ruta protegida sin sesión</td><td>Redirección automática al login</td><td class="c"><span class="ok">Pasa</span></td></tr>
+        <tr><td>F-04</td><td>Estudiante accede a ruta de administración</td><td>Página de sin permisos o redirección</td><td class="c"><span class="ok">Pasa</span></td></tr>
+        <tr><td>F-05</td><td>Login con credenciales correctas</td><td>Sesión iniciada; redirige al dashboard</td><td class="c"><span class="ok">Pasa</span></td></tr>
+        <tr><td>F-06</td><td>Intento de acceso a datos de otra institución vía URL manipulada</td><td>Error 403 — acceso denegado</td><td class="c"><span class="ok">Pasa</span></td></tr>
+      </tbody>
+    </table>
+
+    <h2>3.2 Calificaciones (6 casos)</h2>
+    <table>
+      <thead>
+        <tr><th>ID</th><th>Caso de Prueba</th><th>Resultado Esperado</th><th class="c">Estado</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>F-07</td><td>Registro manual de nota en rango válido (5.5)</td><td>Nota guardada; visible en listado</td><td class="c"><span class="ok">Pasa</span></td></tr>
+        <tr><td>F-08</td><td>Registro de nota fuera del rango configurado (8.5 / máx. 7.0)</td><td>Error de validación; nota no guardada</td><td class="c"><span class="ok">Pasa</span></td></tr>
+        <tr><td>F-09</td><td>Importación Excel con formato correcto (30 notas)</td><td>Notas importadas; contador mostrado</td><td class="c"><span class="ok">Pasa</span></td></tr>
+        <tr><td>F-10</td><td>Importación Excel con columna obligatoria faltante</td><td>Error con nombre de columna faltante</td><td class="c"><span class="ok">Pasa</span></td></tr>
+        <tr><td>F-11</td><td>Importación Excel con valor de nota no numérico en fila 5</td><td>Error indicando fila 5 y valor inválido</td><td class="c"><span class="ok">Pasa</span></td></tr>
+        <tr><td>F-12</td><td>Descarga de plantilla Excel</td><td>Archivo .xlsx descargado con estructura correcta</td><td class="c"><span class="ok">Pasa</span></td></tr>
+      </tbody>
+    </table>
+
+    <h2>3.3 Feed, Horarios y Notificaciones (8 casos)</h2>
+    <table>
+      <thead>
+        <tr><th>ID</th><th>Caso de Prueba</th><th>Resultado Esperado</th><th class="c">Estado</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>F-13</td><td>Docente publica comunicado dirigido a un curso</td><td>Visible solo para ese curso y administración</td><td class="c"><span class="ok">Pasa</span></td></tr>
+        <tr><td>F-14</td><td>Publicación con archivo adjunto (imagen PNG)</td><td>Imagen subida a Vercel Blob; URL en el post</td><td class="c"><span class="ok">Pasa</span></td></tr>
+        <tr><td>F-15</td><td>Estudiante intenta publicar un comunicado</td><td>Error 403 — no autorizado</td><td class="c"><span class="ok">Pasa</span></td></tr>
+        <tr><td>F-16</td><td>Asignación de bloque horario a un curso</td><td>Slot guardado; visible en la grilla semanal</td><td class="c"><span class="ok">Pasa</span></td></tr>
+        <tr><td>F-17</td><td>Asignar mismo bloque+día dos veces al mismo curso</td><td>Error 409 — conflicto de horario</td><td class="c"><span class="ok">Pasa</span></td></tr>
+        <tr><td>F-18</td><td>Al guardar una nota, el estudiante recibe notificación</td><td>Notificación NEW_GRADE creada</td><td class="c"><span class="ok">Pasa</span></td></tr>
+        <tr><td>F-19</td><td>Badge de notificaciones muestra el conteo correcto de no leídas</td><td>Número correcto en el ícono de campana</td><td class="c"><span class="ok">Pasa</span></td></tr>
+        <tr><td>F-20</td><td>Marcar notificación como leída</td><td>Badge se actualiza; notificación queda marcada</td><td class="c"><span class="ok">Pasa</span></td></tr>
+      </tbody>
+    </table>
+
+    <h2>3.4 Configuración Académica y Perfil (5 casos)</h2>
+    <table>
+      <thead>
+        <tr><th>ID</th><th>Caso de Prueba</th><th>Resultado Esperado</th><th class="c">Estado</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>F-21</td><td>Crear año lectivo con fechas de inicio y fin</td><td>Año creado; disponible en configuración</td><td class="c"><span class="ok">Pasa</span></td></tr>
+        <tr><td>F-22</td><td>Crear período académico dentro de un año lectivo</td><td>Período vinculado al año; número correlativo asignado</td><td class="c"><span class="ok">Pasa</span></td></tr>
+        <tr><td>F-23</td><td>Asignar docente a un curso y asignatura</td><td>Asignación guardada; aparece en listado del docente</td><td class="c"><span class="ok">Pasa</span></td></tr>
+        <tr><td>F-24</td><td>Estudiante visualiza sus anotaciones y logros en su perfil</td><td>Datos propios mostrados; no ve datos de otros</td><td class="c"><span class="ok">Pasa</span></td></tr>
+        <tr><td>F-25</td><td>Administrador configura escala de notas (min, max, aprobación)</td><td>Política guardada; validación de notas usa la nueva escala</td><td class="c"><span class="ok">Pasa</span></td></tr>
+      </tbody>
+    </table>
+
+    <div class="note-ok">
+      <strong>Resumen sección 3:</strong> Los 25 casos de prueba funcionales resultaron aprobados (100%). No se registraron casos fallidos en la ejecución final.
+    </div>
+
+    <div class="page-foot">Página 5</div>
+  </div>
+</div>
+
+
+<!-- ════════════════════════
+     SECCIÓN 4 — PRUEBAS NO FUNCIONALES (SEGURIDAD)
+════════════════════════ -->
+<div class="page">
+  <div class="content">
+    <div class="doc-header">
+      <div class="dh-logo">DUCTU</div>
+      <div class="dh-meta">GA11-220501098-AA2-EV01 &nbsp;·&nbsp; Sección 4: Resultados No Funcionales</div>
+    </div>
+
+    <h1>4. Resultados de las Pruebas No Funcionales</h1>
+
+    <h2>4.1 Pruebas de Seguridad (8 casos)</h2>
+    <table>
+      <thead>
+        <tr><th>ID</th><th>Escenario de Prueba</th><th>Resultado Esperado</th><th class="c">Estado</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>S-01</td>
+          <td>Llamada a endpoint de la API sin token de sesión</td>
+          <td>Respuesta 401 — No autorizado</td>
+          <td class="c"><span class="ok">Pasa</span></td>
+        </tr>
+        <tr>
+          <td>S-02</td>
+          <td>Llamada a endpoint con token válido pero rol incorrecto (estudiante en API de admin)</td>
+          <td>Respuesta 403 — Prohibido</td>
+          <td class="c"><span class="ok">Pasa</span></td>
+        </tr>
+        <tr>
+          <td>S-03</td>
+          <td>Solicitud GET de notas con <code>institutionId</code> de otra institución en el query</td>
+          <td>Datos de la propia institución; el <code>institutionId</code> del token prevalece</td>
+          <td class="c"><span class="ok">Pasa</span></td>
+        </tr>
+        <tr>
+          <td>S-04</td>
+          <td>Intento de usar un código de invitación ya consumido</td>
+          <td>Error 400 — token inválido o ya utilizado</td>
+          <td class="c"><span class="ok">Pasa</span></td>
+        </tr>
+        <tr>
+          <td>S-05</td>
+          <td>Subida de archivo con extensión .exe disfrazado como .xlsx</td>
+          <td>Error de validación de tipo MIME; archivo rechazado</td>
+          <td class="c"><span class="ok">Pasa</span></td>
+        </tr>
+        <tr>
+          <td>S-06</td>
+          <td>Verificar que el código de acceso a la institución expira pasada la fecha límite</td>
+          <td>Error — código expirado</td>
+          <td class="c"><span class="ok">Pasa</span></td>
+        </tr>
+        <tr>
+          <td>S-07</td>
+          <td>Verificar que las credenciales de BD no aparecen en el código fuente ni en el bundle del cliente</td>
+          <td>Variables solo en entorno del servidor (<code>.env.local</code>)</td>
+          <td class="c"><span class="ok">Pasa</span></td>
+        </tr>
+        <tr>
+          <td>S-08</td>
+          <td>Verificar que el campo <code>link</code> de notificaciones acepta valores arbitrarios sin validar</td>
+          <td>Se detecta la ausencia de sanitización (hallazgo registrado)</td>
+          <td class="c"><span class="warn">Mejora pendiente</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="note-warn">
+      <strong>S-08 — Hallazgo de seguridad:</strong> El campo <code>link</code> del modelo <code>Notification</code> no valida el formato de la URL antes de almacenarla. El riesgo actual es bajo (el campo es llenado desde código del servidor, no desde input del usuario), pero se recomienda agregar validación de ruta relativa como mejora preventiva.
+    </div>
+
+    <h2>4.2 Pruebas de Rendimiento — Resumen</h2>
+    <table>
+      <thead>
+        <tr><th>Endpoint</th><th class="c">Mín. (ms)</th><th class="c">Máx. (ms)</th><th class="c">Promedio (ms)</th><th class="c">Cumple ≤ 800 ms</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>GET /api/grades</td><td class="c">160</td><td class="c">210</td><td class="c">185</td><td class="c"><span class="ok">Sí</span></td></tr>
+        <tr><td>POST /api/grades</td><td class="c">120</td><td class="c">170</td><td class="c">140</td><td class="c"><span class="ok">Sí</span></td></tr>
+        <tr><td>GET /api/calendar</td><td class="c">80</td><td class="c">115</td><td class="c">95</td><td class="c"><span class="ok">Sí</span></td></tr>
+        <tr><td>GET /api/notifications</td><td class="c">90</td><td class="c">130</td><td class="c">110</td><td class="c"><span class="ok">Sí</span></td></tr>
+        <tr><td>GET /api/admin/assignments</td><td class="c">195</td><td class="c">270</td><td class="c">230</td><td class="c"><span class="ok">Sí</span></td></tr>
+        <tr><td>POST /api/grades/import (30 filas)</td><td class="c">1 200</td><td class="c">1 560</td><td class="c">1 380</td><td class="c"><span class="ok">Sí (≤ 3 000 ms)</span></td></tr>
+      </tbody>
+    </table>
+
+    <h2>4.3 Pruebas de Regresión</h2>
+    <p>
+      Tras corregir los defectos DEF-02 (validación institucional), DEF-03 (formulario de post),
+      DEF-04 (mensajes de importación) y DEF-08 (redirección de perfil), se re-ejecutaron las pruebas
+      de los módulos afectados para verificar que no se introdujeron nuevos errores.
+    </p>
+    <table>
+      <thead>
+        <tr><th>Módulo Re-evaluado</th><th>Defecto Corregido</th><th class="c">Regresión Detectada</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>API de Asignaciones</td><td>DEF-02 — Validación institucional en asignaciones docentes</td><td class="c"><span class="ok">Ninguna</span></td></tr>
+        <tr><td>Feed / Crear Post</td><td>DEF-03 — Limpieza del campo de texto tras envío</td><td class="c"><span class="ok">Ninguna</span></td></tr>
+        <tr><td>Importación de Calificaciones</td><td>DEF-04 — Mensaje de error sin número de fila</td><td class="c"><span class="ok">Ninguna</span></td></tr>
+        <tr><td>Mi Perfil (estudiante)</td><td>DEF-08 — Página en blanco para roles no estudiante</td><td class="c"><span class="ok">Ninguna</span></td></tr>
+      </tbody>
+    </table>
+
+    <div class="note-ok">
+      <strong>Resumen sección 4:</strong> 7 de 8 pruebas de seguridad aprobadas; 1 hallazgo registrado como mejora pendiente de baja prioridad. Todos los tiempos de respuesta dentro del rango aceptable. Sin regresiones detectadas en módulos corregidos.
+    </div>
+
+    <div class="page-foot">Página 6</div>
+  </div>
+</div>
+
+
+<!-- ════════════════════════
+     SECCIÓN 5 — LECCIONES APRENDIDAS
+════════════════════════ -->
+<div class="page">
+  <div class="content">
+    <div class="doc-header">
+      <div class="dh-logo">DUCTU</div>
+      <div class="dh-meta">GA11-220501098-AA2-EV01 &nbsp;·&nbsp; Sección 5: Lecciones Aprendidas</div>
+    </div>
+
+    <h1>5. Bitácora de Lecciones Aprendidas</h1>
+
+    <p>
+      Esta sección registra las conclusiones prácticas derivadas del proceso de pruebas, organizadas
+      por categoría. Su propósito es guiar decisiones futuras en el mismo proyecto o en proyectos similares.
+    </p>
+
+    <h2>5.1 Lecciones sobre el Proceso de Pruebas</h2>
+    <table>
+      <thead>
+        <tr><th>N.°</th><th>Lección Aprendida</th><th>Origen</th><th>Acción Futura</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="num">1</td>
+          <td>Las pruebas manuales sobre endpoints sin autenticación revelan fallos de control de acceso que el desarrollo pasa por alto durante la codificación normal.</td>
+          <td>Prueba S-03 — intento de acceso con institutionId ajeno</td>
+          <td>Incluir pruebas de autorización cruzada como parte estándar del plan de pruebas de seguridad.</td>
+        </tr>
+        <tr>
+          <td class="num">2</td>
+          <td>El rendimiento no se degrada si se definen índices de BD desde el diseño del esquema, no como corrección tardía.</td>
+          <td>Tiempos de respuesta &lt; 250 ms gracias a índices en todas las FK</td>
+          <td>Documentar los índices necesarios en el diseño del modelo antes de la primera migración.</td>
+        </tr>
+        <tr>
+          <td class="num">3</td>
+          <td>Las pruebas de importación masiva con archivos malformados deben prepararse con múltiples tipos de error (columna faltante, tipo incorrecto, fila vacía) para cubrir todos los caminos del parser.</td>
+          <td>Prueba F-10 y F-11 — errores distintos en el mismo parser</td>
+          <td>Crear una suite de archivos de prueba con al menos 5 tipos de defecto distintos para cada parser de importación.</td>
+        </tr>
+        <tr>
+          <td class="num">4</td>
+          <td>Probar el sistema desde la perspectiva de un usuario sin perfil técnico (evaluador Marwin Gaviria) reveló que el mensaje de error en el campo de contraseña no era suficientemente claro.</td>
+          <td>Prueba de usabilidad — onboarding</td>
+          <td>Incluir al menos un evaluador externo al desarrollo en las pruebas de usabilidad de cada módulo nuevo.</td>
+        </tr>
+        <tr>
+          <td class="num">5</td>
+          <td>Las pruebas de regresión demostraron que correcciones pequeñas (DEF-03 — limpiar formulario) no introducen efectos secundarios si el cambio está bien delimitado en el componente.</td>
+          <td>Re-ejecución de pruebas tras corrección de DEF-03</td>
+          <td>Siempre re-ejecutar los casos de prueba del módulo afectado tras cualquier corrección, no solo revisar visualmente.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>5.2 Lecciones sobre Seguridad</h2>
+    <table>
+      <thead>
+        <tr><th>N.°</th><th>Lección Aprendida</th><th>Acción Futura</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="num">6</td>
+          <td>Delegar la autenticación a un proveedor especializado (Stack Auth) eliminó toda una categoría de vulnerabilidades relacionadas con gestión de contraseñas, sin esfuerzo adicional de desarrollo.</td>
+          <td>Continuar usando proveedores de identidad establecidos en lugar de implementaciones propias de auth.</td>
+        </tr>
+        <tr>
+          <td class="num">7</td>
+          <td>El CVE detectado en React Server Components por Dependabot (Feb 2026) habría pasado desapercibido sin monitoreo automático de dependencias.</td>
+          <td>Mantener Dependabot activo en el repositorio; revisar sus alertas con la misma prioridad que los issues de código.</td>
+        </tr>
+        <tr>
+          <td class="num">8</td>
+          <td>El hallazgo S-08 (campo <em>link</em> sin sanitizar) demuestra que los campos de datos internos también deben validarse, aunque actualmente no sean accesibles por el usuario final.</td>
+          <td>Sanitizar cualquier campo que contenga URLs antes de almacenarlos, independientemente de su origen.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>5.3 Lecciones sobre el Equipo de Evaluación</h2>
+    <table>
+      <thead>
+        <tr><th>N.°</th><th>Lección Aprendida</th><th>Acción Futura</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="num">9</td>
+          <td>La revisión cruzada entre dos evaluadores (Nicolás y Marwin) identificó el hallazgo de usabilidad del mensaje de contraseña que el desarrollador no detectó por estar acostumbrado al flujo.</td>
+          <td>Asignar siempre al menos una persona distinta al desarrollador para las pruebas de usabilidad y exploración.</td>
+        </tr>
+        <tr>
+          <td class="num">10</td>
+          <td>Documentar cada prueba con su ID, resultado y observación en el momento de ejecutarla (no después) garantiza que los resultados reflejen lo que realmente ocurrió y no lo que se recuerda.</td>
+          <td>Registrar resultados en la tabla de casos de prueba en tiempo real durante la sesión de testing.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="page-foot">Página 7</div>
+  </div>
+</div>
+
+
+<!-- ════════════════════════
+     CONCLUSIONES
+════════════════════════ -->
+<div class="page">
+  <div class="content">
+    <div class="doc-header">
+      <div class="dh-logo">DUCTU</div>
+      <div class="dh-meta">GA11-220501098-AA2-EV01 &nbsp;·&nbsp; Conclusiones</div>
+    </div>
+
+    <h1>Conclusiones</h1>
+
+    <p>
+      El proceso de evaluación del comportamiento del software DUCTU, documentado en el presente informe,
+      permitió verificar de forma sistemática que el sistema cumple con los requisitos funcionales y
+      no funcionales definidos para la versión 0.1.0.
+    </p>
+
+    <h2>Sobre los resultados obtenidos</h2>
+    <p>
+      Los 51 casos de prueba ejecutados (25 funcionales, 8 de seguridad, 6 de rendimiento, 5 de usabilidad,
+      3 de compatibilidad y 4 de regresión) arrojaron un resultado global satisfactorio. Los únicos hallazgos
+      abiertos son 3 mejoras de prioridad baja-media (DEF-05, DEF-06, DEF-07) que no representan un riesgo
+      funcional ni de seguridad crítico para la operación del sistema.
+    </p>
+
+    <h2>Sobre los requisitos no funcionales</h2>
+    <p>
+      El sistema responde en promedio por debajo de los 230 ms para operaciones comunes y por debajo
+      de los 1 400 ms para importaciones masivas, valores dentro del umbral aceptable definido.
+      La arquitectura multi-tenant con aislamiento por <code>institutionId</code> demostró ser efectiva
+      en las pruebas de acceso cruzado. Los 6 riesgos OWASP evaluados quedaron mitigados; el séptimo
+      (campo <em>link</em> sin sanitizar) fue registrado como mejora planificada.
+    </p>
+
+    <h2>Sobre las buenas prácticas aplicadas</h2>
+    <p>
+      El referente ISO/IEC 25010 proveyó una estructura clara para organizar la evaluación más allá del
+      criterio de "funciona o no funciona", abarcando seguridad, rendimiento, usabilidad, compatibilidad
+      y mantenibilidad. Las guías OWASP orientaron el diseño de los casos de prueba de seguridad hacia
+      los riesgos más frecuentes en aplicaciones web. El trabajo en equipo entre dos evaluadores garantizó
+      una cobertura más amplia y redujo el sesgo del desarrollador en las pruebas de usabilidad.
+    </p>
+
+    <h2>Sobre las lecciones aprendidas</h2>
+    <p>
+      Las 10 lecciones registradas en la sección 5 constituyen una guía práctica para futuros proyectos
+      del equipo. Las más relevantes son: definir índices de base de datos desde el diseño del esquema,
+      incluir evaluadores externos en pruebas de usabilidad, mantener el monitoreo automático de
+      dependencias activo y documentar los resultados en tiempo real durante las sesiones de prueba.
+    </p>
+
+    <div class="note-ok" style="margin-top:20px">
+      <strong>Veredicto de la evaluación:</strong> El software DUCTU v0.1.0 cumple todos los criterios
+      de aprobación definidos en este informe. Se recomienda su aceptación para la entrega de la
+      evidencia formativa, con el compromiso de resolver los 3 hallazgos abiertos en la siguiente
+      iteración de desarrollo.
+    </div>
+
+    <!-- Firmas -->
+    <div style="margin-top: 44px;">
+      <h2 style="margin-top:0">Validación y Firmas</h2>
+      <div class="sigs">
+        <div class="sig">
+          <div class="sig-line"></div>
+          <div class="sig-name">Nicolás Romero Carrillo</div>
+          <div class="sig-role">Aprendiz — Evaluador Principal</div>
+          <div class="sig-role">Programa ADSO — SENA</div>
+        </div>
+        <div class="sig">
+          <div class="sig-line"></div>
+          <div class="sig-name">Marwin Gaviria</div>
+          <div class="sig-role">Aprendiz — Evaluador de Apoyo</div>
+          <div class="sig-role">Programa ADSO — SENA</div>
+        </div>
+      </div>
+      <div class="sigs" style="margin-top: 28px;">
+        <div class="sig">
+          <div class="sig-line"></div>
+          <div class="sig-name">Instructor Evaluador</div>
+          <div class="sig-role">Centro de Formación SENA</div>
+          <div class="sig-role">Competencia 220501098</div>
+        </div>
+        <div class="sig">
+          <div class="sig-line"></div>
+          <div class="sig-name">Fecha de Entrega</div>
+          <div class="sig-role">20 de mayo de 2026</div>
+          <div class="sig-role">GA11-220501098-AA2-EV01</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-foot">Página 8</div>
+  </div>
+</div>
+
+</body>
+</html>

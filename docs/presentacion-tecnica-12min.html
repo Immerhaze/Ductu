@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DUCTU — Guía de Presentación Técnica (12 min)</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #0f1117;
+      color: #e2e8f0;
+      line-height: 1.7;
+    }
+    .header {
+      background: linear-gradient(135deg, #1e3a5f 0%, #0f2744 100%);
+      padding: 48px 40px;
+      text-align: center;
+      border-bottom: 2px solid #2563eb;
+    }
+    .header h1 { font-size: 2.4rem; color: #60a5fa; letter-spacing: 2px; }
+    .header p { color: #94a3b8; margin-top: 8px; font-size: 1.05rem; }
+    .meta {
+      display: flex; justify-content: center; gap: 32px;
+      margin-top: 20px; font-size: 0.9rem; color: #64748b;
+    }
+    .meta span { background: #1e293b; padding: 4px 14px; border-radius: 20px; }
+
+    .container { max-width: 900px; margin: 0 auto; padding: 40px 20px; }
+
+    /* Timeline nav */
+    .timeline {
+      display: flex; overflow-x: auto; gap: 0;
+      background: #1e293b; border-radius: 12px;
+      margin-bottom: 40px; padding: 6px;
+    }
+    .tl-item {
+      flex: 1; min-width: 90px; text-align: center;
+      padding: 8px 4px; border-radius: 8px; cursor: pointer;
+      font-size: 0.72rem; color: #64748b;
+      transition: all 0.2s;
+    }
+    .tl-item span { display: block; font-size: 1.1rem; font-weight: 700; color: #2563eb; }
+    .tl-item:hover { background: #0f2744; color: #93c5fd; }
+
+    /* Sections */
+    .section {
+      background: #1a2236;
+      border: 1px solid #1e3a5f;
+      border-radius: 16px;
+      padding: 32px;
+      margin-bottom: 28px;
+      position: relative;
+      overflow: hidden;
+    }
+    .section::before {
+      content: '';
+      position: absolute; top: 0; left: 0;
+      width: 4px; height: 100%;
+      background: var(--accent, #2563eb);
+    }
+    .section-header {
+      display: flex; align-items: center; gap: 16px;
+      margin-bottom: 20px;
+    }
+    .badge {
+      background: #0f2744; color: #60a5fa;
+      border: 1px solid #2563eb;
+      padding: 4px 14px; border-radius: 20px;
+      font-size: 0.78rem; font-weight: 600;
+      white-space: nowrap;
+    }
+    .section h2 { font-size: 1.4rem; color: #93c5fd; }
+    .section h3 { font-size: 1.05rem; color: #7dd3fc; margin: 20px 0 8px; }
+
+    /* Script box */
+    .script {
+      background: #0d1b2e;
+      border-left: 3px solid #f59e0b;
+      padding: 16px 20px;
+      border-radius: 0 8px 8px 0;
+      margin: 16px 0;
+      font-style: italic;
+      color: #fde68a;
+      font-size: 0.95rem;
+    }
+    .script strong { color: #fbbf24; font-style: normal; font-size: 0.75rem;
+      display: block; margin-bottom: 6px; letter-spacing: 1px; }
+
+    /* Slide visual */
+    .slide-box {
+      background: #0f172a;
+      border: 1px dashed #334155;
+      border-radius: 10px;
+      padding: 16px 20px;
+      margin: 14px 0;
+      font-size: 0.88rem; color: #94a3b8;
+    }
+    .slide-box strong { color: #60a5fa; display: block; margin-bottom: 6px;
+      font-size: 0.75rem; letter-spacing: 1px; text-transform: uppercase; }
+
+    /* Tips */
+    .tip {
+      background: #052e16;
+      border: 1px solid #16a34a;
+      border-radius: 8px; padding: 12px 16px;
+      font-size: 0.85rem; color: #86efac;
+      margin-top: 14px;
+    }
+    .tip::before { content: "💡 Tip: "; font-weight: 700; }
+
+    /* Tech chips */
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+    .chip {
+      background: #0f2744; border: 1px solid #1e40af;
+      color: #93c5fd; padding: 4px 12px; border-radius: 20px;
+      font-size: 0.82rem;
+    }
+    .chip.green { background: #052e16; border-color: #15803d; color: #86efac; }
+    .chip.purple { background: #1e1b4b; border-color: #6d28d9; color: #c4b5fd; }
+    .chip.orange { background: #1c1007; border-color: #b45309; color: #fcd34d; }
+
+    /* Flow diagram */
+    .flow {
+      display: flex; align-items: center; gap: 8px;
+      flex-wrap: wrap; margin: 14px 0;
+    }
+    .flow-box {
+      background: #0f2744; border: 1px solid #2563eb;
+      color: #93c5fd; padding: 8px 14px; border-radius: 8px;
+      font-size: 0.85rem; text-align: center;
+    }
+    .flow-arrow { color: #475569; font-size: 1.2rem; }
+
+    /* Timing bar */
+    .timing-bar {
+      background: #0f172a; border-radius: 100px;
+      overflow: hidden; height: 8px; margin: 10px 0;
+    }
+    .timing-fill {
+      height: 100%; border-radius: 100px;
+      background: linear-gradient(90deg, #2563eb, #7c3aed);
+    }
+
+    /* Module grid */
+    .module-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 12px; margin: 14px 0;
+    }
+    .module-card {
+      background: #0f172a; border: 1px solid #1e3a5f;
+      border-radius: 8px; padding: 14px;
+    }
+    .module-card h4 { color: #60a5fa; font-size: 0.9rem; margin-bottom: 6px; }
+    .module-card p { color: #64748b; font-size: 0.8rem; line-height: 1.5; }
+
+    /* Summary table */
+    table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    td, th { padding: 10px 14px; border-bottom: 1px solid #1e3a5f; font-size: 0.88rem; }
+    th { color: #60a5fa; text-align: left; background: #0f172a; }
+    td { color: #cbd5e1; }
+    td:first-child { color: #7dd3fc; font-weight: 600; }
+
+    /* Accent colors per section */
+    .s1 { --accent: #2563eb; }
+    .s2 { --accent: #7c3aed; }
+    .s3 { --accent: #0891b2; }
+    .s4 { --accent: #16a34a; }
+    .s5 { --accent: #f59e0b; }
+    .s6 { --accent: #dc2626; }
+    .s7 { --accent: #0891b2; }
+    .s8 { --accent: #2563eb; }
+
+    .total-time {
+      background: linear-gradient(135deg, #1e3a5f, #1e1b4b);
+      border: 1px solid #4338ca;
+      border-radius: 12px; padding: 20px 28px;
+      text-align: center; margin-bottom: 28px;
+    }
+    .total-time h3 { color: #a5b4fc; margin-bottom: 12px; }
+    .total-time .row { display: flex; justify-content: space-between; margin: 4px 0; font-size: 0.85rem; }
+    .total-time .row span { color: #64748b; }
+    .total-time .row strong { color: #c7d2fe; }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <h1>DUCTU</h1>
+  <p>Guía de Presentación Técnica — Perspectiva del Programador</p>
+  <div class="meta">
+    <span>Duración total: 12 minutos</span>
+    <span>Nivel: Todos los públicos</span>
+    <span>Presentador: Nicolás Romero Carrillo</span>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- Timeline visual -->
+  <div class="timeline">
+    <div class="tl-item"><span>1:00</span>Apertura</div>
+    <div class="tl-item"><span>1:30</span>Problema</div>
+    <div class="tl-item"><span>1:30</span>Tecnología</div>
+    <div class="tl-item"><span>1:30</span>Arquitectura</div>
+    <div class="tl-item"><span>2:30</span>Módulos</div>
+    <div class="tl-item"><span>1:00</span>Base datos</div>
+    <div class="tl-item"><span>1:30</span>Desafíos</div>
+    <div class="tl-item"><span>1:30</span>Cierre</div>
+  </div>
+
+  <!-- Distribución del tiempo -->
+  <div class="total-time">
+    <h3>Distribución del tiempo</h3>
+    <div class="row"><span>Segmento 1 — Apertura y contexto</span><strong>0:00 – 2:30</strong></div>
+    <div class="row"><span>Segmento 2 — Cómo está construido</span><strong>2:30 – 6:30</strong></div>
+    <div class="row"><span>Segmento 3 — Qué hace el sistema</span><strong>6:30 – 9:30</strong></div>
+    <div class="row"><span>Segmento 4 — Retos y aprendizajes</span><strong>9:30 – 12:00</strong></div>
+  </div>
+
+
+  <!-- ===== SECCIÓN 1: APERTURA ===== -->
+  <div class="section s1">
+    <div class="section-header">
+      <div class="badge">0:00 – 1:00 · 1 min</div>
+      <h2>1. Apertura — ¿Qué es DUCTU?</h2>
+    </div>
+    <div class="timing-bar"><div class="timing-fill" style="width:8%"></div></div>
+
+    <div class="slide-box">
+      <strong>Diapositiva sugerida</strong>
+      Logo de DUCTU centrado + subtítulo: "Plataforma de gestión académica"<br>
+      Una sola frase debajo: "Del cuaderno al sistema."
+    </div>
+
+    <div class="script">
+      <strong>LO QUE DICES</strong>
+      "Buenas. Soy Nicolás, soy el programador detrás de este proyecto. Lo que les voy a mostrar hoy es una plataforma que construí desde cero, que se llama DUCTU. ¿Qué hace? Le da a un colegio toda la herramienta digital que necesita para funcionar: administrar estudiantes, profesores, notas, horarios, comunicaciones. Todo en un solo lugar, desde el navegador. Sin instalar nada."
+    </div>
+
+    <div class="tip">Habla despacio, mira a la audiencia. Esta es la única vez que dices el nombre del proyecto — que quede claro qué es.</div>
+  </div>
+
+
+  <!-- ===== SECCIÓN 2: EL PROBLEMA ===== -->
+  <div class="section s2">
+    <div class="section-header">
+      <div class="badge">1:00 – 2:30 · 1:30 min</div>
+      <h2>2. El problema que resuelve</h2>
+    </div>
+    <div class="timing-bar"><div class="timing-fill" style="width:12%"></div></div>
+
+    <div class="slide-box">
+      <strong>Diapositiva sugerida</strong>
+      Tres íconos: 📋 Planilla Excel → 📧 Correo suelto → 📱 WhatsApp del profe<br>
+      Flecha hacia abajo: "El colegio trabaja así hoy"
+    </div>
+
+    <div class="script">
+      <strong>LO QUE DICES</strong>
+      "Antes de hablar de código quiero que todos entiendan el problema real. Muchos colegios hoy en día llevan las notas en Excel, mandan comunicados por correo, coordinan horarios por WhatsApp. Cada pieza de información vive en un lugar distinto. Eso genera errores, demoras y mucha frustración para profesores, estudiantes y administradores. DUCTU nace para reemplazar ese caos con una sola aplicación centralizada, ordenada, y que cada persona —dependiendo de su rol— solo ve lo que le corresponde."
+    </div>
+
+    <div class="tip">Si el público incluye personas del mundo educativo, pregunta: "¿Cuántos de ustedes han visto un colegio trabajar así?" — genera conexión inmediata.</div>
+  </div>
+
+
+  <!-- ===== SECCIÓN 3: TECNOLOGÍA ===== -->
+  <div class="section s3">
+    <div class="section-header">
+      <div class="badge">2:30 – 4:00 · 1:30 min</div>
+      <h2>3. Las herramientas que usé — y por qué</h2>
+    </div>
+    <div class="timing-bar"><div class="timing-fill" style="width:33%"></div></div>
+
+    <div class="slide-box">
+      <strong>Diapositiva sugerida</strong>
+      Tabla simple de dos columnas: "Herramienta" | "Para qué sirve" (sin logos, texto limpio)
+    </div>
+
+    <div class="script">
+      <strong>LO QUE DICES</strong>
+      "Ahora sí, lo técnico. Pero lo voy a explicar como si fuera la primera vez que escuchan estas palabras, porque a veces los nombres suenan complicados pero las ideas son simples."
+    </div>
+
+    <table>
+      <tr>
+        <th>Herramienta</th>
+        <th>Analogía simple para explicarla en voz alta</th>
+      </tr>
+      <tr>
+        <td>Next.js + React</td>
+        <td>"Es el motor que construye las pantallas que ven los usuarios. Piénsenlo como el arquitecto que diseña cada habitación de una casa."</td>
+      </tr>
+      <tr>
+        <td>PostgreSQL (Neon)</td>
+        <td>"La base de datos. Es el archivero gigante donde vive toda la información: notas, usuarios, horarios. Vive en la nube, no en ningún computador físico."</td>
+      </tr>
+      <tr>
+        <td>Prisma ORM</td>
+        <td>"Es el intérprete entre mi código y la base de datos. En vez de hablarle al archivero en un idioma raro, Prisma traduce automáticamente."</td>
+      </tr>
+      <tr>
+        <td>Tailwind CSS</td>
+        <td>"El diseñador visual. Me permite darle estilo a cada elemento sin escribir hojas de estilos desde cero."</td>
+      </tr>
+      <tr>
+        <td>Stack Auth</td>
+        <td>"El portero del edificio. Se encarga de que solo entren las personas correctas con su usuario y contraseña."</td>
+      </tr>
+    </table>
+
+    <div class="chips">
+      <span class="chip">Next.js 15</span>
+      <span class="chip">React 19</span>
+      <span class="chip green">PostgreSQL</span>
+      <span class="chip green">Prisma ORM</span>
+      <span class="chip purple">Stack Auth</span>
+      <span class="chip orange">Tailwind CSS</span>
+      <span class="chip orange">Neon (cloud)</span>
+    </div>
+
+    <div class="tip">No leas la tabla. Di cada herramienta en voz alta y da solo la analogía. Máximo 15 segundos por fila.</div>
+  </div>
+
+
+  <!-- ===== SECCIÓN 4: ARQUITECTURA ===== -->
+  <div class="section s4">
+    <div class="section-header">
+      <div class="badge">4:00 – 5:30 · 1:30 min</div>
+      <h2>4. Cómo está organizado el código — la arquitectura</h2>
+    </div>
+    <div class="timing-bar"><div class="timing-fill" style="width:46%"></div></div>
+
+    <div class="slide-box">
+      <strong>Diapositiva sugerida</strong>
+      Diagrama de tres capas (dibujado simple, sin íconos técnicos):<br>
+      [Usuario en navegador] → [Servidor Next.js] → [Base de datos PostgreSQL]
+    </div>
+
+    <div class="script">
+      <strong>LO QUE DICES</strong>
+      "Cuando hablo de arquitectura, hablo de cómo está organizado el proyecto por dentro. Imagínense una pizzería: hay una ventana donde el cliente hace su pedido, una cocina donde se prepara, y una bodega donde están los ingredientes. DUCTU funciona igual. El cliente —el navegador— hace una solicitud. El servidor la recibe, la procesa con las reglas del negocio, y va a buscar o guardar información en la base de datos."
+    </div>
+
+    <div class="flow">
+      <div class="flow-box">Navegador<br><small style="color:#475569">lo que ve el usuario</small></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box">API Routes<br><small style="color:#475569">reglas del negocio</small></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box">Prisma ORM<br><small style="color:#475569">habla con la BD</small></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box">PostgreSQL<br><small style="color:#475569">datos reales</small></div>
+    </div>
+
+    <h3>El sistema de roles (RBAC)</h3>
+
+    <div class="script">
+      <strong>LO QUE DICES</strong>
+      "Hay algo muy importante en este proyecto que se llama control de acceso por roles. En términos simples: no todos ven lo mismo. Un estudiante entra y ve sus notas y su horario. Un profesor ve sus cursos y puede ingresar notas. Un administrador tiene acceso a todo. Esto se llama RBAC — Role-Based Access Control — y está implementado en cada ruta, en cada botón, en cada página del sistema."
+    </div>
+
+    <div class="chips">
+      <span class="chip purple">Super Admin</span>
+      <span class="chip">Admin Institucional</span>
+      <span class="chip green">Docente</span>
+      <span class="chip orange">Estudiante</span>
+    </div>
+
+    <div class="tip">Este es el concepto técnico más importante de la presentación. Asegúrate de que todos entiendan la analogía del rol antes de seguir.</div>
+  </div>
+
+
+  <!-- ===== SECCIÓN 5: MÓDULOS ===== -->
+  <div class="section s5">
+    <div class="section-header">
+      <div class="badge">5:30 – 8:00 · 2:30 min</div>
+      <h2>5. Los módulos — qué hace el sistema en la práctica</h2>
+    </div>
+    <div class="timing-bar"><div class="timing-fill" style="width:65%"></div></div>
+
+    <div class="slide-box">
+      <strong>Diapositiva sugerida</strong>
+      Grilla de 6 tarjetas, una por módulo, con ícono y nombre solamente.
+    </div>
+
+    <div class="script">
+      <strong>LO QUE DICES</strong>
+      "DUCTU no es una sola función. Es una plataforma modular — o sea, está armada como piezas de un lego, donde cada módulo hace una cosa específica. Voy a recorrer los más importantes."
+    </div>
+
+    <div class="module-grid">
+      <div class="module-card">
+        <h4>Gestión de usuarios e invitaciones</h4>
+        <p>El admin invita a profesores y estudiantes por correo. Cuando aceptan, crean su cuenta y quedan asignados automáticamente al rol correcto. Sin que el admin tenga que hacer nada más.</p>
+      </div>
+      <div class="module-card">
+        <h4>Notas y calificaciones</h4>
+        <p>El profesor ingresa notas por asignatura y período. El sistema calcula promedios automáticamente. Los estudiantes ven sus notas en tiempo real. Se puede importar desde Excel.</p>
+      </div>
+      <div class="module-card">
+        <h4>Horarios</h4>
+        <p>El admin configura bloques horarios para la institución. Cada curso tiene su horario semanal con asignatura y profesor. El docente puede ver qué clases le tocan hoy.</p>
+      </div>
+      <div class="module-card">
+        <h4>Feed institucional</h4>
+        <p>Como una red social interna. El admin o profesor puede publicar un aviso y elegir si lo ven todos, solo profesores, o solo un curso específico.</p>
+      </div>
+      <div class="module-card">
+        <h4>Calendario de eventos</h4>
+        <p>Exámenes, reuniones, feriados. Cada evento puede estar dirigido a un grupo específico y aparece en el calendario de quienes corresponda.</p>
+      </div>
+      <div class="module-card">
+        <h4>Notificaciones</h4>
+        <p>Cuando hay una nota nueva, un post nuevo o un evento, el sistema genera una notificación automática para el usuario. Con un ícono de campana en la interfaz.</p>
+      </div>
+    </div>
+
+    <div class="script">
+      <strong>LO QUE DICES (al terminar los módulos)</strong>
+      "Lo que quiero que noten es que todos estos módulos están conectados. No son aplicaciones separadas. Cuando un profesor ingresa una nota, se guarda en la base de datos, el sistema la asocia al estudiante correcto, al período correcto, y dispara una notificación. Todo eso pasa en milisegundos, de forma automática, gracias a cómo está diseñado el sistema por dentro."
+    </div>
+
+    <div class="tip">Si tienes el sistema corriendo, muestra en vivo el módulo de notas o el feed. 30 segundos de demo en vivo vale más que 3 minutos de descripción.</div>
+  </div>
+
+
+  <!-- ===== SECCIÓN 6: BASE DE DATOS ===== -->
+  <div class="section s6">
+    <div class="section-header">
+      <div class="badge">8:00 – 9:00 · 1:00 min</div>
+      <h2>6. La base de datos — el corazón del sistema</h2>
+    </div>
+    <div class="timing-bar"><div class="timing-fill" style="width:75%"></div></div>
+
+    <div class="slide-box">
+      <strong>Diapositiva sugerida</strong>
+      Diagrama simplificado de entidades (no el schema completo):<br>
+      Institución → Cursos → Estudiantes → Notas<br>
+      Institución → Profesores → Asignaturas → Notas
+    </div>
+
+    <div class="script">
+      <strong>LO QUE DICES</strong>
+      "La base de datos tiene más de 20 tablas interconectadas. Pero la idea central es simple. Todo en el sistema pertenece a una institución. Dentro de la institución hay cursos, dentro de los cursos hay estudiantes. Los profesores tienen asignaciones: qué asignatura dictan en qué curso. Las notas cuelgan de esas asignaciones. Todo está relacionado, todo tiene sentido, nada es un dato suelto. Esto se diseña antes de escribir una sola línea de código — se llama modelado de datos, y es uno de los trabajos más importantes del programador."
+    </div>
+
+    <div class="tip">No muestres el schema completo — es abrumador. El diagrama simplificado con 5-6 cajas y flechas es suficiente y mucho más claro.</div>
+  </div>
+
+
+  <!-- ===== SECCIÓN 7: DESAFÍOS ===== -->
+  <div class="section s7">
+    <div class="section-header">
+      <div class="badge">9:00 – 10:30 · 1:30 min</div>
+      <h2>7. Los desafíos reales — qué fue difícil y qué aprendí</h2>
+    </div>
+    <div class="timing-bar"><div class="timing-fill" style="width:88%"></div></div>
+
+    <div class="slide-box">
+      <strong>Diapositiva sugerida</strong>
+      Tres bloques lado a lado: "El reto" → "Por qué fue difícil" → "Cómo lo resolví"
+    </div>
+
+    <div class="script">
+      <strong>LO QUE DICES</strong>
+      "Quiero ser honesto: esto no salió a la primera. Hay tres momentos que recuerdo especialmente difíciles."
+    </div>
+
+    <table>
+      <tr>
+        <th>Reto</th>
+        <th>Lo que aprendí (en términos simples)</th>
+      </tr>
+      <tr>
+        <td>El sistema de roles y permisos</td>
+        <td>"Al principio intenté proteger cada ruta manualmente. Después entendí que tenía que centralizar la lógica: un solo lugar donde se decide quién puede hacer qué. Eso hizo el código mucho más limpio y seguro."</td>
+      </tr>
+      <tr>
+        <td>El modelado de la base de datos</td>
+        <td>"Tuve que rediseñar partes de la base de datos varias veces. Cambiar la estructura de datos cuando ya tienes código escrito encima es como reformar los cimientos de un edificio ya construido. Muy costoso. Aprendí a pensar más antes de escribir."</td>
+      </tr>
+      <tr>
+        <td>Conectar todo en tiempo real</td>
+        <td>"Hacer que las notificaciones aparezcan en el momento exacto, que el calendario se actualice al instante, requiere sincronizar muchas piezas al mismo tiempo. Ese tipo de detalle es lo que separa una aplicación 'que funciona' de una aplicación que se siente profesional."</td>
+      </tr>
+    </table>
+
+    <div class="tip">Esta es la parte más humana de la presentación. Habla despacio, con convicción. Que se note que viviste estos problemas de verdad.</div>
+  </div>
+
+
+  <!-- ===== SECCIÓN 8: CIERRE ===== -->
+  <div class="section s8">
+    <div class="section-header">
+      <div class="badge">10:30 – 12:00 · 1:30 min</div>
+      <h2>8. Cierre — qué sigue y reflexión final</h2>
+    </div>
+    <div class="timing-bar"><div class="timing-fill" style="width:100%"></div></div>
+
+    <div class="slide-box">
+      <strong>Diapositiva sugerida</strong>
+      Una sola frase grande en el centro:<br>
+      "Software que resuelve problemas reales, construido con herramientas reales."<br><br>
+      Debajo, tres ítems de "¿Qué sigue?" en una lista pequeña.
+    </div>
+
+    <div class="script">
+      <strong>LO QUE DICES</strong>
+      "DUCTU está activo, funcionando, y sigue creciendo. Lo que falta —y está en el roadmap— son cosas como reportes PDF descargables, comunicación por correo electrónico integrada directamente, y la posibilidad de que el sistema se adapte a múltiples instituciones al mismo tiempo, que es lo que se llama una arquitectura multi-tenant.
+      <br><br>
+      Pero lo más importante para mí como programador no es lo que falta. Es lo que existe: un sistema funcional, diseñado con criterio, con una base de datos bien modelada, con roles bien implementados, con una interfaz que cualquier persona puede usar sin entrenamiento previo.
+      <br><br>
+      Eso es lo que significa para mí desarrollar software: no es escribir código. Es entender un problema real, descomponerlo en partes, construir cada pieza con cuidado, y unirlas de forma que todo tenga sentido. Gracias."
+    </div>
+
+    <div class="tip">Termina mirando a la audiencia, no a la pantalla. Pausa de dos segundos antes de decir "Gracias." Esa pausa hace que el cierre se sienta sólido.</div>
+  </div>
+
+
+  <!-- NOTAS GENERALES -->
+  <div style="background:#0f172a; border:1px solid #334155; border-radius:12px; padding:28px; margin-top:20px;">
+    <h3 style="color:#60a5fa; margin-bottom:16px;">Notas generales para la presentación</h3>
+
+    <h4 style="color:#7dd3fc; margin:14px 0 6px;">Ritmo y tiempo</h4>
+    <p style="color:#94a3b8; font-size:0.9rem;">Practica en voz alta cronometrando. El error más común es apresurarse en la parte técnica (secciones 3 y 4) porque el nervio te acelera. Esas dos secciones son las más importantes de mantener lentas y claras.</p>
+
+    <h4 style="color:#7dd3fc; margin:14px 0 6px;">Lenguaje a evitar</h4>
+    <div class="chips" style="margin:8px 0">
+      <span class="chip" style="background:#1c0505; border-color:#7f1d1d; color:#fca5a5;">ORM</span>
+      <span class="chip" style="background:#1c0505; border-color:#7f1d1d; color:#fca5a5;">endpoint</span>
+      <span class="chip" style="background:#1c0505; border-color:#7f1d1d; color:#fca5a5;">renderizado del lado del servidor</span>
+      <span class="chip" style="background:#1c0505; border-color:#7f1d1d; color:#fca5a5;">hook</span>
+      <span class="chip" style="background:#1c0505; border-color:#7f1d1d; color:#fca5a5;">middleware</span>
+      <span class="chip" style="background:#1c0505; border-color:#7f1d1d; color:#fca5a5;">async/await</span>
+    </div>
+    <p style="color:#94a3b8; font-size:0.85rem; margin-top:4px;">Si necesitas decir alguno de estos, explícalo inmediatamente con una analogía. Nunca asumas que el público sabe qué significa.</p>
+
+    <h4 style="color:#7dd3fc; margin:14px 0 6px;">Demo en vivo (opcional pero poderoso)</h4>
+    <p style="color:#94a3b8; font-size:0.9rem;">Si el entorno lo permite, muestra en vivo durante la sección 5 (módulos): ingresar una nota y que aparezca la notificación. Eso es más memorable que cualquier diapositiva.</p>
+
+    <h4 style="color:#7dd3fc; margin:14px 0 6px;">Preguntas frecuentes que pueden surgir</h4>
+    <table style="margin-top:8px;">
+      <tr>
+        <th>Pregunta</th>
+        <th>Respuesta simple</th>
+      </tr>
+      <tr>
+        <td>¿Cuánto tiempo tardaste en construirlo?</td>
+        <td>"Varios meses de desarrollo iterativo, construyendo módulo por módulo."</td>
+      </tr>
+      <tr>
+        <td>¿Por qué no usaste WordPress o una plataforma ya hecha?</td>
+        <td>"Porque el objetivo era demostrar que puedo construir un sistema a medida desde cero, no configurar uno existente."</td>
+      </tr>
+      <tr>
+        <td>¿Puede usarse en un colegio real hoy?</td>
+        <td>"Sí. La arquitectura está diseñada para escalar. Con configuración y datos reales, estaría listo."</td>
+      </tr>
+      <tr>
+        <td>¿Cómo manejas la seguridad?</td>
+        <td>"La autenticación la delego a un proveedor especializado. Los permisos los controlo capa por capa en el servidor. Ningún dato sensible pasa por el navegador sin validación."</td>
+      </tr>
+    </table>
+  </div>
+
+</div>
+</body>
+</html>

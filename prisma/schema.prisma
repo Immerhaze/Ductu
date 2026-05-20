@@ -88,6 +88,8 @@ model Institution {
   scheduleBlocks   ScheduleBlock[]
 courseSchedules  CourseSchedule[]
 scheduleSlots    ScheduleSlot[]
+notifications Notification[]
+  accessCode   AccessCode?  @relation("AccessCodeInstitution")
 
   courseConfig InstitutionCourseConfig?
 
@@ -138,6 +140,7 @@ model AppUser {
   grades                Grade[]         @relation("StudentGrades")
   calendarEventsCreated CalendarEvent[] @relation("EventsCreatedBy")
   teacherSlots     ScheduleSlot[] @relation("TeacherSlots")
+  notifications Notification[]
 
   // Perfil del alumno
   studentAnnotations       StudentAnnotation[]      @relation("StudentAnnotations")
@@ -655,4 +658,46 @@ model ScheduleSlot {
   @@index([institutionId])
   @@index([courseScheduleId])
   @@index([teacherId])
+}
+
+model Notification {
+  id            String   @id @default(uuid()) @db.Uuid
+  institutionId String   @db.Uuid
+  userId        String   @db.Uuid
+  type          NotificationType
+  title         String
+  body          String?
+  link          String?  // ruta a la que lleva al hacer click
+  isRead        Boolean  @default(false)
+  readAt        DateTime?
+  createdAt     DateTime @default(now())
+
+  institution   Institution @relation(fields: [institutionId], references: [id], onDelete: Cascade)
+  user          AppUser     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isRead])
+  @@index([userId, createdAt])
+  @@index([institutionId])
+}
+
+enum NotificationType {
+  NEW_POST
+  NEW_GRADE
+  NEW_EVENT
+}
+
+model AccessCode {
+  id          String   @id @default(uuid()) @db.Uuid
+  code        String   @unique
+  description String?
+  isActive    Boolean  @default(true)
+  usedAt      DateTime?
+
+  usedByInstitutionId String?      @unique @db.Uuid
+  usedByInstitution   Institution? @relation("AccessCodeInstitution", fields: [usedByInstitutionId], references: [id], onDelete: SetNull)
+
+  expiresAt DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([isActive])
 }

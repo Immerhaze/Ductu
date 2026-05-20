@@ -1,15 +1,22 @@
 // components/landing/landingPage.jsx
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useUser, useStackApp } from "@stackframe/stack";
 import { MacbookScroll } from "../ui/macbook-scroll";
 import { TypewriterEffectSmooth } from "../ui/typewriter-effect";
 import FeaturesSection from "./featureSection";
+import PricingSection from "./pricingSection";
 import CallToActionSection from "./callToAction";
 import FooterSection from "./footer";
+
+const NAV_ITEMS = [
+  { label: "Características", href: "#caracteristicas" },
+  { label: "Precios",         href: "#precios" },
+  { label: "Contacto",        href: "#contacto" },
+];
 
 export default function LandingPageContent() {
   const router = useRouter();
@@ -37,6 +44,22 @@ export default function LandingPageContent() {
   }
 
   const isAuthed = !!user;
+  const [activeSection, setActiveSection] = useState("");
+
+  useEffect(() => {
+    const ids = ["caracteristicas", "precios", "contacto"];
+    const observers = ids.map((id) => {
+      const el = document.getElementById(id);
+      if (!el) return null;
+      const obs = new IntersectionObserver(
+        ([entry]) => { if (entry.isIntersecting) setActiveSection(id); },
+        { threshold: 0.3 }
+      );
+      obs.observe(el);
+      return obs;
+    });
+    return () => observers.forEach((o) => o?.disconnect());
+  }, []);
 
   return (
     <div className="relative w-full min-h-screen bg-white">
@@ -47,11 +70,19 @@ export default function LandingPageContent() {
           <span className="text-xl font-bold tracking-widest text-blue-950">DUCTU</span>
 
           <nav className="hidden md:flex items-center gap-8">
-            {["Características", "Precios", "Contacto"].map(item => (
-              <span key={item} className="text-sm text-gray-500 hover:text-blue-950 cursor-pointer transition-colors">
-                {item}
-              </span>
-            ))}
+            {NAV_ITEMS.map(item => {
+              const sectionId = item.href.slice(1);
+              const isActive = activeSection === sectionId;
+              return (
+                <a
+                  key={item.href}
+                  href={item.href}
+                  className={`text-sm transition-colors ${isActive ? "text-blue-950 font-semibold" : "text-gray-500 hover:text-blue-950"}`}
+                >
+                  {item.label}
+                </a>
+              );
+            })}
           </nav>
 
           <div className="flex items-center gap-3">
@@ -73,7 +104,7 @@ export default function LandingPageContent() {
             ) : (
               <>
                 <Link
-                  href="/post-auth"
+                  href="/api/auth/post-auth"
                   className="text-sm font-medium text-gray-600 hover:text-blue-950 transition-colors px-4 py-2 flex items-center gap-2"
                 >
                   <span className="icon-[material-symbols--arrow-circle-right-outline] text-base" />
@@ -101,10 +132,17 @@ export default function LandingPageContent() {
         />
       </div>
 
-      <FeaturesSection />
+      <div id="caracteristicas">
+        <FeaturesSection />
+      </div>
 
-      <div className="w-full">
-        <CallToActionSection />
+      <div id="precios">
+        <PricingSection />
+      </div>
+
+      <CallToActionSection />
+
+      <div id="contacto">
         <FooterSection />
       </div>
     </div>

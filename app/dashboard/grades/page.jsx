@@ -14,7 +14,7 @@ export default async function GradesPage() {
   } catch (e) {
     const code = e?.message;
     if (code === "PROFILE_INCOMPLETE") redirect("/complete-profile");
-    if (code === "APP_USER_NOT_FOUND") redirect("/post-auth");
+    if (code === "APP_USER_NOT_FOUND") redirect("/api/auth/post-auth");
     if (code === "NO_INSTITUTION") redirect("/onboarding");
     redirect("/auth?mode=login");
   }

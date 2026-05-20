@@ -18,6 +18,7 @@ const LEVEL_OPTIONS = [
 ];
 
 const STEP_TITLES = [
+  "Código de acceso",
   "Institución",
   "Administrador principal",
   "Estructura de cursos",
@@ -26,6 +27,74 @@ const STEP_TITLES = [
   "Asignaturas",
   "Revisión final",
 ];
+
+function AccessCodeStep({ code, validated, onChange, onValidated }) {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  async function handleValidate() {
+    setLoading(true);
+    setError("");
+    try {
+      const res = await fetch("/api/validate-access-code", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code }),
+      });
+      const data = await res.json();
+      if (data.valid) {
+        onValidated();
+      } else {
+        setError(data.reason || "Código inválido");
+      }
+    } catch {
+      setError("Error al validar. Intenta de nuevo.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <section className="space-y-5">
+      <div>
+        <h1 className="text-2xl font-bold text-slate-900">Código de acceso</h1>
+        <p className="mt-1 text-sm text-slate-600">
+          Ingresa el código proporcionado por DUCTU para habilitar el registro de tu institución.
+        </p>
+      </div>
+
+      {validated ? (
+        <div className="rounded-lg border border-green-200 bg-green-50 p-4">
+          <p className="text-sm font-medium text-green-800">Código válido. Puedes continuar con el registro.</p>
+          <p className="mt-1 font-mono text-xs text-green-600">{code}</p>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          <div>
+            <label className="block text-sm font-medium text-slate-700">Código de acceso</label>
+            <input
+              value={code}
+              onChange={(e) => onChange(e.target.value.toUpperCase())}
+              className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 font-mono text-sm uppercase tracking-wider"
+              placeholder="DUCTU-2026-XXXXXX"
+            />
+          </div>
+
+          {error && <p className="text-sm text-red-600">{error}</p>}
+
+          <button
+            type="button"
+            onClick={handleValidate}
+            disabled={!code.trim() || loading}
+            className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {loading ? "Validando..." : "Validar código"}
+          </button>
+        </div>
+      )}
+    </section>
+  );
+}
 
 export default function OnboardingWizard({ action, initialData }) {
   const [step, setStep] = useState(0);
@@ -62,7 +131,7 @@ export default function OnboardingWizard({ action, initialData }) {
         courseConfig: {
           ...prev.courseConfig,
           activeLevels: exists
-            ? prev.courseConfig.activeLevels.filter((code) => code !== levelCode)
+            ? prev.courseConfig.activeLevels.filter((c) => c !== levelCode)
             : [...prev.courseConfig.activeLevels, levelCode],
         },
       };
@@ -94,18 +163,22 @@ export default function OnboardingWizard({ action, initialData }) {
 
   function canContinue() {
     if (step === 0) {
-      return Boolean(data.institution.name.trim());
+      return data.accessCode?.validated === true;
     }
 
     if (step === 1) {
-      return Boolean(data.superAdmin.fullName.trim() && data.superAdmin.email.trim());
+      return Boolean(data.institution.name.trim());
     }
 
     if (step === 2) {
-      return data.courseConfig.activeLevels.length > 0;
+      return Boolean(data.superAdmin.fullName.trim() && data.superAdmin.email.trim());
     }
 
     if (step === 3) {
+      return data.courseConfig.activeLevels.length > 0;
+    }
+
+    if (step === 4) {
       return Boolean(
         data.academicPolicy.academicRegime &&
         data.academicPolicy.gradingScaleMin !== "" &&
@@ -114,7 +187,7 @@ export default function OnboardingWizard({ action, initialData }) {
       );
     }
 
-    if (step === 4) {
+    if (step === 5) {
       return Boolean(
         data.academicYear.year &&
         data.academicYear.startDate &&
@@ -122,7 +195,7 @@ export default function OnboardingWizard({ action, initialData }) {
       );
     }
 
-    if (step === 5) {
+    if (step === 6) {
       return data.subjects.some((subject) => subject.name.trim());
     }
 
@@ -154,6 +227,15 @@ export default function OnboardingWizard({ action, initialData }) {
           <input type="hidden" name="payload" value={payload} />
 
           {step === 0 && (
+            <AccessCodeStep
+              code={data.accessCode?.code || ""}
+              validated={data.accessCode?.validated === true}
+              onChange={(code) => updateSection("accessCode", { code, validated: false })}
+              onValidated={() => updateSection("accessCode", { validated: true })}
+            />
+          )}
+
+          {step === 1 && (
             <section className="space-y-5">
               <div>
                 <h1 className="text-2xl font-bold text-slate-900">
@@ -195,7 +277,7 @@ export default function OnboardingWizard({ action, initialData }) {
             </section>
           )}
 
-          {step === 1 && (
+          {step === 2 && (
             <section className="space-y-5">
               <div>
                 <h1 className="text-2xl font-bold text-slate-900">
@@ -237,7 +319,7 @@ export default function OnboardingWizard({ action, initialData }) {
             </section>
           )}
 
-          {step === 2 && (
+          {step === 3 && (
             <section className="space-y-5">
               <div>
                 <h1 className="text-2xl font-bold text-slate-900">
@@ -328,7 +410,7 @@ export default function OnboardingWizard({ action, initialData }) {
             </section>
           )}
 
-          {step === 3 && (
+          {step === 4 && (
             <section className="space-y-5">
               <div>
                 <h1 className="text-2xl font-bold text-slate-900">
@@ -462,7 +544,7 @@ export default function OnboardingWizard({ action, initialData }) {
             </section>
           )}
 
-          {step === 4 && (
+          {step === 5 && (
             <section className="space-y-5">
               <div>
                 <h1 className="text-2xl font-bold text-slate-900">
@@ -535,7 +617,7 @@ export default function OnboardingWizard({ action, initialData }) {
             </section>
           )}
 
-          {step === 5 && (
+          {step === 6 && (
             <section className="space-y-5">
               <div>
                 <h1 className="text-2xl font-bold text-slate-900">
@@ -582,7 +664,7 @@ export default function OnboardingWizard({ action, initialData }) {
             </section>
           )}
 
-          {step === 6 && (
+          {step === 7 && (
             <section className="space-y-6">
               <div>
                 <h1 className="text-2xl font-bold text-slate-900">
@@ -594,6 +676,11 @@ export default function OnboardingWizard({ action, initialData }) {
               </div>
 
               <div className="grid gap-4 md:grid-cols-2">
+                <SummaryCard
+                  title="Código de acceso"
+                  rows={[["Código", data.accessCode?.code || "—"]]}
+                />
+
                 <SummaryCard
                   title="Institución"
                   rows={[

@@ -7,21 +7,22 @@ import { usePathname } from "next/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "./ui/button";
 import { useUser } from "@stackframe/stack";
+import NotificationBell from "./NotificationBell";
 
-export default function SideBar({ userRole }) {
+export default function SideBar({ userRole, userName }) {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
+  const user = useUser();
 
   function SignOutButton() {
-    const user = useUser();
     return (
       <Button
         onClick={() => user.signOut()}
         variant="ghost"
-        className="cursor-pointer flex flex-col justify-center items-center group hover:bg-red-600 w-full"
+        className={`cursor-pointer flex items-center group hover:bg-red-600 w-full px-3 py-2.5 ${collapsed ? "justify-center" : "gap-3"}`}
       >
-        <span className="icon-[material-symbols--logout] group-hover:text-white text-red-600 text-2xl" />
-        {!collapsed && <span className="text-xs text-red-400 group-hover:text-white mt-1">Salir</span>}
+        <span className="icon-[material-symbols--logout] group-hover:text-white text-red-600 text-xl shrink-0" />
+        {!collapsed && <span className="text-sm font-medium text-red-400 group-hover:text-white">Salir</span>}
       </Button>
     );
   }
@@ -118,11 +119,16 @@ export default function SideBar({ userRole }) {
         </Avatar>
 
         {!collapsed && (
-          <p className="text-xs text-gray-400 font-medium truncate max-w-full px-1">
-            {safeRole === "ADMINISTRATIVE" ? "Admin" : safeRole === "TEACHER" ? "Docente" : safeRole === "STUDENT" ? "Estudiante" : safeRole}
-          </p>
+          <div className="flex flex-col items-center gap-0.5 w-full px-1">
+            <p className="text-xs font-semibold text-blue-950 truncate max-w-full text-center">
+              {userName}
+            </p>
+            <p className="text-xs text-gray-400 font-medium truncate max-w-full text-center">
+              {safeRole === "ADMINISTRATIVE" ? "Administrador" : safeRole === "TEACHER" ? "Docente" : safeRole === "STUDENT" ? "Estudiante" : safeRole}
+            </p>
+          </div>
         )}
-
+        <NotificationBell collapsed={collapsed} />
         <SignOutButton />
       </div>
     </div>

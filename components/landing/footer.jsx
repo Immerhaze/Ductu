@@ -4,9 +4,23 @@ import { TextHoverEffect } from "../ui/text-hover-effect";
 import { useEffect, useState } from "react";
 
 const LINKS = {
-  Producto: ["Características", "Precios", "Solicitar demo", "Novedades"],
-  Soporte: ["Documentación", "Centro de ayuda", "Contacto", "Estado del sistema"],
-  Legal: ["Privacidad", "Términos de uso", "Cookies"],
+  Producto: [
+    { label: "Características", href: "/#caracteristicas" },
+    { label: "Precios",         href: "/precios" },
+    { label: "Solicitar demo",  href: "/contacto" },
+    { label: "Novedades",       href: "/novedades" },
+  ],
+  Soporte: [
+    { label: "Documentación",      href: "/documentacion" },
+    { label: "Centro de ayuda",    href: "/ayuda" },
+    { label: "Contacto",           href: "/contacto" },
+    { label: "Estado del sistema", href: "/estado" },
+  ],
+  Legal: [
+    { label: "Privacidad",      href: "/privacidad" },
+    { label: "Términos de uso", href: "/terminos" },
+    { label: "Cookies",         href: "/cookies" },
+  ],
 };
 
 export default function FooterSection() {
@@ -44,9 +58,9 @@ export default function FooterSection() {
               </h4>
               <ul className="space-y-2.5">
                 {items.map((item) => (
-                  <li key={item}>
-                    <a href="#" className="text-sm text-blue-200 hover:text-white transition-colors">
-                      {item}
+                  <li key={item.label}>
+                    <a href={item.href} className="text-sm text-blue-200 hover:text-white transition-colors">
+                      {item.label}
                     </a>
                   </li>
                 ))}
@@ -64,9 +78,13 @@ export default function FooterSection() {
           © {year} DUCTU. Todos los derechos reservados.
         </p>
         <div className="flex items-center gap-6">
-          {["Privacidad", "Términos", "Cookies"].map((item) => (
-            <a key={item} href="#" className="text-xs text-blue-400 hover:text-white transition-colors">
-              {item}
+          {[
+            { label: "Privacidad", href: "/privacidad" },
+            { label: "Términos",   href: "/terminos" },
+            { label: "Cookies",    href: "/cookies" },
+          ].map((item) => (
+            <a key={item.label} href={item.href} className="text-xs text-blue-400 hover:text-white transition-colors">
+              {item.label}
             </a>
           ))}
         </div>

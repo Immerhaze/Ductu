@@ -45,10 +45,16 @@ export default function AuthClient({
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const err = params.get("error");
-    if (err === "registration_incomplete") {
+    if (err === "registration_incomplete" || err === "account_not_found") {
       setErrorMsg(
         "No encontramos una cuenta asociada a este usuario. Si tienes una invitación, úsala para registrarte. Si eres administrador, regístrate con el correo institucional."
       );
+    } else if (err === "account_disabled") {
+      setErrorMsg("Tu cuenta ha sido desactivada. Contacta al administrador de tu institución.");
+    } else if (err === "db_error") {
+      setErrorMsg("Hubo un problema al verificar tu cuenta. Por favor intenta nuevamente en unos minutos.");
+    } else if (err === "session_error") {
+      setErrorMsg("Tu sesión no pudo ser verificada. Por favor inicia sesión nuevamente.");
     }
   }, []);
 

@@ -12,7 +12,7 @@ export default async function SettingsPage() {
   } catch (e) {
     const code = e?.message;
     if (code === "PROFILE_INCOMPLETE") redirect("/complete-profile");
-    if (code === "APP_USER_NOT_FOUND") redirect("/post-auth");
+    if (code === "APP_USER_NOT_FOUND") redirect("/api/auth/post-auth");
     redirect("/auth?mode=login");
   }
 }

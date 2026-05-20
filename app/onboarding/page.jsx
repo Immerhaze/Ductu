@@ -136,7 +136,17 @@ function buildAcademicPeriods({ academicRegime, startDate, endDate }) {
 }
 
 export default async function OnboardingPage() {
-  await stackServerApp.getUser({ or: "redirect" });
+  const authUser = await stackServerApp.getUser({ or: "redirect" });
+
+  // Si ya completó el onboarding, ir directo al dashboard
+  const existingAppUser = await prisma.appUser.findUnique({
+    where: { authUserId: authUser.id },
+    select: { profileCompletedAt: true },
+  });
+
+  if (existingAppUser?.profileCompletedAt) {
+    redirect("/dashboard");
+  }
 
   async function handleOnboarding(formData) {
     "use server";
@@ -149,6 +159,26 @@ export default async function OnboardingPage() {
     }
 
     const payload = JSON.parse(payloadRaw);
+
+    const accessCodeValue = payload?.accessCode?.code?.trim()?.toUpperCase();
+
+    if (!accessCodeValue) {
+      throw new Error("ACCESS_CODE_REQUIRED");
+    }
+
+    // Server-side access code validation — never trust the client alone
+    const codeRecord = await prisma.accessCode.findUnique({
+      where: { code: accessCodeValue },
+    });
+
+    if (
+      !codeRecord ||
+      !codeRecord.isActive ||
+      codeRecord.usedAt ||
+      (codeRecord.expiresAt && new Date(codeRecord.expiresAt) < new Date())
+    ) {
+      throw new Error("INVALID_ACCESS_CODE");
+    }
 
     const institutionName = payload?.institution?.name?.trim();
     const contactEmail = payload?.institution?.contactEmail?.trim()?.toLowerCase();
@@ -335,6 +365,14 @@ export default async function OnboardingPage() {
         })),
         skipDuplicates: true,
       });
+
+      await tx.accessCode.update({
+        where: { code: accessCodeValue },
+        data: {
+          usedAt: new Date(),
+          usedByInstitutionId: institution.id,
+        },
+      });
     });
 
     redirect("/onboarding/complete");
@@ -343,6 +381,10 @@ export default async function OnboardingPage() {
   const currentYear = new Date().getFullYear();
 
   const initialData = {
+    accessCode: {
+      code: "",
+      validated: false,
+    },
     institution: {
       name: "",
       contactEmail: "",

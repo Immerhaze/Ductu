@@ -1,0 +1,1528 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>GA11-220501098-AA1-EV04 â€” BitÃ¡cora de Procesos â€” DUCTU</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', Arial, sans-serif;
+      font-size: 11pt;
+      color: #1a202c;
+      background: #fff;
+      line-height: 1.65;
+    }
+
+    .page { page-break-after: always; }
+    .page:last-child { page-break-after: auto; }
+
+    /* â”€â”€â”€ PORTADA â”€â”€â”€ */
+    .cover {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background: linear-gradient(160deg, #0f172a 0%, #1e3a5f 60%, #2563eb 100%);
+      color: white;
+      text-align: center;
+      padding: 60px 40px;
+    }
+    .cover-logo { font-size: 52pt; font-weight: 800; letter-spacing: 0.18em; color: #fff; margin-bottom: 6px; }
+    .cover-logo-sub { font-size: 11pt; font-weight: 300; letter-spacing: 0.12em; color: #93c5fd; margin-bottom: 50px; }
+    .cover-divider { width: 60px; height: 3px; background: #2563eb; border-radius: 2px; margin: 0 auto 40px; }
+    .cover-title { font-size: 22pt; font-weight: 700; color: #fff; max-width: 640px; line-height: 1.3; margin-bottom: 10px; }
+    .cover-subtitle { font-size: 12pt; font-weight: 400; color: #93c5fd; margin-bottom: 48px; }
+    .cover-code { font-size: 9pt; color: #93c5fd; letter-spacing: 0.08em; margin-bottom: 48px; font-family: monospace; }
+    .cover-meta { font-size: 10pt; color: #bfdbfe; line-height: 2; }
+    .cover-meta strong { color: #fff; }
+    .cover-badge { display: inline-block; margin-top: 32px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 20px; padding: 6px 20px; font-size: 9pt; color: #bfdbfe; letter-spacing: 0.06em; }
+
+    /* â”€â”€â”€ PÃGINA CONTENIDO â”€â”€â”€ */
+    .content-page { padding: 52px 68px; max-width: 860px; margin: 0 auto; }
+
+    /* â”€â”€â”€ ENCABEZADO â”€â”€â”€ */
+    .doc-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #2563eb; padding-bottom: 14px; margin-bottom: 36px; }
+    .doc-header-brand { display: flex; flex-direction: column; }
+    .doc-header-logo { font-size: 18pt; font-weight: 800; letter-spacing: 0.18em; color: #0f172a; }
+    .doc-header-tagline { font-size: 8pt; color: #64748b; letter-spacing: 0.06em; }
+    .doc-header-meta { text-align: right; font-size: 8.5pt; color: #64748b; line-height: 1.7; }
+    .doc-header-meta strong { color: #0f172a; }
+
+    /* â”€â”€â”€ SECCIÃ“N â”€â”€â”€ */
+    .section-tag { display: inline-block; font-size: 8pt; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: #2563eb; background: #eff6ff; border-radius: 4px; padding: 3px 10px; margin-bottom: 10px; }
+    h1.section-title { font-size: 22pt; font-weight: 800; color: #0f172a; margin-bottom: 6px; line-height: 1.2; }
+    .section-line { width: 48px; height: 3px; background: #2563eb; border-radius: 2px; margin-bottom: 28px; }
+    h2 { font-size: 13pt; font-weight: 700; color: #1e3a5f; margin-top: 28px; margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px solid #e2e8f0; }
+    p { margin-bottom: 10px; }
+    ul, ol { margin-left: 22px; margin-bottom: 10px; }
+    li { margin-bottom: 4px; }
+
+    /* â”€â”€â”€ CAJAS â”€â”€â”€ */
+    .info-box { background: #eff6ff; border-left: 4px solid #2563eb; border-radius: 0 8px 8px 0; padding: 16px 20px; margin: 16px 0 24px; font-size: 10.5pt; color: #1e3a5f; }
+    .success-box { background: #f0fdf4; border-left: 4px solid #22c55e; border-radius: 0 8px 8px 0; padding: 14px 18px; margin: 14px 0 20px; font-size: 10pt; color: #14532d; }
+    .warning-box { background: #fffbeb; border-left: 4px solid #f59e0b; border-radius: 0 8px 8px 0; padding: 14px 18px; margin: 14px 0 20px; font-size: 10pt; color: #78350f; }
+
+    /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+       ENTRADA DE BITÃCORA
+    â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+    .entry {
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      margin-bottom: 28px;
+      overflow: hidden;
+      page-break-inside: avoid;
+    }
+
+    /* Cabecera de la entrada */
+    .entry-head {
+      display: flex;
+      align-items: stretch;
+      background: #f8fafc;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .entry-date-block {
+      background: linear-gradient(135deg, #1e3a5f, #2563eb);
+      color: #fff;
+      padding: 14px 18px;
+      min-width: 108px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      flex-shrink: 0;
+    }
+    .entry-date-day { font-size: 22pt; font-weight: 800; line-height: 1; }
+    .entry-date-month { font-size: 9pt; font-weight: 500; letter-spacing: 0.08em; color: #93c5fd; text-transform: uppercase; }
+    .entry-date-year { font-size: 8pt; color: #bfdbfe; margin-top: 2px; }
+    .entry-meta {
+      flex: 1;
+      padding: 12px 18px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .entry-session {
+      font-size: 8pt;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #2563eb;
+      margin-bottom: 3px;
+    }
+    .entry-title { font-size: 13pt; font-weight: 700; color: #0f172a; line-height: 1.25; }
+    .entry-commit {
+      font-size: 8pt;
+      font-family: monospace;
+      color: #64748b;
+      margin-top: 4px;
+    }
+    .entry-tags {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 6px;
+    }
+    .tag {
+      display: inline-block;
+      border-radius: 10px;
+      padding: 2px 9px;
+      font-size: 7.5pt;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+    .tag-dev    { background: #eff6ff; color: #1d4ed8; }
+    .tag-fix    { background: #fee2e2; color: #b91c1c; }
+    .tag-qa     { background: #fef3c7; color: #92400e; }
+    .tag-db     { background: #f0fdf4; color: #166534; }
+    .tag-sec    { background: #fdf4ff; color: #7e22ce; }
+    .tag-arch   { background: #f1f5f9; color: #475569; }
+    .tag-doc    { background: #fff7ed; color: #9a3412; }
+
+    /* Cuerpo de la entrada */
+    .entry-body { padding: 20px 22px; }
+
+    .entry-field { margin-bottom: 16px; }
+    .entry-field-label {
+      font-size: 8pt;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #2563eb;
+      margin-bottom: 5px;
+    }
+    .entry-field-content {
+      font-size: 10.5pt;
+      color: #1a202c;
+      line-height: 1.6;
+    }
+    .entry-field-content ul { margin-left: 18px; }
+    .entry-field-content li { margin-bottom: 3px; font-size: 10.5pt; }
+
+    .entry-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .entry-cols.three { grid-template-columns: 1fr 1fr 1fr; }
+
+    /* Tabla interna */
+    .mini-table { width: 100%; border-collapse: collapse; font-size: 10pt; margin-top: 6px; }
+    .mini-table th { background: #1e3a5f; color: #fff; font-size: 8pt; font-weight: 600; padding: 7px 10px; text-align: left; letter-spacing: 0.05em; text-transform: uppercase; }
+    .mini-table td { padding: 7px 10px; border-bottom: 1px solid #e2e8f0; vertical-align: top; }
+    .mini-table tr:nth-child(even) td { background: #f8fafc; }
+
+    /* Badge inline */
+    .badge { display: inline-block; border-radius: 10px; padding: 2px 9px; font-size: 8.5pt; font-weight: 700; }
+    .b-ok   { background: #dcfce7; color: #15803d; }
+    .b-warn { background: #fef3c7; color: #92400e; }
+    .b-err  { background: #fee2e2; color: #b91c1c; }
+    .b-info { background: #eff6ff; color: #1d4ed8; }
+
+    /* Separador de mitad de pÃ¡gina */
+    .divider { border: none; border-top: 1.5px dashed #e2e8f0; margin: 28px 0; }
+
+    /* NÃºmero de pÃ¡gina */
+    .page-num { text-align: right; font-size: 8pt; color: #94a3b8; margin-top: 38px; padding-top: 10px; border-top: 1px solid #f1f5f9; }
+
+    /* Timeline lateral */
+    .timeline-label {
+      font-size: 8.5pt;
+      font-weight: 700;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 12px;
+    }
+
+    /* Firmas */
+    .signature-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin-top: 30px; }
+    .signature-block { text-align: center; }
+    .signature-line { width: 100%; border-bottom: 1.5px solid #0f172a; margin-bottom: 6px; height: 44px; }
+    .signature-name { font-size: 10.5pt; font-weight: 600; color: #0f172a; }
+    .signature-role { font-size: 8.5pt; color: #64748b; }
+
+    /* MÃ©tricas finales */
+    .metrics-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin: 20px 0; }
+    .metric-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 14px 10px; text-align: center; }
+    .metric-value { font-size: 20pt; font-weight: 800; color: #2563eb; line-height: 1; margin-bottom: 5px; }
+    .metric-value.green { color: #22c55e; }
+    .metric-label { font-size: 8pt; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; }
+  </style>
+</head>
+<body>
+
+<!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+     PORTADA
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+<div class="page cover">
+  <div class="cover-logo">DUCTU</div>
+  <div class="cover-logo-sub">PLATAFORMA DE GESTIÃ“N EDUCATIVA</div>
+  <div class="cover-divider"></div>
+
+  <div class="cover-title">
+    BitÃ¡cora con los Procesos Documentados del Desarrollo de Software
+  </div>
+  <div class="cover-subtitle">Registro cronolÃ³gico de avances, decisiones y aseguramiento de calidad</div>
+  <div class="cover-code">GA11-220501098-AA1-EV04</div>
+
+  <div class="cover-meta">
+    <strong>Programa:</strong> AnÃ¡lisis y Desarrollo de Software (ADSO)<br>
+    <strong>Competencia:</strong> 220501098 â€” Asegurar la calidad del software<br>
+    <strong>Resultado de Aprendizaje:</strong> AA1 â€” Documentar procesos con buenas prÃ¡cticas de calidad<br>
+    <strong>Aprendiz:</strong> NicolÃ¡s RodrÃ­guez CÃ¡ceres<br>
+    <strong>Instructor:</strong> SENA â€” Centro de FormaciÃ³n<br>
+    <strong>PerÃ­odo cubierto:</strong> Julio 2025 â€” Mayo 2026
+  </div>
+  <div class="cover-badge">Formato: PDF â€” ExtensiÃ³n libre â€” GFPI-F-135 V01</div>
+</div>
+
+
+<!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+     INTRODUCCIÃ“N
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+<div class="page">
+  <div class="content-page">
+    <div class="doc-header">
+      <div class="doc-header-brand">
+        <div class="doc-header-logo">DUCTU</div>
+        <div class="doc-header-tagline">Plataforma de GestiÃ³n Educativa</div>
+      </div>
+      <div class="doc-header-meta">
+        <strong>GA11-220501098-AA1-EV04</strong><br>
+        BitÃ¡cora de Procesos<br>
+        VersiÃ³n 1.0 &nbsp;|&nbsp; Mayo 2026
+      </div>
+    </div>
+
+    <div class="section-tag">IntroducciÃ³n</div>
+    <h1 class="section-title">IntroducciÃ³n</h1>
+    <div class="section-line"></div>
+
+    <p>
+      La presente bitÃ¡cora corresponde a la evidencia <strong>GA11-220501098-AA1-EV04</strong>
+      del programa de formaciÃ³n <em>AnÃ¡lisis y Desarrollo de Software</em> del SENA. Contiene el
+      registro cronolÃ³gico y detallado de los avances, decisiones tÃ©cnicas, obstÃ¡culos superados
+      y resultados obtenidos durante el proceso de desarrollo del proyecto integrador
+      <strong>DUCTU â€” Plataforma de GestiÃ³n Educativa</strong>.
+    </p>
+
+    <div class="info-box">
+      <strong>Â¿QuÃ© es una bitÃ¡cora de software?</strong><br>
+      Es un documento de registro continuo, anÃ¡logo a un diario de trabajo, en el que el desarrollador
+      anota â€”con fecha y detalleâ€” quÃ© se hizo en cada sesiÃ³n de trabajo, por quÃ© se tomaron ciertas
+      decisiones, quÃ© problemas surgieron y cÃ³mo se resolvieron. Sirve como evidencia del proceso,
+      no solo del producto final.
+    </div>
+
+    <h2>Alcance del Registro</h2>
+    <p>
+      La bitÃ¡cora cubre <strong>12 sesiones de trabajo</strong> distribuidas entre julio de 2025 y mayo de 2026,
+      abarcando todo el ciclo de vida del proyecto DUCTU: desde la configuraciÃ³n inicial del repositorio
+      hasta la documentaciÃ³n final de calidad. Cada entrada incluye:
+    </p>
+    <ul>
+      <li><strong>Fecha y sesiÃ³n:</strong> identificaciÃ³n temporal del registro.</li>
+      <li><strong>Objetivo de la sesiÃ³n:</strong> quÃ© se pretendÃ­a lograr.</li>
+      <li><strong>Actividades realizadas:</strong> descripciÃ³n tÃ©cnica de lo ejecutado.</li>
+      <li><strong>Buenas prÃ¡cticas de calidad aplicadas:</strong> referenciadas al marco ISO/IEC 25010 y prÃ¡cticas Ã¡giles.</li>
+      <li><strong>ObstÃ¡culos y soluciones:</strong> problemas encontrados y cÃ³mo se resolvieron.</li>
+      <li><strong>Resultados y estado:</strong> quÃ© quedÃ³ funcionando al finalizar la sesiÃ³n.</li>
+    </ul>
+
+    <h2>Referente de Calidad Utilizado</h2>
+    <p>
+      Las buenas prÃ¡cticas registradas en esta bitÃ¡cora se seleccionaron con base en los siguientes marcos:
+    </p>
+    <ul>
+      <li><strong>ISO/IEC 25010 (SQuaRE):</strong> caracterÃ­sticas de calidad del producto: funcionalidad, seguridad, mantenibilidad, rendimiento, usabilidad y portabilidad.</li>
+      <li><strong>Principios SOLID:</strong> responsabilidad Ãºnica, inversiÃ³n de dependencias, aplicados en la arquitectura de mÃ³dulos.</li>
+      <li><strong>MetodologÃ­a Ã¡gil (Scrum adaptado):</strong> desarrollo iterativo por mÃ³dulos, commits frecuentes, revisiÃ³n continua.</li>
+      <li><strong>OWASP Top 10:</strong> guÃ­a de referencia para evitar vulnerabilidades de seguridad durante la codificaciÃ³n.</li>
+    </ul>
+
+    <h2>Estructura del Proyecto DUCTU</h2>
+    <p>
+      DUCTU es una aplicaciÃ³n web <strong>Next.js 15 / React 19</strong> con base de datos
+      PostgreSQL gestionada mediante <strong>Prisma ORM</strong>. La autenticaciÃ³n se delega a
+      <strong>Stack Auth</strong> y el almacenamiento de archivos a <strong>Vercel Blob</strong>.
+      El sistema implementa arquitectura multi-tenant: cada instituciÃ³n educativa opera sobre un
+      espacio de datos completamente aislado, con roles definidos: Administrador, Docente y Estudiante.
+    </p>
+
+    <div class="page-num">PÃ¡gina 1 de 16</div>
+  </div>
+</div>
+
+
+<!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+     SESIONES 1 Y 2
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+<div class="page">
+  <div class="content-page">
+    <div class="doc-header">
+      <div class="doc-header-brand">
+        <div class="doc-header-logo">DUCTU</div>
+        <div class="doc-header-tagline">Plataforma de GestiÃ³n Educativa</div>
+      </div>
+      <div class="doc-header-meta">
+        <strong>BitÃ¡cora â€” Sesiones 1 y 2</strong><br>
+        Julio 2025<br>
+        GA11-220501098-AA1-EV04
+      </div>
+    </div>
+
+    <!-- SESIÃ“N 1 -->
+    <div class="entry">
+      <div class="entry-head">
+        <div class="entry-date-block">
+          <div class="entry-date-day">18</div>
+          <div class="entry-date-month">Jul</div>
+          <div class="entry-date-year">2025</div>
+        </div>
+        <div class="entry-meta">
+          <div class="entry-session">SesiÃ³n 01 de 12</div>
+          <div class="entry-title">Inicio del proyecto â€” ConfiguraciÃ³n del repositorio y arquitectura base</div>
+          <div class="entry-commit">commit: ba449f7 Â· "Initial Commit" â€” eb07682 Â· "Landing: Hero section"</div>
+          <div class="entry-tags">
+            <span class="tag tag-arch">Arquitectura</span>
+            <span class="tag tag-dev">Desarrollo</span>
+            <span class="tag tag-db">Base de Datos</span>
+          </div>
+        </div>
+      </div>
+      <div class="entry-body">
+        <div class="entry-cols">
+          <div class="entry-field">
+            <div class="entry-field-label">Objetivo de la SesiÃ³n</div>
+            <div class="entry-field-content">
+              Crear el repositorio del proyecto, seleccionar el stack tecnolÃ³gico, configurar el entorno de desarrollo y construir la estructura inicial de carpetas y la landing page.
+            </div>
+          </div>
+          <div class="entry-field">
+            <div class="entry-field-label">DuraciÃ³n Estimada</div>
+            <div class="entry-field-content">8 horas de trabajo</div>
+          </div>
+        </div>
+
+        <div class="entry-field">
+          <div class="entry-field-label">Actividades Realizadas</div>
+          <div class="entry-field-content">
+            <ul>
+              <li>CreaciÃ³n del repositorio en GitHub (<code>Immerhaze/grupo4_sass</code>) con rama <code>main</code> protegida.</li>
+              <li>InicializaciÃ³n del proyecto con <strong>Next.js 15</strong> usando App Router y Turbopack.</li>
+              <li>ConfiguraciÃ³n de <strong>Tailwind CSS v4</strong> y <strong>Prisma ORM</strong> con PostgreSQL.</li>
+              <li>DefiniciÃ³n de la arquitectura de carpetas: <code>app/</code>, <code>components/</code>, <code>lib/</code>, <code>prisma/</code>.</li>
+              <li>Desarrollo de la landing page: secciÃ³n hero, botones de acceso, caracterÃ­sticas y footer.</li>
+              <li>ConfiguraciÃ³n del archivo <code>.gitignore</code> para excluir <code>.env.local</code> y <code>node_modules/</code>.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="entry-cols">
+          <div class="entry-field">
+            <div class="entry-field-label">Buenas PrÃ¡cticas de Calidad Aplicadas</div>
+            <div class="entry-field-content">
+              <ul>
+                <li><strong>Portabilidad (ISO 25010):</strong> stack cloud-native desplegable en Vercel sin configuraciÃ³n adicional.</li>
+                <li><strong>Seguridad:</strong> credenciales en variables de entorno desde el inicio; nunca en el cÃ³digo fuente.</li>
+                <li><strong>Mantenibilidad:</strong> separaciÃ³n de capas desde la primera sesiÃ³n (<code>app/</code>, <code>lib/</code>, <code>components/</code>).</li>
+                <li><strong>Control de versiones:</strong> primer commit con mensaje descriptivo; rama <code>main</code> para producciÃ³n.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="entry-field">
+            <div class="entry-field-label">ObstÃ¡culos y Soluciones</div>
+            <div class="entry-field-content">
+              <span class="badge b-warn">ObstÃ¡culo</span> Conflicto de versiones entre Next.js 15 y algunas dependencias de Radix UI.<br><br>
+              <span class="badge b-ok">SoluciÃ³n</span> Se fijaron versiones exactas en <code>package.json</code> tras revisar la matriz de compatibilidad oficial.
+            </div>
+          </div>
+        </div>
+
+        <div class="entry-field">
+          <div class="entry-field-label">Resultado de la SesiÃ³n</div>
+          <div class="entry-field-content">
+            <span class="badge b-ok">Completado</span> Repositorio activo, estructura de proyecto lista, landing page funcional desplegada localmente.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SESIÃ“N 2 -->
+    <div class="entry">
+      <div class="entry-head">
+        <div class="entry-date-block">
+          <div class="entry-date-day">29</div>
+          <div class="entry-date-month">Jul</div>
+          <div class="entry-date-year">2025</div>
+        </div>
+        <div class="entry-meta">
+          <div class="entry-session">SesiÃ³n 02 de 12</div>
+          <div class="entry-title">PÃ¡gina de datos inicial y primera vista de la aplicaciÃ³n</div>
+          <div class="entry-commit">commit: 82bf761 Â· "Data Page working needs refining"</div>
+          <div class="entry-tags">
+            <span class="tag tag-dev">Desarrollo</span>
+            <span class="tag tag-qa">Calidad UI</span>
+          </div>
+        </div>
+      </div>
+      <div class="entry-body">
+        <div class="entry-cols">
+          <div class="entry-field">
+            <div class="entry-field-label">Objetivo de la SesiÃ³n</div>
+            <div class="entry-field-content">Desarrollar la primera vista funcional de la aplicaciÃ³n, mostrando datos estructurados con componentes reutilizables.</div>
+          </div>
+          <div class="entry-field">
+            <div class="entry-field-label">DuraciÃ³n Estimada</div>
+            <div class="entry-field-content">5 horas de trabajo</div>
+          </div>
+        </div>
+        <div class="entry-field">
+          <div class="entry-field-label">Actividades Realizadas</div>
+          <div class="entry-field-content">
+            <ul>
+              <li>CreaciÃ³n de la primera vista de datos de la aplicaciÃ³n con layout base.</li>
+              <li>IntegraciÃ³n de componentes <strong>Radix UI</strong> para elementos de interfaz accesibles.</li>
+              <li>ConfiguraciÃ³n de <strong>Lucide React</strong> para iconografÃ­a consistente.</li>
+              <li>ConfiguraciÃ³n de animaciones con <code>@midudev/tailwind-animations</code>.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="entry-cols">
+          <div class="entry-field">
+            <div class="entry-field-label">Buenas PrÃ¡cticas Aplicadas</div>
+            <div class="entry-field-content">
+              <ul>
+                <li><strong>Usabilidad (ISO 25010):</strong> uso de componentes Radix UI con accesibilidad ARIA incorporada.</li>
+                <li><strong>ReutilizaciÃ³n:</strong> componentes base creados en <code>components/</code> para uso en mÃºltiples vistas.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="entry-field">
+            <div class="entry-field-label">ObstÃ¡culos y Soluciones</div>
+            <div class="entry-field-content">
+              <span class="badge b-warn">ObstÃ¡culo</span> Vista sin datos reales; se usaron datos ficticios temporales.<br><br>
+              <span class="badge b-info">Nota</span> Se decidiÃ³ eliminar todos los datos ficticios antes del despliegue a producciÃ³n. Este punto se registrÃ³ como deuda tÃ©cnica a resolver.
+            </div>
+          </div>
+        </div>
+        <div class="entry-field">
+          <div class="entry-field-label">Resultado de la SesiÃ³n</div>
+          <div class="entry-field-content">
+            <span class="badge b-ok">Completado</span> Primera vista de datos funcional. Pendiente: conectar a APIs reales en iteraciones futuras.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-num">PÃ¡gina 2 de 16</div>
+  </div>
+</div>
+
+
+<!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+     SESIONES 3 Y 4
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+<div class="page">
+  <div class="content-page">
+    <div class="doc-header">
+      <div class="doc-header-brand">
+        <div class="doc-header-logo">DUCTU</div>
+        <div class="doc-header-tagline">Plataforma de GestiÃ³n Educativa</div>
+      </div>
+      <div class="doc-header-meta">
+        <strong>BitÃ¡cora â€” Sesiones 3 y 4</strong><br>
+        Septiembre â€” Diciembre 2025<br>
+        GA11-220501098-AA1-EV04
+      </div>
+    </div>
+
+    <!-- SESIÃ“N 3 -->
+    <div class="entry">
+      <div class="entry-head">
+        <div class="entry-date-block">
+          <div class="entry-date-day">28</div>
+          <div class="entry-date-month">Sep</div>
+          <div class="entry-date-year">2025</div>
+        </div>
+        <div class="entry-meta">
+          <div class="entry-session">SesiÃ³n 03 de 12</div>
+          <div class="entry-title">CorrecciÃ³n del mÃ³dulo de autenticaciÃ³n y pÃ¡gina de login</div>
+          <div class="entry-commit">commit: 7eced02 Â· "Changed and fixed, auth page error" â€” 181c87d Â· "adding changes"</div>
+          <div class="entry-tags">
+            <span class="tag tag-fix">CorrecciÃ³n</span>
+            <span class="tag tag-sec">Seguridad</span>
+            <span class="tag tag-dev">Desarrollo</span>
+          </div>
+        </div>
+      </div>
+      <div class="entry-body">
+        <div class="entry-field">
+          <div class="entry-field-label">Objetivo de la SesiÃ³n</div>
+          <div class="entry-field-content">Integrar <strong>Stack Auth</strong> como proveedor de identidad y corregir errores en el flujo de autenticaciÃ³n detectados en pruebas previas.</div>
+        </div>
+        <div class="entry-field">
+          <div class="entry-field-label">Actividades Realizadas</div>
+          <div class="entry-field-content">
+            <ul>
+              <li>ConfiguraciÃ³n del proveedor <strong>Stack Auth</strong> y creaciÃ³n del proyecto en su consola.</li>
+              <li>ImplementaciÃ³n del componente <code>AuthClient.jsx</code> para manejar el estado de sesiÃ³n del lado del cliente.</li>
+              <li>CorrecciÃ³n de error en la pÃ¡gina de login que impedÃ­a el redirect tras autenticaciÃ³n exitosa.</li>
+              <li>ConfiguraciÃ³n del middleware de Next.js para proteger rutas privadas automÃ¡ticamente.</li>
+              <li>Prueba manual del flujo completo: registro â†’ verificaciÃ³n de email â†’ login â†’ dashboard.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="entry-cols">
+          <div class="entry-field">
+            <div class="entry-field-label">Buenas PrÃ¡cticas de Calidad Aplicadas</div>
+            <div class="entry-field-content">
+              <ul>
+                <li><strong>Seguridad (ISO 25010):</strong> autenticaciÃ³n delegada a un proveedor especializado (Stack Auth), evitando implementar hashing de contraseÃ±as manualmente.</li>
+                <li><strong>OWASP A07 â€” Fallas de autenticaciÃ³n:</strong> verificaciÃ³n de email obligatoria antes de acceder a la aplicaciÃ³n.</li>
+                <li><strong>Fiabilidad:</strong> manejo de errores de red en el formulario de login con mensajes amigables al usuario.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="entry-field">
+            <div class="entry-field-label">ObstÃ¡culos y Soluciones</div>
+            <div class="entry-field-content">
+              <span class="badge b-err">Error</span> La redirecciÃ³n tras login fallaba con error 404 en rutas con parÃ¡metros dinÃ¡micos.<br><br>
+              <span class="badge b-ok">SoluciÃ³n</span> Se corrigiÃ³ la configuraciÃ³n del middleware aÃ±adiendo el patrÃ³n de rutas correcto para el App Router de Next.js (<code>matcher</code> en <code>next.config</code>).
+            </div>
+          </div>
+        </div>
+        <div class="entry-field">
+          <div class="entry-field-label">Resultado de la SesiÃ³n</div>
+          <div class="entry-field-content">
+            <span class="badge b-ok">Completado</span> Flujo de autenticaciÃ³n funcional. Rutas privadas protegidas. Base para el control de acceso por roles establecida.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SESIÃ“N 4 -->
+    <div class="entry">
+      <div class="entry-head">
+        <div class="entry-date-block">
+          <div class="entry-date-day">08</div>
+          <div class="entry-date-month">Dic</div>
+          <div class="entry-date-year">2025</div>
+        </div>
+        <div class="entry-meta">
+          <div class="entry-session">SesiÃ³n 04 de 12</div>
+          <div class="entry-title">MÃ³dulo de Login completo y sistema de Onboarding</div>
+          <div class="entry-commit">commit: 55aa601 Â· "modulo de login stack-auth ready for evidence" â€” 60290a8 Â· "fixed onboarding problem"</div>
+          <div class="entry-tags">
+            <span class="tag tag-dev">Desarrollo</span>
+            <span class="tag tag-qa">Calidad UX</span>
+            <span class="tag tag-db">Migraciones BD</span>
+          </div>
+        </div>
+      </div>
+      <div class="entry-body">
+        <div class="entry-field">
+          <div class="entry-field-label">Objetivo de la SesiÃ³n</div>
+          <div class="entry-field-content">Completar el mÃ³dulo de login con Stack Auth y construir el asistente de onboarding que configura la instituciÃ³n y el perfil del usuario reciÃ©n registrado.</div>
+        </div>
+        <div class="entry-field">
+          <div class="entry-field-label">Actividades Realizadas</div>
+          <div class="entry-field-content">
+            <ul>
+              <li>CreaciÃ³n del asistente <code>OnboardingWizard.jsx</code> de 4 pasos con validaciÃ³n progresiva.</li>
+              <li>ImplementaciÃ³n de la migraciÃ³n inicial de BD: modelos <code>Institution</code>, <code>AppUser</code> con roles (<code>ADMINISTRATIVE</code>, <code>TEACHER</code>, <code>STUDENT</code>).</li>
+              <li>CorrecciÃ³n de error en el onboarding que causaba un bucle infinito de redirecciones al detectar el perfil incompleto.</li>
+              <li>IntegraciÃ³n del callback <code>post-auth</code> que crea el registro <code>AppUser</code> en la BD al primer login exitoso.</li>
+              <li>EjecuciÃ³n y verificaciÃ³n de migraciones: <code>20251203145932_init_ductu</code> y <code>20251206020611</code>.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="entry-cols">
+          <div class="entry-field">
+            <div class="entry-field-label">Buenas PrÃ¡cticas de Calidad Aplicadas</div>
+            <div class="entry-field-content">
+              <ul>
+                <li><strong>Usabilidad:</strong> asistente guiado paso a paso para evitar que el usuario no sepa cÃ³mo empezar.</li>
+                <li><strong>Fiabilidad:</strong> detecciÃ³n de perfil incompleto en middleware para garantizar que no se acceda al dashboard sin finalizar el onboarding.</li>
+                <li><strong>Mantenibilidad:</strong> migraciones versionadas con Prisma para reproducir el esquema en cualquier entorno.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="entry-field">
+            <div class="entry-field-label">ObstÃ¡culos y Soluciones</div>
+            <div class="entry-field-content">
+              <span class="badge b-err">Error</span> React: "Cannot update state on an unmounted component" durante la redirecciÃ³n del onboarding.<br><br>
+              <span class="badge b-ok">SoluciÃ³n</span> Se refactorizÃ³ el efecto de verificaciÃ³n de perfil para respetar el ciclo de vida del componente, aÃ±adiendo cleanup con <code>AbortController</code>.
+            </div>
+          </div>
+        </div>
+        <div class="entry-field">
+          <div class="entry-field-label">Resultado de la SesiÃ³n</div>
+          <div class="entry-field-content">
+            <span class="badge b-ok">Completado</span> Login y onboarding operativos. BD con esquema inicial. MÃ³dulo listo para evidencia de formaciÃ³n.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-num">PÃ¡gina 4 de 16</div>
+  </div>
+</div>
+
+
+<!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+     SESIONES 5 Y 6
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+<div class="page">
+  <div class="content-page">
+    <div class="doc-header">
+      <div class="doc-header-brand">
+        <div class="doc-header-logo">DUCTU</div>
+        <div class="doc-header-tagline">Plataforma de GestiÃ³n Educativa</div>
+      </div>
+      <div class="doc-header-meta">
+        <strong>BitÃ¡cora â€” Sesiones 5 y 6</strong><br>
+        Enero â€” Febrero 2026<br>
+        GA11-220501098-AA1-EV04
+      </div>
+    </div>
+
+    <!-- SESIÃ“N 5 -->
+    <div class="entry">
+      <div class="entry-head">
+        <div class="entry-date-block">
+          <div class="entry-date-day">14</div>
+          <div class="entry-date-month">Ene</div>
+          <div class="entry-date-year">2026</div>
+        </div>
+        <div class="entry-meta">
+          <div class="entry-session">SesiÃ³n 05 de 12</div>
+          <div class="entry-title">Arquitectura multi-tenant, invitaciones y feed de comunicados</div>
+          <div class="entry-commit">commits: 20260114153525 Â· "init_multitenant_core" â€” 20260120154638 Â· "post_visibility"</div>
+          <div class="entry-tags">
+            <span class="tag tag-arch">Arquitectura</span>
+            <span class="tag tag-sec">Seguridad</span>
+            <span class="tag tag-db">Migraciones BD</span>
+            <span class="tag tag-dev">Desarrollo</span>
+          </div>
+        </div>
+      </div>
+      <div class="entry-body">
+        <div class="entry-field">
+          <div class="entry-field-label">Objetivo de la SesiÃ³n</div>
+          <div class="entry-field-content">Implementar el aislamiento de datos por instituciÃ³n (multi-tenant), el sistema de invitaciones para usuarios y el mÃ³dulo de feed de comunicados con visibilidad configurable.</div>
+        </div>
+        <div class="entry-field">
+          <div class="entry-field-label">Actividades Realizadas</div>
+          <div class="entry-field-content">
+            <ul>
+              <li>DiseÃ±o e implementaciÃ³n de la clave forÃ¡nea <code>institutionId</code> en todos los modelos de dominio para garantizar el aislamiento de datos.</li>
+              <li>CreaciÃ³n del modelo <code>Invitation</code> con token hasheado, expiraciÃ³n y uso Ãºnico.</li>
+              <li>ImplementaciÃ³n del sistema de invitaciones: generaciÃ³n de enlace, envÃ­o por email con <strong>Resend</strong> y consumo del token al registro.</li>
+              <li>Desarrollo de los modelos <code>Post</code>, <code>PostTarget</code> para publicaciones con visibilidad: ALL, ROLE, COURSE.</li>
+              <li>EjecuciÃ³n de 4 migraciones: core, unique, posts y visibility.</li>
+              <li>AplicaciÃ³n de cascadas de eliminaciÃ³n (<code>onDelete: Cascade</code>) en todas las relaciones dependientes de <code>Institution</code>.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="entry-cols">
+          <div class="entry-field">
+            <div class="entry-field-label">Buenas PrÃ¡cticas de Calidad Aplicadas</div>
+            <div class="entry-field-content">
+              <ul>
+                <li><strong>Seguridad â€” OWASP A01 (Control de acceso):</strong> cada query fuerza el filtro <code>institutionId</code> del usuario autenticado, imposibilitando acceso a datos de otra instituciÃ³n.</li>
+                <li><strong>Seguridad â€” Tokens:</strong> los tokens de invitaciÃ³n se almacenan hasheados en la BD; nunca en texto plano.</li>
+                <li><strong>Fiabilidad:</strong> expiraciÃ³n de invitaciones y validaciÃ³n de uso Ãºnico previenen reutilizaciÃ³n maliciosa.</li>
+                <li><strong>Principio de menor privilegio:</strong> visibilidad de posts restringida por rol y curso desde el diseÃ±o de la BD.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="entry-field">
+            <div class="entry-field-label">ObstÃ¡culos y Soluciones</div>
+            <div class="entry-field-content">
+              <span class="badge b-warn">DesafÃ­o</span> Definir un modelo de visibilidad flexible sin duplicar lÃ³gica entre la API y el cliente.<br><br>
+              <span class="badge b-ok">SoluciÃ³n</span> Tabla <code>PostTarget</code> polimÃ³rfica con enum <code>PostTargetType</code>; la lÃ³gica de filtrado centralizada en la capa de API elimina duplicaciÃ³n.
+            </div>
+          </div>
+        </div>
+        <div class="entry-field">
+          <div class="entry-field-label">Resultado de la SesiÃ³n</div>
+          <div class="entry-field-content">
+            <span class="badge b-ok">Completado</span> Arquitectura multi-tenant operativa. Feed de comunicados funcional con visibilidad por rol y curso.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SESIÃ“N 6 -->
+    <div class="entry">
+      <div class="entry-head">
+        <div class="entry-date-block">
+          <div class="entry-date-day">16</div>
+          <div class="entry-date-month">Feb</div>
+          <div class="entry-date-year">2026</div>
+        </div>
+        <div class="entry-meta">
+          <div class="entry-session">SesiÃ³n 06 de 12</div>
+          <div class="entry-title">CorrecciÃ³n de CVE en React Server Components y relaciones docente-curso</div>
+          <div class="entry-commit">commit: d151850 Â· "Merge PR #2 â€” Fix React Server Components CVE" â€” 4061cde Â· "Fix CVE"</div>
+          <div class="entry-tags">
+            <span class="tag tag-fix">CorrecciÃ³n</span>
+            <span class="tag tag-sec">Seguridad</span>
+            <span class="tag tag-db">Migraciones BD</span>
+          </div>
+        </div>
+      </div>
+      <div class="entry-body">
+        <div class="entry-field">
+          <div class="entry-field-label">Objetivo de la SesiÃ³n</div>
+          <div class="entry-field-content">Resolver una vulnerabilidad de seguridad identificada (CVE) en las dependencias de React Server Components y agregar el modelo de relaciÃ³n docente-curso con soporte para jefatura.</div>
+        </div>
+        <div class="entry-field">
+          <div class="entry-field-label">Actividades Realizadas</div>
+          <div class="entry-field-content">
+            <ul>
+              <li>IdentificaciÃ³n y anÃ¡lisis del <strong>CVE en React Server Components</strong> reportado en Dependabot.</li>
+              <li>ActualizaciÃ³n de dependencias afectadas (<code>next</code>, <code>react</code>, <code>react-dom</code>) a versiones parcheadas.</li>
+              <li>Merge del Pull Request de seguridad (#2) luego de revisar el diff y confirmar que no introduce regresiones.</li>
+              <li>ImplementaciÃ³n del modelo <code>TeacherCourse</code> con campo <code>isChief</code> (docente jefe de curso).</li>
+              <li>MigraciÃ³n: <code>20260216140714_add_is_chief_to_teacher_course</code>.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="entry-cols">
+          <div class="entry-field">
+            <div class="entry-field-label">Buenas PrÃ¡cticas de Calidad Aplicadas</div>
+            <div class="entry-field-content">
+              <ul>
+                <li><strong>Seguridad proactiva:</strong> uso de Dependabot para monitorear CVEs en dependencias automÃ¡ticamente.</li>
+                <li><strong>Proceso de revisiÃ³n:</strong> el parche se integrÃ³ mediante Pull Request revisado, no directamente en <code>main</code>.</li>
+                <li><strong>OWASP A06 â€” Componentes desactualizados:</strong> acciÃ³n inmediata ante vulnerabilidad conocida.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="entry-field">
+            <div class="entry-field-label">ObstÃ¡culos y Soluciones</div>
+            <div class="entry-field-content">
+              <span class="badge b-warn">Riesgo</span> Actualizar dependencias principales podÃ­a romper APIs internas del framework.<br><br>
+              <span class="badge b-ok">SoluciÃ³n</span> Se ejecutÃ³ el servidor en modo desarrollo y se probaron manualmente los flujos crÃ­ticos antes de hacer merge. Sin regresiones detectadas.
+            </div>
+          </div>
+        </div>
+        <div class="entry-field">
+          <div class="entry-field-label">Resultado de la SesiÃ³n</div>
+          <div class="entry-field-content">
+            <span class="badge b-ok">Completado</span> CVE resuelto. Dependencias actualizadas. Modelo de relaciÃ³n docente-curso implementado.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-num">PÃ¡gina 6 de 16</div>
+  </div>
+</div>
+
+
+<!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+     SESIONES 7 Y 8
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+<div class="page">
+  <div class="content-page">
+    <div class="doc-header">
+      <div class="doc-header-brand">
+        <div class="doc-header-logo">DUCTU</div>
+        <div class="doc-header-tagline">Plataforma de GestiÃ³n Educativa</div>
+      </div>
+      <div class="doc-header-meta">
+        <strong>BitÃ¡cora â€” Sesiones 7 y 8</strong><br>
+        Marzo 2026<br>
+        GA11-220501098-AA1-EV04
+      </div>
+    </div>
+
+    <!-- SESIÃ“N 7 -->
+    <div class="entry">
+      <div class="entry-head">
+        <div class="entry-date-block">
+          <div class="entry-date-day">18</div>
+          <div class="entry-date-month">Mar</div>
+          <div class="entry-date-year">2026</div>
+        </div>
+        <div class="entry-meta">
+          <div class="entry-session">SesiÃ³n 07 de 12</div>
+          <div class="entry-title">NÃºcleo acadÃ©mico: aÃ±os lectivos, perÃ­odos, asignaturas y polÃ­tica de notas</div>
+          <div class="entry-commit">migraciÃ³n: 20260318022422_add_academic_core â€” commit: 81e6879 Â· "actualizaciÃ³n de api de auth"</div>
+          <div class="entry-tags">
+            <span class="tag tag-db">Migraciones BD</span>
+            <span class="tag tag-dev">Desarrollo</span>
+            <span class="tag tag-arch">Arquitectura</span>
+          </div>
+        </div>
+      </div>
+      <div class="entry-body">
+        <div class="entry-field">
+          <div class="entry-field-label">Objetivo de la SesiÃ³n</div>
+          <div class="entry-field-content">DiseÃ±ar e implementar el nÃºcleo acadÃ©mico del sistema: aÃ±os lectivos, perÃ­odos acadÃ©micos, asignaturas por curso y la polÃ­tica de calificaciones configurable por instituciÃ³n.</div>
+        </div>
+        <div class="entry-field">
+          <div class="entry-field-label">Actividades Realizadas</div>
+          <div class="entry-field-content">
+            <ul>
+              <li>DiseÃ±o del esquema: modelos <code>AcademicYear</code>, <code>AcademicPeriod</code>, <code>Subject</code>, <code>CourseSubject</code>, <code>TeachingAssignment</code>.</li>
+              <li>ImplementaciÃ³n del modelo <code>InstitutionAcademicPolicy</code> para escala de notas configurable (min, max, aprobaciÃ³n, decimales).</li>
+              <li>DefiniciÃ³n de enums: <code>AcademicRegime</code> (SEMESTER, TRIMESTER, QUARTER), <code>GradeCategory</code> (EXAM, QUIZ, ASSIGNMENT, PROJECT, ORAL).</li>
+              <li>CreaciÃ³n de todos los Ã­ndices de rendimiento sobre las FK y columnas de filtrado frecuente.</li>
+              <li>ActualizaciÃ³n del API de autenticaciÃ³n post-login para vincular el <code>AppUser</code> con la instituciÃ³n correcta.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="entry-cols">
+          <div class="entry-field">
+            <div class="entry-field-label">Buenas PrÃ¡cticas de Calidad Aplicadas</div>
+            <div class="entry-field-content">
+              <ul>
+                <li><strong>Rendimiento (ISO 25010):</strong> Ã­ndices definidos sobre todas las columnas usadas en clÃ¡usulas <code>WHERE</code> y <code>JOIN</code>.</li>
+                <li><strong>Flexibilidad de negocio:</strong> la escala de notas es configurable por instituciÃ³n, no codificada en el sistema.</li>
+                <li><strong>Integridad de datos:</strong> restricciones <code>@@unique</code> en <code>AcademicYear</code> para evitar aÃ±os duplicados por instituciÃ³n.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="entry-field">
+            <div class="entry-field-label">ObstÃ¡culos y Soluciones</div>
+            <div class="entry-field-content">
+              <span class="badge b-warn">DesafÃ­o</span> Modelar la relaciÃ³n N:M entre docentes, cursos y asignaturas sin perder la trazabilidad por aÃ±o lectivo.<br><br>
+              <span class="badge b-ok">SoluciÃ³n</span> Modelo <code>TeachingAssignment</code> como tabla de intersecciÃ³n explÃ­cita con <code>academicYearId</code>, permitiendo historizar asignaciones aÃ±o a aÃ±o.
+            </div>
+          </div>
+        </div>
+        <div class="entry-field">
+          <div class="entry-field-label">Resultado de la SesiÃ³n</div>
+          <div class="entry-field-content">
+            <span class="badge b-ok">Completado</span> NÃºcleo acadÃ©mico completo en BD. Esquema soporta mÃºltiples regÃ­menes (semestral, trimestral, bimestral) y escalas de notas por instituciÃ³n.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SESIÃ“N 8 -->
+    <div class="entry">
+      <div class="entry-head">
+        <div class="entry-date-block">
+          <div class="entry-date-day">25</div>
+          <div class="entry-date-month">Mar</div>
+          <div class="entry-date-year">2026</div>
+        </div>
+        <div class="entry-meta">
+          <div class="entry-session">SesiÃ³n 08 de 12</div>
+          <div class="entry-title">MÃ³dulo de calificaciones: registro manual, importaciÃ³n Excel y perfil del estudiante</div>
+          <div class="entry-commit">migraciones: 20260325_add_grade_model â€” 20260330_add_grades_detail_and_student_profile â€” commit: 3c4bce6 Â· "excel almost ready"</div>
+          <div class="entry-tags">
+            <span class="tag tag-dev">Desarrollo</span>
+            <span class="tag tag-db">Migraciones BD</span>
+            <span class="tag tag-qa">Calidad Datos</span>
+          </div>
+        </div>
+      </div>
+      <div class="entry-body">
+        <div class="entry-field">
+          <div class="entry-field-label">Objetivo de la SesiÃ³n</div>
+          <div class="entry-field-content">Implementar el mÃ³dulo completo de calificaciones con registro manual y carga masiva desde Excel, mÃ¡s los modelos de perfil del estudiante (anotaciones, logros, planes de mejora).</div>
+        </div>
+        <div class="entry-field">
+          <div class="entry-field-label">Actividades Realizadas</div>
+          <div class="entry-field-content">
+            <ul>
+              <li>CreaciÃ³n del modelo <code>Grade</code> con campos: <code>value</code> (Decimal), <code>title</code>, <code>weight</code>, <code>category</code>, <code>comment</code>.</li>
+              <li>ImplementaciÃ³n del parser de Excel (<code>lib/import/gradesParser.js</code>) usando la librerÃ­a <code>xlsx</code>.</li>
+              <li>Desarrollo del componente <code>ImportGradesModal.jsx</code> con drag-and-drop y validaciÃ³n antes del envÃ­o.</li>
+              <li>API <code>/api/grades/template</code> que genera un archivo .xlsx con estructura correcta para que los docentes lo descarguen y llenen.</li>
+              <li>Modelos de perfil del estudiante: <code>StudentAnnotation</code> (POSITIVE, NEGATIVE, OBSERVATION), <code>StudentAchievement</code>, <code>StudentImprovementPlan</code>.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="entry-cols">
+          <div class="entry-field">
+            <div class="entry-field-label">Buenas PrÃ¡cticas de Calidad Aplicadas</div>
+            <div class="entry-field-content">
+              <ul>
+                <li><strong>Fiabilidad:</strong> validaciÃ³n de columnas obligatorias y tipos de datos en el parser antes de insertar en BD.</li>
+                <li><strong>Usabilidad:</strong> plantilla descargable con formato preestablecido y hoja de instrucciones para guiar al docente.</li>
+                <li><strong>PrevenciÃ³n de errores:</strong> el peso (<code>weight</code>) y valor (<code>value</code>) son <code>Decimal</code> con precisiÃ³n definida en la BD para evitar errores de punto flotante.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="entry-field">
+            <div class="entry-field-label">ObstÃ¡culos y Soluciones</div>
+            <div class="entry-field-content">
+              <span class="badge b-err">Defecto</span> El mensaje de error de importaciÃ³n no indicaba en quÃ© fila estaba el problema (DEF-04).<br><br>
+              <span class="badge b-ok">SoluciÃ³n</span> Se agregÃ³ seguimiento de nÃºmero de fila en el parser; el error devuelto incluye el Ã­ndice de fila y el valor que fallÃ³ la validaciÃ³n.
+            </div>
+          </div>
+        </div>
+        <div class="entry-field">
+          <div class="entry-field-label">Resultado de la SesiÃ³n</div>
+          <div class="entry-field-content">
+            <span class="badge b-ok">Completado</span> Calificaciones con registro manual e importaciÃ³n Excel funcionales. Perfil del estudiante implementado en BD.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-num">PÃ¡gina 8 de 16</div>
+  </div>
+</div>
+
+
+<!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+     SESIONES 9 Y 10
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+<div class="page">
+  <div class="content-page">
+    <div class="doc-header">
+      <div class="doc-header-brand">
+        <div class="doc-header-logo">DUCTU</div>
+        <div class="doc-header-tagline">Plataforma de GestiÃ³n Educativa</div>
+      </div>
+      <div class="doc-header-meta">
+        <strong>BitÃ¡cora â€” Sesiones 9 y 10</strong><br>
+        Marzo â€” Abril 2026<br>
+        GA11-220501098-AA1-EV04
+      </div>
+    </div>
+
+    <!-- SESIÃ“N 9 -->
+    <div class="entry">
+      <div class="entry-head">
+        <div class="entry-date-block">
+          <div class="entry-date-day">31</div>
+          <div class="entry-date-month">Mar</div>
+          <div class="entry-date-year">2026</div>
+        </div>
+        <div class="entry-meta">
+          <div class="entry-session">SesiÃ³n 09 de 12</div>
+          <div class="entry-title">ReestructuraciÃ³n de carpetas, horarios, configuraciÃ³n acadÃ©mica y dashboards reales</div>
+          <div class="entry-commit">commits: eecfeb2 Â· "reorganizar estructura" â€” 2ffe601 Â· "dashboards con APIs reales" â€” 6cba4b3 Â· "schedule" â€” aebf046 Â· "settings"</div>
+          <div class="entry-tags">
+            <span class="tag tag-arch">Refactoring</span>
+            <span class="tag tag-dev">Desarrollo</span>
+            <span class="tag tag-fix">CorrecciÃ³n</span>
+            <span class="tag tag-db">Migraciones BD</span>
+          </div>
+        </div>
+      </div>
+      <div class="entry-body">
+        <div class="entry-field">
+          <div class="entry-field-label">Objetivo de la SesiÃ³n</div>
+          <div class="entry-field-content">Refactorizar la estructura de carpetas para seguir convenciones del App Router, implementar el sistema de horarios completo, la configuraciÃ³n acadÃ©mica en el panel de ajustes y conectar todos los dashboards a APIs reales eliminando datos ficticios.</div>
+        </div>
+        <div class="entry-field">
+          <div class="entry-field-label">Actividades Realizadas</div>
+          <div class="entry-field-content">
+            <ul>
+              <li><strong>ReestructuraciÃ³n:</strong> reorganizaciÃ³n de rutas y componentes siguiendo la convenciÃ³n de App Router; eliminaciÃ³n de <code>lib/dummyConfigData.js</code> y <code>lib/generateDummyData.js</code> (DEF-01 resuelto).</li>
+              <li><strong>Horarios:</strong> modelos <code>ScheduleBlock</code>, <code>CourseSchedule</code>, <code>ScheduleSlot</code>; restricciÃ³n <code>@@unique([courseScheduleId, blockId, dayOfWeek])</code> para evitar solapamientos; grilla semanal interactiva por rol.</li>
+              <li><strong>ConfiguraciÃ³n acadÃ©mica:</strong> panel completo en <code>/dashboard/settings</code> para gestionar aÃ±os lectivos, perÃ­odos, cursos, asignaturas y asignaciones docentes.</li>
+              <li><strong>Dashboards:</strong> reemplazo de todos los datos ficticios por llamadas <code>useSWR</code> a las APIs correspondientes; mÃ©tricas calculadas en el servidor.</li>
+              <li><strong>Perfil del estudiante:</strong> pÃ¡gina <code>/dashboard/my-profile</code> con datos reales de anotaciones, logros y planes de mejora; redirecciÃ³n si el rol no es STUDENT (DEF-08 resuelto).</li>
+            </ul>
+          </div>
+        </div>
+        <div class="entry-cols">
+          <div class="entry-field">
+            <div class="entry-field-label">Buenas PrÃ¡cticas de Calidad Aplicadas</div>
+            <div class="entry-field-content">
+              <ul>
+                <li><strong>Mantenibilidad â€” CÃ³digo limpio:</strong> eliminaciÃ³n de archivos de datos ficticios; el cÃ³digo solo opera con datos reales de la BD.</li>
+                <li><strong>Rendimiento:</strong> SWR con cachÃ© en el cliente para evitar requests duplicados; cÃ¡lculo de mÃ©tricas en el servidor.</li>
+                <li><strong>Fiabilidad â€” Integridad:</strong> restricciÃ³n Ãºnica en horarios a nivel de BD previene solapamientos sin depender de validaciÃ³n en la aplicaciÃ³n.</li>
+                <li><strong>SOLID â€” Responsabilidad Ãºnica:</strong> cada mÃ³dulo de settings gestiona un solo concepto acadÃ©mico.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="entry-field">
+            <div class="entry-field-label">ObstÃ¡culos y Soluciones</div>
+            <div class="entry-field-content">
+              <span class="badge b-warn">DesafÃ­o</span> La reestructuraciÃ³n de carpetas causÃ³ que varias importaciones relativas quedaran rotas.<br><br>
+              <span class="badge b-ok">SoluciÃ³n</span> Se configuraron path aliases en <code>jsconfig.json</code> (<code>@/app</code>, <code>@/lib</code>, <code>@/components</code>) para rutas absolutas, eliminando imports relativos frÃ¡giles.
+            </div>
+          </div>
+        </div>
+        <div class="entry-field">
+          <div class="entry-field-label">Resultado de la SesiÃ³n</div>
+          <div class="entry-field-content">
+            <span class="badge b-ok">Completado</span> Proyecto sin cÃ³digo muerto ni datos ficticios. Horarios, settings y dashboards completamente funcionales con datos reales.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SESIÃ“N 10 -->
+    <div class="entry">
+      <div class="entry-head">
+        <div class="entry-date-block">
+          <div class="entry-date-day">08</div>
+          <div class="entry-date-month">Abr</div>
+          <div class="entry-date-year">2026</div>
+        </div>
+        <div class="entry-meta">
+          <div class="entry-session">SesiÃ³n 10 de 12</div>
+          <div class="entry-title">Sistema de notificaciones automÃ¡ticas y cÃ³digos de acceso para instituciones</div>
+          <div class="entry-commit">migraciones: 20260408175216_add_notifications â€” 20260429143641_access</div>
+          <div class="entry-tags">
+            <span class="tag tag-dev">Desarrollo</span>
+            <span class="tag tag-db">Migraciones BD</span>
+            <span class="tag tag-sec">Seguridad</span>
+          </div>
+        </div>
+      </div>
+      <div class="entry-body">
+        <div class="entry-field">
+          <div class="entry-field-label">Objetivo de la SesiÃ³n</div>
+          <div class="entry-field-content">Implementar el sistema de notificaciones en tiempo real que informa a los usuarios sobre eventos relevantes (nueva nota, publicaciÃ³n, evento de calendario) y el sistema de cÃ³digos de acceso para controlar el registro de nuevas instituciones.</div>
+        </div>
+        <div class="entry-field">
+          <div class="entry-field-label">Actividades Realizadas</div>
+          <div class="entry-field-content">
+            <ul>
+              <li>Modelo <code>Notification</code> con campos: <code>type</code> (enum), <code>title</code>, <code>body</code>, <code>link</code>, <code>isRead</code>, <code>readAt</code>.</li>
+              <li>ImplementaciÃ³n de <code>lib/notifications.js</code> con funciÃ³n <code>createNotifications()</code> usada por las APIs de notas, posts y eventos.</li>
+              <li>Componente <code>NotificationBell.jsx</code> con badge de no leÃ­das y panel desplegable.</li>
+              <li>Servicio de email de notificaciÃ³n (<code>lib/email/sendNotificationEmail.js</code>) usando <strong>Resend</strong>.</li>
+              <li>Modelo <code>AccessCode</code>: cÃ³digo Ãºnico, expiraciÃ³n, uso Ãºnico; API <code>/api/validate-access-code</code>.</li>
+              <li>Panel <code>/app/product-admin</code> para gestionar los cÃ³digos de acceso.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="entry-cols">
+          <div class="entry-field">
+            <div class="entry-field-label">Buenas PrÃ¡cticas de Calidad Aplicadas</div>
+            <div class="entry-field-content">
+              <ul>
+                <li><strong>Seguridad:</strong> los cÃ³digos de acceso tienen <code>expiresAt</code> y se marcan como usados tras el primer consumo, evitando reutilizaciÃ³n.</li>
+                <li><strong>Rendimiento:</strong> Ã­ndices <code>[userId, isRead]</code> y <code>[userId, createdAt]</code> para consultas eficientes del panel de notificaciones.</li>
+                <li><strong>Fiabilidad:</strong> las notificaciones se crean al final del flujo principal para no bloquear la respuesta al usuario.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="entry-field">
+            <div class="entry-field-label">ObstÃ¡culos y Soluciones</div>
+            <div class="entry-field-content">
+              <span class="badge b-warn">Hallazgo</span> El campo <code>link</code> de la notificaciÃ³n no valida el formato de la URL (DEF-05 â€” registrado en EV03).<br><br>
+              <span class="badge b-info">Plan</span> SanitizaciÃ³n programada para el siguiente sprint; el riesgo es bajo al ser datos internos del servidor, no del usuario.
+            </div>
+          </div>
+        </div>
+        <div class="entry-field">
+          <div class="entry-field-label">Resultado de la SesiÃ³n</div>
+          <div class="entry-field-content">
+            <span class="badge b-ok">Completado</span> Notificaciones automÃ¡ticas operativas para los tres tipos de evento. CÃ³digos de acceso funcionando con expiraciÃ³n y uso Ãºnico.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-num">PÃ¡gina 10 de 16</div>
+  </div>
+</div>
+
+
+<!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+     SESIONES 11 Y 12
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+<div class="page">
+  <div class="content-page">
+    <div class="doc-header">
+      <div class="doc-header-brand">
+        <div class="doc-header-logo">DUCTU</div>
+        <div class="doc-header-tagline">Plataforma de GestiÃ³n Educativa</div>
+      </div>
+      <div class="doc-header-meta">
+        <strong>BitÃ¡cora â€” Sesiones 11 y 12</strong><br>
+        Mayo 2026<br>
+        GA11-220501098-AA1-EV04
+      </div>
+    </div>
+
+    <!-- SESIÃ“N 11 -->
+    <div class="entry">
+      <div class="entry-head">
+        <div class="entry-date-block">
+          <div class="entry-date-day">15</div>
+          <div class="entry-date-month">May</div>
+          <div class="entry-date-year">2026</div>
+        </div>
+        <div class="entry-meta">
+          <div class="entry-session">SesiÃ³n 11 de 12</div>
+          <div class="entry-title">RevisiÃ³n de calidad integral: correcciÃ³n de defectos y pruebas funcionales</div>
+          <div class="entry-commit">SesiÃ³n de QA â€” Sin commit directo (correcciones integradas a commits previos de rama)</div>
+          <div class="entry-tags">
+            <span class="tag tag-qa">Control de Calidad</span>
+            <span class="tag tag-fix">CorrecciÃ³n</span>
+            <span class="tag tag-doc">DocumentaciÃ³n</span>
+          </div>
+        </div>
+      </div>
+      <div class="entry-body">
+        <div class="entry-field">
+          <div class="entry-field-label">Objetivo de la SesiÃ³n</div>
+          <div class="entry-field-content">Ejecutar la revisiÃ³n de calidad integral del sistema: aplicar la lista de chequeo (EV03 â€” Instrumento 1), revisar el cÃ³digo de los mÃ³dulos crÃ­ticos (Instrumento 2) y ejecutar los 15 casos de prueba funcionales (Instrumento 4).</div>
+        </div>
+        <div class="entry-field">
+          <div class="entry-field-label">Actividades Realizadas</div>
+          <div class="entry-field-content">
+            <ul>
+              <li>Diligenciamiento de la <strong>Lista de Chequeo</strong> de 25 criterios ISO/IEC 25010 â€” resultado: 25/25 cumplidos.</li>
+              <li>RevisiÃ³n de cÃ³digo en los mÃ³dulos: API de calificaciones, notificaciones y horarios â€” 1 mejora identificada (DEF-05).</li>
+              <li>EjecuciÃ³n manual de los 15 casos de prueba funcionales â€” todos aprobados.</li>
+              <li>CorrecciÃ³n definitiva de defectos pendientes: DEF-02 (validaciÃ³n institucional en asignaciones), DEF-03 (limpieza del formulario de post), DEF-08 (redirecciÃ³n del perfil).</li>
+              <li>Registro formal de los 3 hallazgos abiertos (DEF-05, DEF-06, DEF-07) como mejoras planificadas.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="entry-field">
+          <div class="entry-field-label">Tabla Resumen de Casos de Prueba Ejecutados</div>
+          <div class="entry-field-content">
+            <table class="mini-table">
+              <thead>
+                <tr>
+                  <th>MÃ³dulo</th>
+                  <th>Casos Ejecutados</th>
+                  <th>Aprobados</th>
+                  <th>Fallidos</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>AutenticaciÃ³n y Acceso</td>
+                  <td>4</td>
+                  <td><span class="badge b-ok">4</span></td>
+                  <td><span class="badge b-info">0</span></td>
+                </tr>
+                <tr>
+                  <td>Calificaciones</td>
+                  <td>4</td>
+                  <td><span class="badge b-ok">4</span></td>
+                  <td><span class="badge b-info">0</span></td>
+                </tr>
+                <tr>
+                  <td>Feed y Comunicados</td>
+                  <td>3</td>
+                  <td><span class="badge b-ok">3</span></td>
+                  <td><span class="badge b-info">0</span></td>
+                </tr>
+                <tr>
+                  <td>Horarios y ConfiguraciÃ³n</td>
+                  <td>2</td>
+                  <td><span class="badge b-ok">2</span></td>
+                  <td><span class="badge b-info">0</span></td>
+                </tr>
+                <tr>
+                  <td>Notificaciones</td>
+                  <td>2</td>
+                  <td><span class="badge b-ok">2</span></td>
+                  <td><span class="badge b-info">0</span></td>
+                </tr>
+                <tr>
+                  <td><strong>TOTAL</strong></td>
+                  <td><strong>15</strong></td>
+                  <td><strong><span class="badge b-ok">15</span></strong></td>
+                  <td><strong><span class="badge b-info">0</span></strong></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="entry-cols">
+          <div class="entry-field">
+            <div class="entry-field-label">Buenas PrÃ¡cticas de Calidad Aplicadas</div>
+            <div class="entry-field-content">
+              <ul>
+                <li><strong>VerificaciÃ³n sistemÃ¡tica:</strong> uso de instrumentos formales (lista de chequeo, casos de prueba) en lugar de revisiÃ³n informal.</li>
+                <li><strong>Registro de hallazgos:</strong> todo defecto e mejora documentado con ID, descripciÃ³n, prioridad y estado.</li>
+                <li><strong>Pruebas de borde:</strong> se incluyeron casos con datos invÃ¡lidos, accesos no autorizados y archivos malformados.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="entry-field">
+            <div class="entry-field-label">Resultado de la SesiÃ³n</div>
+            <div class="entry-field-content">
+              <span class="badge b-ok">Completado</span> Todos los defectos crÃ­ticos corregidos. Instrumentos de calidad diligenciados. 15/15 pruebas aprobadas.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SESIÃ“N 12 -->
+    <div class="entry">
+      <div class="entry-head">
+        <div class="entry-date-block">
+          <div class="entry-date-day">20</div>
+          <div class="entry-date-month">May</div>
+          <div class="entry-date-year">2026</div>
+        </div>
+        <div class="entry-meta">
+          <div class="entry-session">SesiÃ³n 12 de 12</div>
+          <div class="entry-title">DocumentaciÃ³n de calidad â€” ElaboraciÃ³n de EV03 y EV04</div>
+          <div class="entry-commit">Evidencias: GA11-220501098-AA1-EV03 Â· GA11-220501098-AA1-EV04</div>
+          <div class="entry-tags">
+            <span class="tag tag-doc">DocumentaciÃ³n</span>
+            <span class="tag tag-qa">Aseguramiento de Calidad</span>
+          </div>
+        </div>
+      </div>
+      <div class="entry-body">
+        <div class="entry-field">
+          <div class="entry-field-label">Objetivo de la SesiÃ³n</div>
+          <div class="entry-field-content">Consolidar toda la informaciÃ³n recolectada durante el proceso de desarrollo en los documentos formales de evidencia: los instrumentos diligenciados (EV03) y la presente bitÃ¡cora (EV04).</div>
+        </div>
+        <div class="entry-field">
+          <div class="entry-field-label">Actividades Realizadas</div>
+          <div class="entry-field-content">
+            <ul>
+              <li>RedacciÃ³n y maquetaciÃ³n del documento <strong>GA11-220501098-AA1-EV03</strong>: portada, introducciÃ³n, 5 instrumentos diligenciados y conclusiones.</li>
+              <li>RedacciÃ³n y maquetaciÃ³n de la presente <strong>bitÃ¡cora GA11-220501098-AA1-EV04</strong>: portada, introducciÃ³n, 12 entradas de sesiones y conclusiones.</li>
+              <li>VerificaciÃ³n de coherencia entre los datos de ambos documentos (defectos, fechas, mÃ©tricas).</li>
+              <li>RevisiÃ³n final del formato HTML para exportaciÃ³n a PDF.</li>
+              <li>Almacenamiento de ambos documentos en la carpeta <code>docs/</code> del repositorio del proyecto.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="entry-cols">
+          <div class="entry-field">
+            <div class="entry-field-label">Buenas PrÃ¡cticas de Calidad Aplicadas</div>
+            <div class="entry-field-content">
+              <ul>
+                <li><strong>Trazabilidad:</strong> cada hallazgo, fecha y decisiÃ³n en los documentos tiene correspondencia con el cÃ³digo real del repositorio o con una migraciÃ³n fechada.</li>
+                <li><strong>PresentaciÃ³n estructurada:</strong> portada, introducciÃ³n, cuerpo y conclusiones siguiendo las normas SENA para documentos escritos.</li>
+                <li><strong>Versionamiento:</strong> los documentos se almacenan en el repositorio Git como parte de la historia del proyecto.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="entry-field">
+            <div class="entry-field-label">Resultado de la SesiÃ³n</div>
+            <div class="entry-field-content">
+              <span class="badge b-ok">Completado</span> Ambas evidencias (EV03 y EV04) finalizadas y listas para entrega en formato PDF.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-num">PÃ¡gina 12 de 16</div>
+  </div>
+</div>
+
+
+<!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+     RESUMEN GENERAL DE LA BITÃCORA
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+<div class="page">
+  <div class="content-page">
+    <div class="doc-header">
+      <div class="doc-header-brand">
+        <div class="doc-header-logo">DUCTU</div>
+        <div class="doc-header-tagline">Plataforma de GestiÃ³n Educativa</div>
+      </div>
+      <div class="doc-header-meta">
+        <strong>BitÃ¡cora â€” Resumen General</strong><br>
+        GA11-220501098-AA1-EV04
+      </div>
+    </div>
+
+    <div class="section-tag">Consolidado</div>
+    <h1 class="section-title">Resumen General del Proceso</h1>
+    <div class="section-line"></div>
+
+    <h2>LÃ­nea de Tiempo del Proyecto</h2>
+    <table class="mini-table" style="margin-bottom:24px">
+      <thead>
+        <tr>
+          <th>SesiÃ³n</th>
+          <th>Fecha</th>
+          <th>Hito Principal</th>
+          <th>Migraciones Ejecutadas</th>
+          <th>Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>01</td><td>18/07/2025</td><td>Repositorio + Landing page</td><td>â€”</td><td><span class="badge b-ok">âœ“</span></td></tr>
+        <tr><td>02</td><td>29/07/2025</td><td>Primera vista de datos</td><td>â€”</td><td><span class="badge b-ok">âœ“</span></td></tr>
+        <tr><td>03</td><td>28/09/2025</td><td>AutenticaciÃ³n Stack Auth</td><td>â€”</td><td><span class="badge b-ok">âœ“</span></td></tr>
+        <tr><td>04</td><td>08/12/2025</td><td>Onboarding + BD inicial</td><td>init_ductu, add_email_appuser</td><td><span class="badge b-ok">âœ“</span></td></tr>
+        <tr><td>05</td><td>14/01/2026</td><td>Multi-tenant + Feed</td><td>invitations, multitenant_core, posts, visibility</td><td><span class="badge b-ok">âœ“</span></td></tr>
+        <tr><td>06</td><td>07/02/2026</td><td>CVE + RelaciÃ³n docente-curso</td><td>is_chief_teacher_course</td><td><span class="badge b-ok">âœ“</span></td></tr>
+        <tr><td>07</td><td>18/03/2026</td><td>NÃºcleo acadÃ©mico completo</td><td>add_academic_core</td><td><span class="badge b-ok">âœ“</span></td></tr>
+        <tr><td>08</td><td>25/03/2026</td><td>Calificaciones + Perfil alumno</td><td>add_grade_model (Ã—2), grades_detail_student_profile</td><td><span class="badge b-ok">âœ“</span></td></tr>
+        <tr><td>09</td><td>31/03/2026</td><td>Horarios + Settings + Dashboards reales</td><td>add_schedule_system, subject_invitation</td><td><span class="badge b-ok">âœ“</span></td></tr>
+        <tr><td>10</td><td>08/04/2026</td><td>Notificaciones + CÃ³digos de acceso</td><td>add_notifications, access</td><td><span class="badge b-ok">âœ“</span></td></tr>
+        <tr><td>11</td><td>15/05/2026</td><td>QA integral â€” pruebas y correcciones</td><td>â€”</td><td><span class="badge b-ok">âœ“</span></td></tr>
+        <tr><td>12</td><td>20/05/2026</td><td>DocumentaciÃ³n EV03 y EV04</td><td>â€”</td><td><span class="badge b-ok">âœ“</span></td></tr>
+      </tbody>
+    </table>
+
+    <h2>Indicadores del Proceso</h2>
+    <div class="metrics-row">
+      <div class="metric-card">
+        <div class="metric-value">12</div>
+        <div class="metric-label">Sesiones registradas</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value">21</div>
+        <div class="metric-label">Migraciones de BD</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value green">8</div>
+        <div class="metric-label">Defectos detectados</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value green">5</div>
+        <div class="metric-label">Defectos corregidos</div>
+      </div>
+    </div>
+    <div class="metrics-row">
+      <div class="metric-card">
+        <div class="metric-value">20+</div>
+        <div class="metric-label">Modelos en BD</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value green">100%</div>
+        <div class="metric-label">Pruebas aprobadas</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value">1</div>
+        <div class="metric-label">CVE resuelto</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value">7</div>
+        <div class="metric-label">MÃ³dulos funcionales</div>
+      </div>
+    </div>
+
+    <h2>Buenas PrÃ¡cticas de Calidad MÃ¡s Aplicadas</h2>
+    <table class="mini-table">
+      <thead>
+        <tr>
+          <th>PrÃ¡ctica / Referente</th>
+          <th>Sesiones en que se AplicÃ³</th>
+          <th>Impacto en el Producto</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Aislamiento multi-tenant (institutionId)</strong></td>
+          <td>05, 07, 08, 09, 10</td>
+          <td>Seguridad â€” datos de cada instituciÃ³n completamente separados</td>
+        </tr>
+        <tr>
+          <td><strong>Variables de entorno para credenciales</strong></td>
+          <td>01, 03, 10</td>
+          <td>OWASP A02 â€” Nunca se exponen secretos en el repositorio</td>
+        </tr>
+        <tr>
+          <td><strong>Ãndices de BD en columnas de filtrado</strong></td>
+          <td>05, 07, 10</td>
+          <td>Rendimiento â€” consultas eficientes a escala</td>
+        </tr>
+        <tr>
+          <td><strong>Migraciones versionadas con Prisma</strong></td>
+          <td>04, 05, 06, 07, 08, 09, 10</td>
+          <td>Portabilidad â€” esquema reproducible en cualquier entorno</td>
+        </tr>
+        <tr>
+          <td><strong>RevisiÃ³n mediante Pull Request</strong></td>
+          <td>06</td>
+          <td>Proceso â€” parche de seguridad (CVE) integrado con revisiÃ³n formal</td>
+        </tr>
+        <tr>
+          <td><strong>ValidaciÃ³n de entrada en APIs</strong></td>
+          <td>05, 08, 09, 10</td>
+          <td>Fiabilidad â€” el sistema rechaza datos invÃ¡lidos antes de tocar la BD</td>
+        </tr>
+        <tr>
+          <td><strong>Restricciones <code>@@unique</code> en BD</strong></td>
+          <td>05, 07, 09</td>
+          <td>Integridad â€” la BD como Ãºltima barrera ante datos inconsistentes</td>
+        </tr>
+        <tr>
+          <td><strong>Instrumentos formales de QA (lista de chequeo, pruebas)</strong></td>
+          <td>11, 12</td>
+          <td>Aseguramiento â€” evaluaciÃ³n objetiva contra estÃ¡ndares ISO 25010</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="page-num">PÃ¡gina 14 de 16</div>
+  </div>
+</div>
+
+
+<!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+     CONCLUSIONES
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+<div class="page">
+  <div class="content-page">
+    <div class="doc-header">
+      <div class="doc-header-brand">
+        <div class="doc-header-logo">DUCTU</div>
+        <div class="doc-header-tagline">Plataforma de GestiÃ³n Educativa</div>
+      </div>
+      <div class="doc-header-meta">
+        <strong>GA11-220501098-AA1-EV04</strong><br>
+        Conclusiones<br>
+        Mayo 2026
+      </div>
+    </div>
+
+    <div class="section-tag">Conclusiones</div>
+    <h1 class="section-title">Conclusiones</h1>
+    <div class="section-line"></div>
+
+    <p>
+      La bitÃ¡cora presentada registra de manera fiel y cronolÃ³gica el proceso completo de desarrollo
+      del proyecto <strong>DUCTU</strong>, desde su concepciÃ³n en julio de 2025 hasta la documentaciÃ³n
+      de calidad en mayo de 2026. A travÃ©s de 12 sesiones de trabajo, se construyÃ³ un sistema de
+      gestiÃ³n educativa funcional, seguro y mantenible, aplicando en cada etapa buenas prÃ¡cticas
+      verificables del marco ISO/IEC 25010.
+    </p>
+
+    <h2>ConclusiÃ³n 1 â€” El registro continuo evidencia el proceso, no solo el resultado</h2>
+    <p>
+      Una bitÃ¡cora bien llevada demuestra que el software no surge de forma espontÃ¡nea sino de
+      decisiones tÃ©cnicas concretas, debates de diseÃ±o resueltos y defectos detectados a tiempo.
+      Cada entrada de esta bitÃ¡cora corresponde a un hecho verificable: un commit en el repositorio,
+      una migraciÃ³n fechada o un defecto registrado en el instrumento correspondiente (EV03).
+      Esto cumple el principio de <em>trazabilidad</em>, esencial en procesos de calidad maduros.
+    </p>
+
+    <h2>ConclusiÃ³n 2 â€” Las buenas prÃ¡cticas de calidad se aplican desde el diseÃ±o, no al final</h2>
+    <p>
+      El aislamiento multi-tenant, los Ã­ndices de base de datos, la validaciÃ³n de entradas en las
+      APIs y el uso de variables de entorno para credenciales fueron decisiones tomadas desde las
+      primeras sesiones, no como correcciones de Ãºltimo momento. Esto demuestra que incorporar
+      calidad desde el inicio del ciclo de vida reduce el costo de las correcciones y mejora la
+      solidez del sistema resultante.
+    </p>
+
+    <h2>ConclusiÃ³n 3 â€” La correcciÃ³n proactiva de defectos es seÃ±al de madurez en el proceso</h2>
+    <p>
+      Los 8 hallazgos detectados y registrados formalmente â€”5 de ellos resueltos y 3 planificadosâ€”
+      muestran un proceso de desarrollo que no esconde sus deficiencias, sino que las identifica,
+      clasifica por prioridad y actÃºa sobre ellas. La correcciÃ³n del CVE de seguridad en React
+      Server Components (sesiÃ³n 6) es el ejemplo mÃ¡s claro: un riesgo externo detectado y
+      resuelto mediante proceso formal de revisiÃ³n (Pull Request) antes de que afectara a los usuarios.
+    </p>
+
+    <h2>ConclusiÃ³n 4 â€” La documentaciÃ³n es parte integral del software, no un trÃ¡mite posterior</h2>
+    <p>
+      Almacenar los documentos de calidad (<code>docs/</code>) dentro del mismo repositorio del
+      proyecto garantiza que el cÃ³digo y su documentaciÃ³n evolucionen juntos. Los futuros
+      mantenedores del sistema podrÃ¡n entender las decisiones de diseÃ±o consultando esta bitÃ¡cora,
+      sin depender de la memoria del desarrollador original.
+    </p>
+
+    <h2>Aprendizajes Personales</h2>
+    <ul>
+      <li>El control de versiones con Git no solo protege el cÃ³digo: permite reconstruir la historia de decisiones tÃ©cnicas con fecha y contexto.</li>
+      <li>DiseÃ±ar el esquema de base de datos con restricciones de integridad desde el inicio ahorra horas de depuraciÃ³n de datos corruptos en el futuro.</li>
+      <li>Delegar la autenticaciÃ³n a un proveedor especializado (Stack Auth) permitiÃ³ concentrar el esfuerzo de desarrollo en la lÃ³gica de negocio, sin sacrificar seguridad.</li>
+      <li>Los instrumentos formales de calidad (listas de chequeo, casos de prueba) dan objetividad a la evaluaciÃ³n: reemplazan la opiniÃ³n subjetiva de "creo que funciona" por evidencia concreta.</li>
+    </ul>
+
+    <div class="success-box" style="margin-top: 24px">
+      <strong>ConclusiÃ³n final:</strong> La bitÃ¡cora del proyecto DUCTU documenta 10 meses de desarrollo
+      iterativo, con 21 migraciones de base de datos, 7 mÃ³dulos funcionales entregados, 1 vulnerabilidad
+      de seguridad resuelta y 100% de pruebas funcionales aprobadas. El proceso cumple los criterios
+      de la evidencia GA11-220501098-AA1-EV04 y demuestra la aplicaciÃ³n efectiva de buenas prÃ¡cticas
+      de calidad de software durante todo el ciclo de vida del proyecto.
+    </div>
+
+    <!-- Firma -->
+    <div style="margin-top: 40px">
+      <div class="section-tag">ValidaciÃ³n</div>
+      <div class="signature-grid" style="margin-top: 16px">
+        <div class="signature-block">
+          <div class="signature-line"></div>
+          <div class="signature-name">NicolÃ¡s RodrÃ­guez CÃ¡ceres</div>
+          <div class="signature-role">Aprendiz â€” Autor del Proyecto DUCTU</div>
+          <div class="signature-role">Programa ADSO â€” SENA</div>
+        </div>
+        <div class="signature-block">
+          <div class="signature-line"></div>
+          <div class="signature-name">Instructor Evaluador</div>
+          <div class="signature-role">Centro de FormaciÃ³n SENA</div>
+          <div class="signature-role">Competencia 220501098</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-num">PÃ¡gina 16 de 16</div>
+  </div>
+</div>
+
+</body>
+</html>

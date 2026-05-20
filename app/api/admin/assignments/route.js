@@ -52,21 +52,28 @@ export async function POST(req) {
       return NextResponse.json({ error: "No hay año académico activo" }, { status: 400 });
     }
 
-    const assignment = await prisma.teachingAssignment.create({
-      data: {
-        institutionId,
-        academicYearId: policy.activeAcademicYearId,
-        teacherId,
-        courseId,
-        subjectId,
-        isActive: true,
-      },
-      include: {
-        teacher: { select: { id: true, fullName: true, email: true } },
-        course: { select: { id: true, name: true } },
-        subject: { select: { id: true, name: true } },
-      },
-    });
+    const [assignment] = await prisma.$transaction([
+      prisma.teachingAssignment.create({
+        data: {
+          institutionId,
+          academicYearId: policy.activeAcademicYearId,
+          teacherId,
+          courseId,
+          subjectId,
+          isActive: true,
+        },
+        include: {
+          teacher: { select: { id: true, fullName: true, email: true } },
+          course: { select: { id: true, name: true } },
+          subject: { select: { id: true, name: true } },
+        },
+      }),
+      prisma.teacherCourse.upsert({
+        where: { teacherId_courseId: { teacherId, courseId } },
+        create: { teacherId, courseId, institutionId, isChief: false },
+        update: {},
+      }),
+    ]);
 
     return NextResponse.json({ assignment });
   } catch (e) {

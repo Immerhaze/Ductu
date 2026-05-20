@@ -7,6 +7,7 @@ import GradeSelectors from "./GradeSelectors";
 import GradeStats from "./GradeStats";
 import StudentGradeCard from "./StudentGradeCard";
 import AddGradeModal from "./AddGradeModal";
+import ImportGradesModal from "./ImportGradesModal";
 import {
   EmptySelectState,
   EmptyStudentsState,
@@ -30,19 +31,16 @@ export default function GradesClient() {
   const [loadingGrades, setLoadingGrades]               = useState(false);
   const [search, setSearch]                             = useState("");
   const [modalOpen, setModalOpen]                       = useState(false);
+  const [importModalOpen, setImportModalOpen]           = useState(false);
   const [selectedStudent, setSelectedStudent]           = useState(null);
   const [editingGrade, setEditingGrade]                 = useState(null);
 
-  // Esperar a que me cargue antes de hacer fetch
   useEffect(() => {
     if (!me?.role) return;
-
     async function load() {
       setLoadingSetup(true);
       try {
-        const url = isAdmin
-          ? "/api/grades/admin-overview"
-          : "/api/grades/my-assignments";
+        const url = isAdmin ? "/api/grades/admin-overview" : "/api/grades/my-assignments";
         const res = await fetch(url);
         if (!res.ok) return;
         const data = await res.json();
@@ -56,27 +54,25 @@ export default function GradesClient() {
         setLoadingSetup(false);
       }
     }
-
     load();
   }, [me?.role]); // eslint-disable-line
 
-  useEffect(() => {
+  const loadGrades = useCallback(async () => {
     if (!selectedAssignmentId || !selectedPeriodId) return;
-    async function load() {
-      setLoadingGrades(true);
-      try {
-        const res = await fetch(`/api/grades?assignmentId=${selectedAssignmentId}&periodId=${selectedPeriodId}`);
-        if (!res.ok) return;
-        const data = await res.json();
-        setStudents(data.students ?? []);
-        setGrades(data.grades ?? []);
-        setPolicy(data.policy ?? { passingGrade: 4.0, scaleMin: 1.0, scaleMax: 7.0 });
-      } finally {
-        setLoadingGrades(false);
-      }
+    setLoadingGrades(true);
+    try {
+      const res = await fetch(`/api/grades?assignmentId=${selectedAssignmentId}&periodId=${selectedPeriodId}`);
+      if (!res.ok) return;
+      const data = await res.json();
+      setStudents(data.students ?? []);
+      setGrades(data.grades ?? []);
+      setPolicy(data.policy ?? { passingGrade: 4.0, scaleMin: 1.0, scaleMax: 7.0 });
+    } finally {
+      setLoadingGrades(false);
     }
-    load();
   }, [selectedAssignmentId, selectedPeriodId]);
+
+  useEffect(() => { loadGrades(); }, [loadGrades]);
 
   const gradesByStudent = useMemo(() => {
     const map = {};
@@ -108,19 +104,17 @@ export default function GradesClient() {
       ? Math.round((avgs.reduce((a, b) => a + b, 0) / avgs.length) * 10) / 10
       : "—";
 
-    return {
-      total: students.length,
-      withGrades: avgs.length,
-      passing,
-      failing: avgs.length - passing,
-      avg,
-    };
+    return { total: students.length, withGrades: avgs.length, passing, failing: avgs.length - passing, avg };
   }, [students, gradesByStudent, policy]);
 
   const selectedAssignment = useMemo(
     () => assignments.find((a) => a.id === selectedAssignmentId),
     [assignments, selectedAssignmentId]
   );
+
+  const assignmentLabel = selectedAssignment
+    ? `${selectedAssignment.course.name} · ${selectedAssignment.subject.name}`
+    : "";
 
   const openAddGrade = (student) => {
     setSelectedStudent(student);
@@ -150,10 +144,7 @@ export default function GradesClient() {
 
   const ready = selectedAssignmentId && selectedPeriodId;
 
-  // Mientras el usuario no carga
   if (!me) return <LoadingState message="Cargando..." />;
-
-  // Mientras cargan las asignaciones
   if (loadingSetup) return <LoadingState message="Cargando asignaciones..." />;
 
   return (
@@ -164,20 +155,35 @@ export default function GradesClient() {
         <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-1">
           Calificaciones
         </p>
-        <h1 className="text-3xl font-bold text-gray-900">Libro de notas</h1>
-        <div className="flex items-center gap-3 mt-1 flex-wrap">
-          {selectedAssignment && (
-            <p className="text-sm text-gray-400">
-              {selectedAssignment.course.name} · {selectedAssignment.subject.name}
-              {isAdmin && selectedAssignment.teacher && (
-                <span className="text-gray-300"> · {selectedAssignment.teacher.fullName}</span>
+        <div className="flex items-center justify-between gap-4 flex-wrap">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">Libro de notas</h1>
+            <div className="flex items-center gap-3 mt-1 flex-wrap">
+              {selectedAssignment && (
+                <p className="text-sm text-gray-400">
+                  {selectedAssignment.course.name} · {selectedAssignment.subject.name}
+                  {isAdmin && selectedAssignment.teacher && (
+                    <span className="text-gray-300"> · {selectedAssignment.teacher.fullName}</span>
+                  )}
+                </p>
               )}
-            </p>
-          )}
-          {isAdmin && (
-            <span className="text-xs font-medium bg-purple-50 text-purple-700 border border-purple-100 px-2.5 py-0.5 rounded-full">
-              Vista administrador · solo lectura
-            </span>
+              {isAdmin && (
+                <span className="text-xs font-medium bg-purple-50 text-purple-700 border border-purple-100 px-2.5 py-0.5 rounded-full">
+                  Vista administrador · solo lectura
+                </span>
+              )}
+            </div>
+          </div>
+
+          {/* Botón importar — solo teachers con asignación seleccionada */}
+          {!isAdmin && selectedAssignmentId && selectedPeriodId && (
+            <button
+              onClick={() => setImportModalOpen(true)}
+              className="flex items-center gap-2 text-sm font-medium px-4 py-2.5 rounded-xl bg-white border border-gray-200 text-gray-700 hover:border-blue-300 hover:text-blue-950 transition-colors"
+            >
+              <span className="icon-[lucide--upload] text-base" />
+              Importar notas
+            </button>
           )}
         </div>
       </div>
@@ -233,7 +239,7 @@ export default function GradesClient() {
         </>
       )}
 
-      {/* Modal solo para teachers */}
+      {/* Modal agregar nota — solo teachers */}
       {!isAdmin && (
         <AddGradeModal
           open={modalOpen}
@@ -244,6 +250,18 @@ export default function GradesClient() {
           student={selectedStudent}
           policy={policy}
           editingGrade={editingGrade}
+        />
+      )}
+
+      {/* Modal importar notas — solo teachers */}
+      {!isAdmin && (
+        <ImportGradesModal
+          open={importModalOpen}
+          onClose={() => setImportModalOpen(false)}
+          assignmentId={selectedAssignmentId}
+          periodId={selectedPeriodId}
+          assignmentLabel={assignmentLabel}
+          onImported={loadGrades}
         />
       )}
     </div>

@@ -151,21 +151,50 @@ if (invite.role === "TEACHER" && invite.courseAssignments?.length > 0) {
   });
 }
 
+async function safeSignOut(authUser) {
+  try {
+    await authUser.signOut();
+  } catch {
+    // Si el sign out falla no bloqueamos la respuesta
+  }
+}
+
 export async function GET(req) {
-  const authUser = await stackServerApp.getUser({ or: "redirect" });
+  let authUser;
+
+  try {
+    authUser = await stackServerApp.getUser({ or: "redirect" });
+  } catch {
+    // Stack no pudo obtener el usuario (sesión corrupta, timeout, etc.)
+    return redirectTo("/auth?mode=login&error=session_error", req);
+  }
+
   const email = authUser.primaryEmail?.toLowerCase() ?? null;
 
   if (!email) {
-    await authUser.signOut();
+    await safeSignOut(authUser);
     return redirectTo("/auth?mode=login", req);
   }
 
-  const existingAppUser = await findExistingAppUser(authUser.id);
+  // --- Consulta principal a la BD ---
+  let existingAppUser;
+  try {
+    existingAppUser = await findExistingAppUser(authUser.id);
+  } catch (dbError) {
+    // La BD falló (conexión, timeout, schema desincronizado, etc.)
+    // No dejamos al usuario en un loop: cerramos sesión y redirigimos.
+    console.error("[post-auth] Error al consultar AppUser:", dbError);
+    await safeSignOut(authUser);
+    return redirectTo("/auth?mode=login&error=db_error", req, {
+      clearInvite: true,
+      clearIntent: true,
+    });
+  }
 
   // 1) Ya existe en la BD
   if (existingAppUser) {
     if (!existingAppUser.isActive) {
-      await authUser.signOut();
+      await safeSignOut(authUser);
       return redirectTo("/auth?mode=login&error=account_disabled", req);
     }
 
@@ -176,6 +205,7 @@ export async function GET(req) {
     return redirectTo("/dashboard", req);
   }
 
+  // El usuario existe en Stack Auth pero NO en nuestra BD
   const cookieStore = await cookies();
   const inviteToken = cookieStore.get("invite_token")?.value ?? null;
   const signupIntent = cookieStore.get("signup_intent")?.value ?? null;
@@ -218,17 +248,8 @@ export async function GET(req) {
     }
   }
 
-  // 3) Flujo de registro de institución
-  if (signupIntent === "institution") {
-    return redirectTo("/onboarding", req, { clearInvite: true });
-  }
-
-  // 4) Fallback: Stack tiene sesión pero no hay AppUser ni intent conocido
-  // Hacer sign out para romper el loop de redirección
-  await authUser.signOut();
-
-  return redirectTo("/auth?mode=login&error=registration_incomplete", req, {
-    clearInvite: true,
-    clearIntent: true,
-  });
+  // 3) Sin AppUser y sin invitación → onboarding.
+  //    Cubre tanto el primer registro de institución como el caso de
+  //    onboarding abandonado (usuario retoma desde donde lo dejó).
+  return redirectTo("/onboarding", req, { clearInvite: true, clearIntent: true });
 }

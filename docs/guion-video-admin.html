@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Guion Video Tutorial — DUCTU Administrador</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap');
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:'Inter',sans-serif; background:#0f172a; color:#e2e8f0; font-size:11pt; line-height:1.7; }
+
+    .hero { background:linear-gradient(135deg,#0f172a 0%,#3b0764 60%,#7c3aed 100%); padding:60px 80px 50px; }
+    .hero-tag { font-size:8.5pt; font-weight:700; letter-spacing:.18em; text-transform:uppercase; color:#c4b5fd; margin-bottom:12px; }
+    .hero-title { font-size:28pt; font-weight:800; color:#fff; line-height:1.2; margin-bottom:8px; }
+    .hero-sub { font-size:13pt; color:#ddd6fe; font-weight:300; margin-bottom:32px; }
+    .hero-badges { display:flex; gap:12px; flex-wrap:wrap; }
+    .badge { background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.15); border-radius:20px; padding:5px 16px; font-size:9pt; color:#e9d5ff; }
+
+    .container { max-width:960px; margin:0 auto; padding:48px 40px; }
+
+    .steps-section { background:#1e293b; border-radius:16px; padding:36px; margin-bottom:40px; border:1px solid #334155; }
+    .steps-title { font-size:14pt; font-weight:700; color:#f1f5f9; margin-bottom:6px; }
+    .steps-desc { font-size:10.5pt; color:#94a3b8; margin-bottom:20px; }
+
+    /* TIMELINE */
+    .timeline { display:flex; flex-direction:column; gap:0; }
+    .tl-row { display:flex; gap:0; }
+    .tl-left { display:flex; flex-direction:column; align-items:center; width:48px; flex-shrink:0; }
+    .tl-dot { width:14px; height:14px; border-radius:50%; background:#7c3aed; border:2px solid #4c1d95; flex-shrink:0; margin-top:6px; }
+    .tl-line { width:2px; background:#2d1b69; flex:1; min-height:20px; }
+    .tl-content { flex:1; padding:0 0 22px 16px; }
+    .tl-num { font-size:8pt; font-weight:700; letter-spacing:.1em; color:#7c3aed; text-transform:uppercase; margin-bottom:2px; }
+    .tl-title { font-size:11pt; font-weight:700; color:#f1f5f9; }
+    .tl-time { display:inline-block; background:#1e1b4b; color:#a78bfa; border:1px solid #4c1d95; border-radius:20px; padding:1px 10px; font-size:8.5pt; margin-left:8px; }
+    .tl-desc { font-size:10pt; color:#94a3b8; margin-top:4px; }
+
+    /* SEGMENT */
+    .segment { border-radius:14px; overflow:hidden; margin-bottom:32px; border:1px solid #334155; }
+    .seg-header { padding:18px 26px; display:flex; align-items:center; gap:16px; }
+    .seg-header.s0 { background:linear-gradient(90deg,#3b0764,#6d28d9); }
+    .seg-header.s1 { background:linear-gradient(90deg,#1e3a5f,#2563eb); }
+    .seg-header.s2 { background:linear-gradient(90deg,#064e3b,#059669); }
+    .seg-header.s3 { background:linear-gradient(90deg,#7c3aed,#a855f7); }
+    .seg-header.s4 { background:linear-gradient(90deg,#9a3412,#ea580c); }
+    .seg-header.s5 { background:linear-gradient(90deg,#0369a1,#0ea5e9); }
+    .seg-header.s6 { background:linear-gradient(90deg,#065f46,#10b981); }
+    .seg-header.s7 { background:linear-gradient(90deg,#1e293b,#475569); }
+
+    .seg-num { background:rgba(0,0,0,.3); color:#fff; font-weight:800; font-size:13pt; width:42px; height:42px; border-radius:10px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .seg-info { flex:1; }
+    .seg-title { font-size:13pt; font-weight:700; color:#fff; }
+    .seg-time { font-size:9pt; color:rgba(255,255,255,.75); margin-top:2px; }
+    .seg-duration { background:rgba(0,0,0,.2); color:#fff; padding:4px 14px; border-radius:20px; font-size:9pt; font-weight:600; white-space:nowrap; }
+
+    .seg-body { background:#1e293b; padding:26px 28px; }
+
+    .actions-label { font-size:8pt; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:#60a5fa; margin-bottom:12px; display:block; }
+    .action-row { display:flex; gap:12px; margin-bottom:8px; align-items:flex-start; padding:8px; border-radius:8px; background:#0f172a; border:1px solid #1e293b; }
+    .act-icon { font-size:14pt; flex-shrink:0; width:28px; text-align:center; margin-top:1px; }
+    .act-text { font-size:10.5pt; color:#cbd5e1; flex:1; }
+    .act-text strong { color:#f1f5f9; }
+
+    .narration-wrap { margin-top:18px; }
+    .narration-label { font-size:8pt; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:#a78bfa; margin-bottom:10px; display:flex; align-items:center; gap:8px; }
+    .narration-label::before { content:'🎙'; font-size:13pt; }
+    .narration-box { background:#0f172a; border:1px solid #4c1d95; border-left:4px solid #7c3aed; border-radius:0 10px 10px 0; padding:18px 22px; }
+    .narration-box p { color:#ddd6fe; font-size:11pt; line-height:1.8; margin-bottom:10px; }
+    .narration-box p:last-child { margin-bottom:0; }
+
+    .screen-cue { background:#0c1a2e; border:1px solid #1e3a5f; border-left:4px solid #2563eb; border-radius:0 8px 8px 0; padding:10px 16px; margin:12px 0; font-size:9.5pt; color:#93c5fd; display:flex; gap:8px; }
+    .screen-cue::before { content:'🖥'; flex-shrink:0; }
+
+    .tip { background:#1c1917; border:1px solid #78350f; border-left:4px solid #d97706; border-radius:0 8px 8px 0; padding:10px 16px; margin:12px 0; font-size:9.5pt; color:#fde68a; display:flex; gap:8px; }
+    .tip::before { content:'💡'; flex-shrink:0; }
+
+    .warn { background:#1a0000; border:1px solid #7f1d1d; border-left:4px solid #ef4444; border-radius:0 8px 8px 0; padding:10px 16px; margin:12px 0; font-size:9.5pt; color:#fca5a5; display:flex; gap:8px; }
+    .warn::before { content:'⚠️'; flex-shrink:0; }
+
+    h3 { font-size:10.5pt; font-weight:700; color:#c4b5fd; margin:18px 0 8px; }
+  </style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-tag">DUCTU · Video Tutorial</div>
+  <div class="hero-title">Guion — Rol Administrador<br/>y Superadministrador</div>
+  <div class="hero-sub">Gestión completa de la institución. Palabra por palabra.</div>
+  <div class="hero-badges">
+    <span class="badge">📹 ~18 minutos de video</span>
+    <span class="badge">🎙 8 segmentos de narración</span>
+    <span class="badge">🤖 Voz IA en español</span>
+    <span class="badge">👑 Rol: Administrador</span>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- AGENDA -->
+<div class="steps-section">
+  <div class="steps-title">Estructura del video</div>
+  <div class="steps-desc">El video cubre todos los módulos exclusivos del administrador en orden lógico de uso.</div>
+
+  <div class="timeline">
+    <div class="tl-row"><div class="tl-left"><div class="tl-dot"></div><div class="tl-line"></div></div><div class="tl-content"><div class="tl-num">Seg 0</div><div class="tl-title">Introducción <span class="tl-time">00:00 – 00:20</span></div><div class="tl-desc">Presentación del video y del rol administrador.</div></div></div>
+    <div class="tl-row"><div class="tl-left"><div class="tl-dot"></div><div class="tl-line"></div></div><div class="tl-content"><div class="tl-num">Seg 1</div><div class="tl-title">Acceso y Dashboard <span class="tl-time">00:20 – 02:30</span></div><div class="tl-desc">Login, panel principal, feed y publicaciones con segmentación avanzada.</div></div></div>
+    <div class="tl-row"><div class="tl-left"><div class="tl-dot"></div><div class="tl-line"></div></div><div class="tl-content"><div class="tl-num">Seg 2</div><div class="tl-title">Gestión de Usuarios <span class="tl-time">02:30 – 06:00</span></div><div class="tl-desc">Tabla de usuarios, invitar, editar, desactivar e importar.</div></div></div>
+    <div class="tl-row"><div class="tl-left"><div class="tl-dot"></div><div class="tl-line"></div></div><div class="tl-content"><div class="tl-num">Seg 3</div><div class="tl-title">Ajustes — Configuración Académica <span class="tl-time">06:00 – 10:30</span></div><div class="tl-desc">Años, períodos, cursos, asignaturas y asignaciones docentes.</div></div></div>
+    <div class="tl-row"><div class="tl-left"><div class="tl-dot"></div><div class="tl-line"></div></div><div class="tl-content"><div class="tl-num">Seg 4</div><div class="tl-title">Horarios <span class="tl-time">10:30 – 13:30</span></div><div class="tl-desc">Crear bloques horarios y armar la grilla semanal por curso.</div></div></div>
+    <div class="tl-row"><div class="tl-left"><div class="tl-dot"></div><div class="tl-line"></div></div><div class="tl-content"><div class="tl-num">Seg 5</div><div class="tl-title">Calificaciones (vista admin) <span class="tl-time">13:30 – 15:30</span></div><div class="tl-desc">Supervisión de notas de todos los docentes en modo solo lectura.</div></div></div>
+    <div class="tl-row"><div class="tl-left"><div class="tl-dot"></div><div class="tl-line"></div></div><div class="tl-content"><div class="tl-num">Seg 6</div><div class="tl-title">Dashboard de Datos <span class="tl-time">15:30 – 17:30</span></div><div class="tl-desc">Estadísticas institucionales: aprobados, promedios por asignatura y por docente.</div></div></div>
+    <div class="tl-row"><div class="tl-left"><div class="tl-dot"></div></div><div class="tl-content"><div class="tl-num">Seg 7</div><div class="tl-title">Cierre <span class="tl-time">17:30 – 18:00</span></div><div class="tl-desc">Resumen de responsabilidades y recomendaciones finales.</div></div></div>
+  </div>
+</div>
+
+<!-- ══ SEG 0: INTRO ══ -->
+<div class="segment">
+  <div class="seg-header s0">
+    <div class="seg-num">0</div>
+    <div class="seg-info">
+      <div class="seg-title">Introducción del Video</div>
+      <div class="seg-time">00:00 – 00:20 &nbsp;|&nbsp; Pantalla: logo DUCTU o dashboard admin</div>
+    </div>
+    <div class="seg-duration">20 seg</div>
+  </div>
+  <div class="seg-body">
+    <div class="screen-cue">Mostrar el logo de DUCTU sobre fondo oscuro, o el dashboard del administrador ya cargado.</div>
+    <div class="narration-wrap">
+      <div class="narration-label">Texto para ElevenLabs / TTSMaker</div>
+      <div class="narration-box">
+        <p>Bienvenido al tutorial de DUCTU para el rol de administrador. En este video aprenderás a gestionar usuarios, configurar el año académico, construir horarios, supervisar calificaciones y analizar el rendimiento de toda tu institución. Comencemos.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SEG 1: ACCESO Y DASHBOARD ══ -->
+<div class="segment">
+  <div class="seg-header s1">
+    <div class="seg-num">1</div>
+    <div class="seg-info">
+      <div class="seg-title">Acceso, Dashboard y Feed Institucional</div>
+      <div class="seg-time">00:20 – 02:30 &nbsp;|&nbsp; ~2 minutos 10 segundos</div>
+    </div>
+    <div class="seg-duration">2 min 10 seg</div>
+  </div>
+  <div class="seg-body">
+    <span class="actions-label">Lo que debes hacer en pantalla</span>
+    <div class="action-row"><div class="act-icon">🔐</div><div class="act-text">Mostrar la pantalla de login. Ingresar credenciales y hacer clic en "Entrar". El sistema redirige al dashboard.</div></div>
+    <div class="action-row"><div class="act-icon">📌</div><div class="act-text">Señalar el sidebar: los 6 módulos disponibles para admin — Inicio, Usuarios, Calificaciones, Datos, Horarios, Ajustes.</div></div>
+    <div class="action-row"><div class="act-icon">📊</div><div class="act-text">Señalar la barra superior de estadísticas rápidas del dashboard.</div></div>
+    <div class="action-row"><div class="act-icon">✍️</div><div class="act-text">Hacer clic en "¿Qué tienes en mente hoy?" para abrir el compositor de publicación. Escribir un mensaje de ejemplo.</div></div>
+    <div class="action-row"><div class="act-icon">🎯</div><div class="act-text">Abrir el panel de visibilidad. Mostrar las 3 pestañas: <strong>Todos</strong>, <strong>Roles</strong>, <strong>Cursos</strong>. Seleccionar "Roles" → marcar "Profesores". Luego cambiar a "Cursos" y seleccionar un curso específico.</div></div>
+    <div class="action-row"><div class="act-icon">📢</div><div class="act-text">Seleccionar "Todos" y publicar el mensaje de ejemplo. Mostrar que aparece en el feed.</div></div>
+
+    <div class="narration-wrap">
+      <div class="narration-label">Texto para ElevenLabs / TTSMaker</div>
+      <div class="narration-box">
+        <p>Al ingresar con tu cuenta de administrador, llegarás al dashboard principal. En la barra lateral izquierda tienes acceso a los seis módulos del sistema: Inicio, Usuarios, Calificaciones, Datos, Horarios y Ajustes. Como administrador tienes acceso completo a todos ellos.</p>
+        <p>En la parte superior del dashboard verás estadísticas rápidas de tu institución, como el período académico activo o indicadores generales.</p>
+        <p>El centro de la pantalla es el feed institucional. Desde aquí puedes publicar avisos para toda la comunidad escolar. Haz clic en el campo de publicación y escribe tu mensaje.</p>
+        <p>Lo que diferencia al administrador es la capacidad de segmentar el destinatario. Al configurar la visibilidad, tienes tres opciones: publicar para toda la institución, para un rol específico como solo docentes o solo administrativos, o para un curso en particular. Elige la opción que necesites y luego haz clic en Publicar.</p>
+        <p>Esta herramienta es ideal para comunicados oficiales, recordatorios de fechas importantes o instrucciones dirigidas a grupos específicos.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SEG 2: USUARIOS ══ -->
+<div class="segment">
+  <div class="seg-header s2">
+    <div class="seg-num">2</div>
+    <div class="seg-info">
+      <div class="seg-title">Gestión de Usuarios</div>
+      <div class="seg-time">02:30 – 06:00 &nbsp;|&nbsp; ~3 minutos 30 segundos</div>
+    </div>
+    <div class="seg-duration">3 min 30 seg</div>
+  </div>
+  <div class="seg-body">
+    <span class="actions-label">Lo que debes hacer en pantalla</span>
+
+    <h3>Ver tabla de usuarios</h3>
+    <div class="action-row"><div class="act-icon">👥</div><div class="act-text">Hacer clic en "Usuarios" en el sidebar. Mostrar la tabla con columnas: nombre, correo, rol, curso (si aplica), estado.</div></div>
+    <div class="action-row"><div class="act-icon">🔍</div><div class="act-text">Usar el campo de búsqueda: escribir el nombre de un usuario. Luego usar los filtros de rol (Todos / Docente / Estudiante / Administrativo) y de estado.</div></div>
+
+    <h3>Invitar un usuario</h3>
+    <div class="action-row"><div class="act-icon">✉️</div><div class="act-text">Hacer clic en "Invitar usuario". Se abre el modal. Completar: correo electrónico, rol (ej: Docente), cargo (ej: "Profesor de Física").</div></div>
+    <div class="action-row"><div class="act-icon">📚</div><div class="act-text">Si el rol es Docente, mostrar la sección de asignación de cursos: seleccionar un curso y una asignatura. Marcar o no la casilla "Profesor jefe". Agregar más asignaciones si aplica.</div></div>
+    <div class="action-row"><div class="act-icon">📧</div><div class="act-text">Hacer clic en "Enviar invitación". El sistema genera un enlace y lo envía por correo al nuevo usuario.</div></div>
+    <div class="action-row"><div class="act-icon">📋</div><div class="act-text">Mostrar la pestaña "Invitaciones pendientes" con el estado de los correos enviados y la opción de revocar una invitación.</div></div>
+
+    <h3>Editar y desactivar</h3>
+    <div class="action-row"><div class="act-icon">✏️</div><div class="act-text">En la tabla, hacer clic en el ícono de edición de un usuario. Mostrar el modal de edición: cambiar el cargo o el estado activo/inactivo.</div></div>
+
+    <div class="tip">Prepara un correo de prueba real (tuyo o de un compañero) para demostrar el flujo de invitación en vivo. Así el video muestra el proceso completo y auténtico.</div>
+
+    <div class="narration-wrap">
+      <div class="narration-label">Texto para ElevenLabs / TTSMaker</div>
+      <div class="narration-box">
+        <p>El módulo de Usuarios es donde administras a toda la comunidad escolar. Haz clic en Usuarios en el sidebar.</p>
+        <p>Verás la tabla completa de usuarios activos: nombre, correo, rol, curso asignado y estado. Puedes buscar por nombre o correo, y filtrar por rol o estado para encontrar a quien necesites rápidamente.</p>
+        <p>Para agregar un nuevo usuario al sistema, haz clic en Invitar usuario. Se abrirá un formulario donde debes ingresar el correo electrónico del nuevo miembro, seleccionar su rol: administrativo, docente o estudiante, y su cargo o título si aplica.</p>
+        <p>Si el usuario es docente, deberás asignarle los cursos y asignaturas que dictará. Selecciona el curso, luego la asignatura, y decide si será profesor jefe de ese curso. Puedes agregar múltiples asignaciones en el mismo formulario. Cuando termines, haz clic en Enviar invitación. El sistema enviará automáticamente un correo con el enlace de registro al nuevo docente.</p>
+        <p>Las invitaciones enviadas quedan registradas en la pestaña Invitaciones pendientes, donde puedes ver cuáles han sido usadas y cuáles están vencidas o activas. Si necesitas revocar una invitación antes de que sea usada, tienes la opción de hacerlo desde allí.</p>
+        <p>Para modificar los datos de un usuario existente, haz clic en el ícono de edición junto a su nombre. Puedes actualizar su cargo, cambiar sus cursos asignados o desactivar su cuenta si ya no forma parte de la institución. Un usuario desactivado no puede ingresar al sistema pero sus datos se conservan.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SEG 3: AJUSTES ══ -->
+<div class="segment">
+  <div class="seg-header s3">
+    <div class="seg-num">3</div>
+    <div class="seg-info">
+      <div class="seg-title">Ajustes — Configuración Académica Completa</div>
+      <div class="seg-time">06:00 – 10:30 &nbsp;|&nbsp; ~4 minutos 30 segundos</div>
+    </div>
+    <div class="seg-duration">4 min 30 seg</div>
+  </div>
+  <div class="seg-body">
+    <span class="actions-label">Lo que debes hacer en pantalla</span>
+
+    <h3>Año académico</h3>
+    <div class="action-row"><div class="act-icon">⚙️</div><div class="act-text">Hacer clic en "Ajustes" en el sidebar. Mostrar las 6 pestañas: Año académico, Períodos, Cursos, Asignaturas, Asignaciones docentes, Institución.</div></div>
+    <div class="action-row"><div class="act-icon">📅</div><div class="act-text">En la pestaña "Año académico": mostrar el año activo existente. Hacer clic en "Nuevo año" para mostrar el formulario (nombre, fecha inicio, fecha fin). Señalar el botón de activar/desactivar un año.</div></div>
+
+    <h3>Períodos</h3>
+    <div class="action-row"><div class="act-icon">🗓️</div><div class="act-text">Ir a la pestaña "Períodos". Mostrar los períodos del año activo (ej: 1er Semestre, 2do Semestre). Señalar cuál está activo con la indicación visual.</div></div>
+
+    <h3>Cursos</h3>
+    <div class="action-row"><div class="act-icon">🏫</div><div class="act-text">Ir a la pestaña "Cursos". Mostrar la lista de cursos generados (ej: 7°A, 7°B, 8°A). Hacer clic en "Agregar curso" y mostrar el formulario.</div></div>
+
+    <h3>Asignaturas</h3>
+    <div class="action-row"><div class="act-icon">📖</div><div class="act-text">Ir a "Asignaturas". Mostrar la lista de materias activas (Matemáticas, Lenguaje, Historia, etc.). Hacer clic en "Nueva asignatura" y escribir el nombre.</div></div>
+
+    <h3>Asignaciones docentes</h3>
+    <div class="action-row"><div class="act-icon">🔗</div><div class="act-text">Ir a "Asignaciones docentes". Mostrar la tabla que relaciona docente → curso → asignatura. Hacer clic en "Nueva asignación": seleccionar docente, curso y asignatura. Guardar.</div></div>
+    <div class="action-row"><div class="act-icon">🗑️</div><div class="act-text">Mostrar el botón de eliminar una asignación existente.</div></div>
+
+    <h3>Institución</h3>
+    <div class="action-row"><div class="act-icon">🏛️</div><div class="act-text">Ir a "Institución". Mostrar la configuración: nombre, correo de contacto, escala de notas (mínima, máxima, nota de aprobación), régimen académico y configuración de secciones de cursos.</div></div>
+
+    <div class="warn">El orden importa: primero configura el Año académico, luego los Períodos, luego los Cursos y Asignaturas, y finalmente las Asignaciones docentes. Si omites pasos anteriores, los siguientes no funcionarán correctamente.</div>
+
+    <div class="narration-wrap">
+      <div class="narration-label">Texto para ElevenLabs / TTSMaker</div>
+      <div class="narration-box">
+        <p>El módulo de Ajustes es el punto de partida de todo el sistema. Aquí configuras la estructura académica de tu institución. Haz clic en Ajustes en el sidebar.</p>
+        <p>Verás seis pestañas. Es importante configurarlas en orden, porque cada una depende de la anterior.</p>
+        <p>Comienza por el Año académico. Aquí creas el año escolar activo, definiendo su nombre y fechas de inicio y fin. Solo puede haber un año académico activo a la vez. Cuando comienza un nuevo año escolar, creas uno nuevo y lo activas.</p>
+        <p>Luego ve a Períodos. Los períodos son las divisiones del año: semestres, trimestres o cuatrimestres según la configuración de tu institución. Crea cada período con su nombre y fechas, y activa el que está en curso actualmente. Las notas de los docentes siempre se registran dentro de un período.</p>
+        <p>En la pestaña Cursos encontrarás todos los cursos de tu institución. Aquí puedes agregar nuevos cursos especificando el nivel y la sección.</p>
+        <p>En Asignaturas registras todas las materias que se dictan en la institución. Estas serán las opciones disponibles al crear asignaciones docentes y al construir los horarios.</p>
+        <p>La pestaña Asignaciones docentes es donde vinculas a un docente con un curso y una asignatura específica para el año académico activo. Esta asignación es la que determina qué libro de notas puede gestionar cada profesor. Al crear una asignación aquí, el docente verá automáticamente ese curso en su módulo de calificaciones.</p>
+        <p>Por último, en Institución puedes configurar los datos generales como el nombre del colegio, el correo de contacto, y la política de calificaciones: la escala de notas, la nota mínima de aprobación y el tipo de régimen académico.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SEG 4: HORARIOS ══ -->
+<div class="segment">
+  <div class="seg-header s4">
+    <div class="seg-num">4</div>
+    <div class="seg-info">
+      <div class="seg-title">Horarios — Bloques y Grilla Semanal</div>
+      <div class="seg-time">10:30 – 13:30 &nbsp;|&nbsp; ~3 minutos</div>
+    </div>
+    <div class="seg-duration">3 min</div>
+  </div>
+  <div class="seg-body">
+    <span class="actions-label">Lo que debes hacer en pantalla</span>
+
+    <h3>Gestionar bloques horarios</h3>
+    <div class="action-row"><div class="act-icon">📅</div><div class="act-text">Hacer clic en "Horarios" en el sidebar. Mostrar que hay dos pestañas: "Horario" y "Bloques". Ir a la pestaña "Bloques".</div></div>
+    <div class="action-row"><div class="act-icon">⏰</div><div class="act-text">Mostrar la lista de bloques existentes (Bloque 1: 08:00–08:45, Recreo: 10:30–11:00, etc.) con su orden numérico. Hacer clic en "Agregar bloque": completar nombre, hora inicio, hora fin y si es recreo o no.</div></div>
+
+    <h3>Construir la grilla del horario</h3>
+    <div class="action-row"><div class="act-icon">📚</div><div class="act-text">Ir a la pestaña "Horario". Seleccionar un curso del selector (ej: "7°A"). La grilla semanal se carga con los bloques configurados.</div></div>
+    <div class="action-row"><div class="act-icon">🖱️</div><div class="act-text">Hacer clic en una celda vacía de la grilla (ej: Lunes, Bloque 1). Se abre el modal de edición de slot.</div></div>
+    <div class="action-row"><div class="act-icon">🔗</div><div class="act-text">En el modal: seleccionar la asignatura (ej: "Matemáticas"), el docente asignado (ej: "Prof. García") y opcionalmente el aula (ej: "Sala 12"). Guardar.</div></div>
+    <div class="action-row"><div class="act-icon">✅</div><div class="act-text">Mostrar que la celda de la grilla ahora muestra la asignatura y el docente asignado. Repetir con 2 o 3 celdas más para mostrar el flujo.</div></div>
+    <div class="action-row"><div class="act-icon">👁️</div><div class="act-text">Mencionar que docentes y estudiantes ven este horario en modo solo lectura desde sus propias cuentas.</div></div>
+
+    <div class="tip">Configura los bloques ANTES de armar la grilla. Si agregas bloques después, tendrás que volver a la grilla para llenarlos.</div>
+
+    <div class="narration-wrap">
+      <div class="narration-label">Texto para ElevenLabs / TTSMaker</div>
+      <div class="narration-box">
+        <p>El módulo de Horarios te permite construir el horario semanal de cada curso y publicarlo para que docentes y estudiantes lo consulten en tiempo real. Haz clic en Horarios en el sidebar.</p>
+        <p>El primer paso es definir los bloques horarios. Ve a la pestaña Bloques. Aquí creas las franjas de tiempo que compondrán el día escolar: el Bloque 1 de ocho a ocho cuarenta y cinco, el Bloque 2, el recreo, el almuerzo, y así sucesivamente. Para cada bloque defines su nombre, la hora de inicio, la hora de fin, y si es un bloque de clase o un descanso. El orden de los bloques determina cómo se muestran en la grilla.</p>
+        <p>Una vez que tienes tus bloques listos, ve a la pestaña Horario. Selecciona el curso al que quieres asignar el horario usando el selector de curso. Verás la grilla semanal vacía, con los días de la semana como columnas y tus bloques como filas.</p>
+        <p>Para asignar una clase, haz clic en cualquier celda vacía. Se abrirá un modal donde seleccionas la asignatura que se dictará en ese bloque, el docente responsable, y opcionalmente el aula o sala. Guarda y verás la información reflejada inmediatamente en esa celda de la grilla.</p>
+        <p>Repite este proceso para completar el horario del curso. Cuando termines, docentes y estudiantes podrán consultar el horario actualizado desde sus propias cuentas sin necesidad de que tú les notifiques.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SEG 5: CALIFICACIONES ══ -->
+<div class="segment">
+  <div class="seg-header s5">
+    <div class="seg-num">5</div>
+    <div class="seg-info">
+      <div class="seg-title">Calificaciones — Supervisión en Modo Solo Lectura</div>
+      <div class="seg-time">13:30 – 15:30 &nbsp;|&nbsp; ~2 minutos</div>
+    </div>
+    <div class="seg-duration">2 min</div>
+  </div>
+  <div class="seg-body">
+    <span class="actions-label">Lo que debes hacer en pantalla</span>
+    <div class="action-row"><div class="act-icon">📋</div><div class="act-text">Hacer clic en "Calificaciones" en el sidebar. Mostrar la insignia morada "Vista administrador · solo lectura".</div></div>
+    <div class="action-row"><div class="act-icon">🔽</div><div class="act-text">En el selector de asignación, mostrar que aparecen TODAS las asignaciones de todos los docentes (no solo las propias). Seleccionar una, por ejemplo "7°A · Matemáticas · Prof. García".</div></div>
+    <div class="action-row"><div class="act-icon">📅</div><div class="act-text">Seleccionar el período activo. Mostrar las tarjetas de estudiantes con sus notas ya registradas por el docente.</div></div>
+    <div class="action-row"><div class="act-icon">📊</div><div class="act-text">Señalar el panel de estadísticas: aprobados, reprobados, promedio. Intentar hacer clic en agregar nota para mostrar que el botón no está disponible en modo admin.</div></div>
+
+    <div class="narration-wrap">
+      <div class="narration-label">Texto para ElevenLabs / TTSMaker</div>
+      <div class="narration-box">
+        <p>En el módulo de Calificaciones, el administrador tiene una vista de supervisión completa. Haz clic en Calificaciones en el sidebar.</p>
+        <p>Notarás la insignia que dice "Vista administrador, solo lectura". Esto significa que puedes revisar las notas de cualquier docente, pero no modificarlas. La gestión de notas es responsabilidad exclusiva de cada docente.</p>
+        <p>En el selector de asignación verás todas las asignaciones de toda la institución, no solo las de un docente en particular. Puedes seleccionar cualquier combinación de curso, asignatura y docente para revisar su libro de notas.</p>
+        <p>Al seleccionar una asignación y un período, verás las tarjetas de todos los estudiantes del curso con sus calificaciones registradas, junto con las estadísticas del grupo: cuántos están aprobando, cuántos reprobando y el promedio general.</p>
+        <p>Esta vista es especialmente útil para detectar cursos con bajo rendimiento y coordinar acciones pedagógicas con los docentes responsables.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SEG 6: DATOS ══ -->
+<div class="segment">
+  <div class="seg-header s6">
+    <div class="seg-num">6</div>
+    <div class="seg-info">
+      <div class="seg-title">Dashboard de Datos — Estadísticas Institucionales</div>
+      <div class="seg-time">15:30 – 17:30 &nbsp;|&nbsp; ~2 minutos</div>
+    </div>
+    <div class="seg-duration">2 min</div>
+  </div>
+  <div class="seg-body">
+    <span class="actions-label">Lo que debes hacer en pantalla</span>
+    <div class="action-row"><div class="act-icon">📊</div><div class="act-text">Hacer clic en "Datos" en el sidebar. Esperar a que carguen los paneles.</div></div>
+    <div class="action-row"><div class="act-icon">🔢</div><div class="act-text">Señalar las 3 tarjetas de estadísticas superiores: Total estudiantes, Aprobados, Reprobados. Mover el mouse por encima de cada una.</div></div>
+    <div class="action-row"><div class="act-icon">📉</div><div class="act-text">Señalar la gráfica de barras de promedios por asignatura. Las barras están ordenadas de menor a mayor para destacar las materias en riesgo. Pasar el mouse para mostrar los tooltips.</div></div>
+    <div class="action-row"><div class="act-icon">🏆</div><div class="act-text">Señalar la gráfica de barras de promedios por docente. Explicar que muestra el rendimiento promedio de los estudiantes de cada profesor.</div></div>
+
+    <div class="narration-wrap">
+      <div class="narration-label">Texto para ElevenLabs / TTSMaker</div>
+      <div class="narration-box">
+        <p>El módulo de Datos ofrece al administrador una visión global del rendimiento académico de toda la institución. Haz clic en Datos en el sidebar.</p>
+        <p>En la parte superior verás tres indicadores clave: el total de estudiantes con notas registradas, cuántos están aprobando y cuántos reprobando. Estos números se calculan automáticamente a partir de todas las calificaciones ingresadas en el sistema.</p>
+        <p>Debajo encontrarás la gráfica de rendimiento por asignatura. Las barras están ordenadas de menor a mayor promedio, lo que te permite identificar de inmediato cuáles son las materias donde los estudiantes tienen más dificultades. Esta información es valiosa para tomar decisiones pedagógicas como reforzamiento, capacitación docente o revisión curricular.</p>
+        <p>La segunda gráfica muestra el rendimiento promedio por docente: qué tan bien están rindiendo los estudiantes de cada profesor. Esto no es una evaluación del docente en sí, sino una herramienta para detectar cursos que pueden necesitar apoyo adicional.</p>
+        <p>Todos estos datos se actualizan en tiempo real a medida que los docentes ingresan calificaciones al sistema.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SEG 7: CIERRE ══ -->
+<div class="segment">
+  <div class="seg-header s7">
+    <div class="seg-num">7</div>
+    <div class="seg-info">
+      <div class="seg-title">Cierre y Resumen</div>
+      <div class="seg-time">17:30 – 18:00 &nbsp;|&nbsp; ~30 segundos</div>
+    </div>
+    <div class="seg-duration">30 seg</div>
+  </div>
+  <div class="seg-body">
+    <div class="screen-cue">Volver al dashboard principal. Mostrar la pantalla completa durante 3-4 segundos como imagen de cierre.</div>
+    <div class="narration-wrap">
+      <div class="narration-label">Texto para ElevenLabs / TTSMaker</div>
+      <div class="narration-box">
+        <p>Esto concluye el tutorial de DUCTU para administradores. Ahora conoces cómo gestionar usuarios mediante invitaciones, configurar el año académico, los períodos, los cursos, las asignaturas y las asignaciones docentes, construir los horarios semanales, supervisar calificaciones de toda la institución y analizar el rendimiento académico global.</p>
+        <p>Recuerda: el orden correcto al iniciar el sistema es primero configurar los ajustes académicos, luego invitar a los usuarios, y después los docentes podrán comenzar a gestionar sus calificaciones y horarios. ¡Mucho éxito con DUCTU!</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CHECKLIST -->
+<div class="steps-section">
+  <div class="steps-title">Checklist antes de grabar</div>
+  <div class="steps-desc">Prepara esto antes de abrir OBS.</div>
+
+  <div style="display:flex;flex-direction:column;gap:14px;margin-top:4px;">
+    <div style="display:flex;gap:14px;align-items:flex-start;">
+      <div style="background:#059669;color:#fff;font-weight:800;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:11pt;">✓</div>
+      <div><strong style="color:#f1f5f9;display:block;">Cuenta admin con datos reales de prueba</strong><span style="color:#94a3b8;font-size:10pt;">Que tenga: al menos 2 cursos, 3 docentes invitados y activos, asignaciones creadas, notas ya ingresadas por los docentes, y bloques horarios configurados.</span></div>
+    </div>
+    <div style="display:flex;gap:14px;align-items:flex-start;">
+      <div style="background:#059669;color:#fff;font-weight:800;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:11pt;">✓</div>
+      <div><strong style="color:#f1f5f9;display:block;">Año académico activo configurado</strong><span style="color:#94a3b8;font-size:10pt;">Sin año activo, el módulo de calificaciones y asignaciones no funciona. Verifica en Ajustes → Año académico antes de grabar.</span></div>
+    </div>
+    <div style="display:flex;gap:14px;align-items:flex-start;">
+      <div style="background:#059669;color:#fff;font-weight:800;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:11pt;">✓</div>
+      <div><strong style="color:#f1f5f9;display:block;">Graba Ajustes de último a primero (o usa datos ya cargados)</strong><span style="color:#94a3b8;font-size:10pt;">Si grabas el proceso de creación desde cero, hazlo en un ambiente de prueba separado para no afectar los datos reales. Alternativamente, muestra los datos ya creados y describe el proceso verbalmente.</span></div>
+    </div>
+    <div style="display:flex;gap:14px;align-items:flex-start;">
+      <div style="background:#059669;color:#fff;font-weight:800;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:11pt;">✓</div>
+      <div><strong style="color:#f1f5f9;display:block;">Genera todos los audios primero en ElevenLabs</strong><span style="color:#94a3b8;font-size:10pt;">Escúchalos completos antes de grabar la pantalla para saber exactamente qué va a decir la voz en cada momento y poder sincronizar tus acciones.</span></div>
+    </div>
+  </div>
+</div>
+
+<div style="text-align:center;padding:40px 0 20px;color:#475569;font-size:9.5pt;">
+  <strong style="color:#f1f5f9;letter-spacing:.12em;">DUCTU</strong> · Guion Video Tutorial Admin · GA10-220501097-AA12-EV01 · Abril 2026
+</div>
+
+</div>
+</body>
+</html>

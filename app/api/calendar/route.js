@@ -119,9 +119,48 @@ export async function POST(request) {
       },
     });
 
+    // Al final del POST de calendar, después de crear el evento:
+try {
+  const { createNotifications } = await import("@/lib/notifications");
+
+  let recipients = [];
+  if (targets.some((t) => t.type === "ALL")) {
+    recipients = await prisma.appUser.findMany({
+      where: { institutionId, isActive: true, id: { not: userId } },
+      select: { id: true, email: true, fullName: true },
+    });
+  } else {
+    const courseIds = targets.filter((t) => t.type === "COURSE").map((t) => t.courseId);
+    recipients = await prisma.appUser.findMany({
+      where: {
+        institutionId,
+        isActive: true,
+        id: { not: userId },
+        ...(courseIds.length ? { courseId: { in: courseIds } } : {}),
+      },
+      select: { id: true, email: true, fullName: true },
+    });
+  }
+
+  if (recipients.length > 0) {
+    await createNotifications(
+      recipients.map((u) => ({ userId: u.id, email: u.email, fullName: u.fullName })),
+      {
+        type: "NEW_EVENT",
+        title: `Nuevo evento: ${title.trim()}`,
+        body: description?.trim() || null,
+        link: "/dashboard",
+      }
+    );
+  }
+} catch (e) {
+  console.error("[notifications] event error:", e?.message);
+}
+
     return NextResponse.json({ event }, { status: 201 });
   } catch (e) {
     console.error("[api/calendar POST]", e?.message);
+    console.error("[api/calendar POST]", e?.message, e?.cause?.message, e);
     const code = e?.message;
     if (code === "APP_USER_NOT_FOUND") return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     if (code === "PROFILE_INCOMPLETE") return NextResponse.json({ error: "Profile incomplete" }, { status: 403 });

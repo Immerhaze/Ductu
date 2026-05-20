@@ -18,7 +18,7 @@ function ShellInner({ children }) {
   return (
     <div className="flex h-screen overflow-hidden">
       <aside className="shrink-0 border-r border-gray-100 h-screen transition-all duration-300">
-        <SideBar userRole={me?.role} />
+        <SideBar userRole={me?.role} userName={me?.fullName} />
       </aside>
       <main className="flex-1 overflow-y-auto bg-gray-50">
         {children}
