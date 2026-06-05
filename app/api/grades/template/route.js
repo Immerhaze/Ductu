@@ -93,24 +93,60 @@ export async function GET(req) {
 
     XLSX.utils.book_append_sheet(wb, ws, "notas");
 
-    // Hoja de info
-    const wsInfo = XLSX.utils.aoa_to_sheet([
-      ["Información del template"],
+    // Hoja guía
+    const wsGuia = XLSX.utils.aoa_to_sheet([
+      ["GUÍA DE VALORES ACEPTADOS POR EL SISTEMA"],
       [""],
+      ["COLUMNA", "VALORES QUE ENTIENDE EL SISTEMA", "NOTAS"],
+      [
+        "email",
+        "(no modificar)",
+        "Ya viene cargado con los alumnos del curso. No editar.",
+      ],
+      [
+        "titulo",
+        "Cualquier texto: Prueba 1, Trabajo Final, Tarea 3…",
+        "Obligatorio. Nombre de la evaluación.",
+      ],
+      [
+        "nota",
+        `Número entre ${scaleMin} y ${scaleMax} (ej: 4.5 o 4,5)`,
+        "Obligatorio. Acepta punto o coma decimal.",
+      ],
+      [
+        "categoria",
+        "EXAM  /  Examen  /  Prueba  /  Test\nHOMEWORK  /  Tarea  /  Trabajo\nPROJECT  /  Proyecto\nPARTICIPATION  /  Participacion\nOTHER  /  Otro  (o dejar vacío → OTHER)",
+        "Opcional. No distingue mayúsculas ni tildes.",
+      ],
+      [
+        "ponderacion",
+        "Número decimal: 1.0, 0.5, 2.0…",
+        "Opcional. Peso relativo de la nota. Default: 1.0",
+      ],
+      [
+        "comentario",
+        "Cualquier texto libre",
+        "Opcional. Observación sobre la nota.",
+      ],
+      [""],
+      ["DATOS DE ESTE TEMPLATE"],
       ["Curso",      assignment.course.name],
       ["Asignatura", assignment.subject.name],
       ["Escala",     `${scaleMin} – ${scaleMax}`],
+      ["Alumnos",    students.length],
       [""],
-      ["Instrucciones"],
-      ["1. NO modifiques la columna email"],
-      ["2. Llena la columna 'titulo' con el nombre de la evaluación"],
-      ["3. Llena la columna 'nota' con el valor numérico"],
-      ["4. La columna 'categoria' es opcional (default: OTHER)"],
-      ["5. Guarda el archivo y súbelo en DUCTU"],
+      ["EJEMPLOS COMPLETOS"],
+      [""],
+      ["email", "titulo", "nota", "categoria", "ponderacion", "comentario"],
+      [`alumno1@colegio.com`, "Prueba 1",       "5.5", "EXAM",          "1.0", "Buen desempeño"],
+      [`alumno2@colegio.com`, "Tarea semana 3", "6.0", "Tarea",         "0.5", ""],
+      [`alumno3@colegio.com`, "Proyecto final", "4.0", "Proyecto",      "2.0", "Entregó tarde"],
+      [`alumno4@colegio.com`, "Participación",  "7.0", "participacion", "1.0", ""],
+      [`alumno5@colegio.com`, "Control 2",      "3.5", "exam",          "1.0", "Necesita refuerzo"],
     ]);
 
-    wsInfo["!cols"] = [{ wch: 20 }, { wch: 40 }];
-    XLSX.utils.book_append_sheet(wb, wsInfo, "info");
+    wsGuia["!cols"] = [{ wch: 28 }, { wch: 52 }, { wch: 40 }];
+    XLSX.utils.book_append_sheet(wb, wsGuia, "guia");
 
     const buf = XLSX.write(wb, { type: "buffer", bookType: "xlsx" });
 

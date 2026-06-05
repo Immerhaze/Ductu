@@ -157,6 +157,7 @@ export default function BlocksManager({ blocks, onChanged }) {
       )}
 
       <BlockModal
+        key={editing?.id ?? "new"}
         open={modalOpen}
         onClose={() => { setModalOpen(false); setEditing(null); }}
         onSaved={handleSaved}

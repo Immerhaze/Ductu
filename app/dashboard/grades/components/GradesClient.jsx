@@ -35,6 +35,11 @@ export default function GradesClient() {
   const [selectedStudent, setSelectedStudent]           = useState(null);
   const [editingGrade, setEditingGrade]                 = useState(null);
 
+  // Filtros admin
+  const [filterTeacher, setFilterTeacher] = useState("");
+  const [filterCourse,  setFilterCourse]  = useState("");
+  const [filterSubject, setFilterSubject] = useState("");
+
   useEffect(() => {
     if (!me?.role) return;
     async function load() {
@@ -73,6 +78,61 @@ export default function GradesClient() {
   }, [selectedAssignmentId, selectedPeriodId]);
 
   useEffect(() => { loadGrades(); }, [loadGrades]);
+
+  // Listas únicas para los filtros admin
+  const adminTeachers = useMemo(() => {
+    const map = new Map();
+    assignments.forEach((a) => { if (a.teacher) map.set(a.teacher.id, a.teacher); });
+    return [...map.values()].sort((a, b) => a.fullName.localeCompare(b.fullName));
+  }, [assignments]);
+
+  const adminCourses = useMemo(() => {
+    const map = new Map();
+    assignments
+      .filter((a) => !filterTeacher || a.teacher?.id === filterTeacher)
+      .forEach((a) => map.set(a.course.id, a.course));
+    return [...map.values()].sort((a, b) => a.name.localeCompare(b.name));
+  }, [assignments, filterTeacher]);
+
+  const adminSubjects = useMemo(() => {
+    const map = new Map();
+    assignments
+      .filter((a) => (!filterTeacher || a.teacher?.id === filterTeacher) &&
+                     (!filterCourse  || a.course.id   === filterCourse))
+      .forEach((a) => map.set(a.subject.id, a.subject));
+    return [...map.values()].sort((a, b) => a.name.localeCompare(b.name));
+  }, [assignments, filterTeacher, filterCourse]);
+
+  const filteredAssignments = useMemo(() => {
+    return assignments.filter((a) =>
+      (!filterTeacher || a.teacher?.id === filterTeacher) &&
+      (!filterCourse  || a.course.id   === filterCourse)  &&
+      (!filterSubject || a.subject.id  === filterSubject)
+    );
+  }, [assignments, filterTeacher, filterCourse, filterSubject]);
+
+  // Auto-seleccionar cuando los filtros dejan exactamente una asignación
+  useEffect(() => {
+    if (filteredAssignments.length === 1) {
+      setSelectedAssignmentId(filteredAssignments[0].id);
+    }
+  }, [filteredAssignments]);
+
+  const handleFilterTeacher = (val) => {
+    setFilterTeacher(val);
+    setFilterCourse("");
+    setFilterSubject("");
+    setSelectedAssignmentId("");
+  };
+  const handleFilterCourse = (val) => {
+    setFilterCourse(val);
+    setFilterSubject("");
+    setSelectedAssignmentId("");
+  };
+  const handleFilterSubject = (val) => {
+    setFilterSubject(val);
+    setSelectedAssignmentId("");
+  };
 
   const gradesByStudent = useMemo(() => {
     const map = {};
@@ -194,7 +254,7 @@ export default function GradesClient() {
       ) : (
         <>
           <GradeSelectors
-            assignments={assignments}
+            assignments={filteredAssignments}
             periods={periods}
             selectedAssignmentId={selectedAssignmentId}
             selectedPeriodId={selectedPeriodId}
@@ -203,6 +263,15 @@ export default function GradesClient() {
             onPeriodChange={setSelectedPeriodId}
             onSearchChange={setSearch}
             isAdmin={isAdmin}
+            adminTeachers={adminTeachers}
+            adminCourses={adminCourses}
+            adminSubjects={adminSubjects}
+            filterTeacher={filterTeacher}
+            filterCourse={filterCourse}
+            filterSubject={filterSubject}
+            onFilterTeacher={handleFilterTeacher}
+            onFilterCourse={handleFilterCourse}
+            onFilterSubject={handleFilterSubject}
           />
 
           {students.length > 0 && (

@@ -51,7 +51,7 @@ export default function AdminScheduleView() {
       // Cargar bloques
       const blocksRes = await fetch("/api/schedule/blocks");
       const blocksData = await blocksRes.json();
-      setBlocks(blocksData.blocks ?? []);
+      setBlocks((blocksData.blocks ?? []).sort((a, b) => a.startTime.localeCompare(b.startTime)));
     }
     loadInit();
   }, []);
@@ -64,7 +64,7 @@ export default function AdminScheduleView() {
         const res = await fetch(`/api/schedule/course/${selectedCourseId}`);
         const data = await res.json();
         setSlots(data.slots ?? []);
-        if (data.blocks?.length > 0) setBlocks(data.blocks);
+        if (data.blocks?.length > 0) setBlocks([...data.blocks].sort((a, b) => a.startTime.localeCompare(b.startTime)));
       } finally {
         setLoading(false);
       }
@@ -97,7 +97,7 @@ export default function AdminScheduleView() {
   };
 
   const handleBlocksChanged = (newBlocks) => {
-    setBlocks(newBlocks);
+    setBlocks([...newBlocks].sort((a, b) => a.startTime.localeCompare(b.startTime)));
   };
 
   const toggleDay = (day) => {

@@ -1,9 +1,14 @@
 // app/dashboard/grades/components/ImportGradesModal.jsx
 "use client";
 
-import { useRef, useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { useEffect, useRef, useState } from "react";
+import {
+  Dialog, DialogContent, DialogHeader,
+  DialogTitle, DialogFooter,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+
+// step: "upload" | "preview" | "sending" | "success" | "result"
 
 const CATEGORY_LABELS = {
   EXAM:          "Examen / Prueba",
@@ -18,16 +23,23 @@ export default function ImportGradesModal({
   onClose,
   assignmentId,
   periodId,
-  assignmentLabel, // "7°A · Matemáticas"
+  assignmentLabel,
   onImported,
 }) {
-  const fileInputRef            = useRef(null);
-  const [file, setFile]         = useState(null);
-  const [step, setStep]         = useState("upload"); // upload | preview | result
-  const [preview, setPreview]   = useState(null);     // { validRows, errors }
-  const [result, setResult]     = useState(null);     // { imported, skipped, errors }
-  const [loading, setLoading]   = useState(false);
-  const [error, setError]       = useState("");
+  const fileInputRef          = useRef(null);
+  const [file, setFile]       = useState(null);
+  const [step, setStep]       = useState("upload");
+  const [preview, setPreview] = useState(null);
+  const [result, setResult]   = useState(null);
+  const [error, setError]     = useState("");
+  const [loading, setLoading] = useState(false);
+
+  // Auto-avanzar de "success" → "result" tras 1.8 s
+  useEffect(() => {
+    if (step !== "success") return;
+    const t = setTimeout(() => setStep("result"), 1800);
+    return () => clearTimeout(t);
+  }, [step]);
 
   const reset = () => {
     setFile(null);
@@ -35,29 +47,23 @@ export default function ImportGradesModal({
     setPreview(null);
     setResult(null);
     setError("");
+    setLoading(false);
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
-  const handleClose = () => {
-    reset();
-    onClose();
-  };
+  const handleClose = () => { reset(); onClose(); };
 
-  // Descargar template
   const handleDownloadTemplate = () => {
     window.open(`/api/grades/template?assignmentId=${assignmentId}`, "_blank");
   };
 
-  // Preview del archivo antes de importar
   const handleFileChange = async (e) => {
     const f = e.target.files?.[0];
     if (!f) return;
     setFile(f);
     setError("");
     setLoading(true);
-
     try {
-      // Parsear en el cliente para mostrar preview
       const { parseGradesExcel } = await import("@/lib/import/gradesParser");
       const parsed = await parseGradesExcel(f);
       setPreview(parsed);
@@ -69,11 +75,10 @@ export default function ImportGradesModal({
     }
   };
 
-  // Confirmar importación
   const handleImport = async () => {
     if (!file || !assignmentId || !periodId) return;
-    setLoading(true);
     setError("");
+    setStep("sending");
 
     try {
       const formData = new FormData();
@@ -86,37 +91,82 @@ export default function ImportGradesModal({
 
       if (!res.ok) {
         setError(data.error ?? "Error importando notas.");
+        setStep("preview");
         return;
       }
 
       setResult(data);
-      setStep("result");
       if (data.imported > 0) onImported?.();
-    } catch (e) {
+      setStep("success");
+    } catch {
       setError("Error de red.");
-    } finally {
-      setLoading(false);
+      setStep("preview");
     }
   };
+
+  const canImport = step === "preview" && (preview?.validRows?.length ?? 0) > 0 && !loading;
 
   return (
     <Dialog open={open} onOpenChange={(v) => { if (!v) handleClose(); }}>
       <DialogContent className="max-w-lg">
-        <DialogHeader>
-          <DialogTitle>Importar notas masivamente</DialogTitle>
-          {assignmentLabel && (
-            <p className="text-xs text-gray-400 mt-1">{assignmentLabel}</p>
-          )}
-        </DialogHeader>
+
+        {/* ── Encabezado (oculto durante animaciones) ── */}
+        {step !== "sending" && step !== "success" && (
+          <DialogHeader>
+            <DialogTitle>Importar notas masivamente</DialogTitle>
+            {assignmentLabel && (
+              <p className="text-xs text-gray-400 mt-1">{assignmentLabel}</p>
+            )}
+          </DialogHeader>
+        )}
+
+        {/* ── Animación de carga ── */}
+        {step === "sending" && (
+          <div className="flex flex-col items-center justify-center py-10 gap-5">
+            <div className="relative w-16 h-16">
+              <div className="absolute inset-0 rounded-full border-4 border-blue-100" />
+              <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-blue-950 animate-spin" />
+            </div>
+            <div className="text-center space-y-1">
+              <p className="text-sm font-semibold text-gray-800">Importando notas…</p>
+              <p className="text-xs text-gray-500">
+                Procesando {preview?.validRows?.length ?? 0} notas. Por favor espera.
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* ── Animación de éxito ── */}
+        {step === "success" && (
+          <div className="flex flex-col items-center justify-center py-10 gap-5">
+            <div
+              className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center"
+              style={{ animation: "successPop 0.4s cubic-bezier(0.175,0.885,0.32,1.275) both" }}
+            >
+              <span className="icon-[lucide--check] text-green-600 text-3xl" />
+            </div>
+            <div className="text-center space-y-1">
+              <p className="text-sm font-semibold text-gray-800">
+                ¡{result?.imported ?? 0} nota{result?.imported !== 1 ? "s" : ""} importada{result?.imported !== 1 ? "s" : ""}!
+              </p>
+              <p className="text-xs text-gray-500">Preparando el resumen…</p>
+            </div>
+            <style>{`
+              @keyframes successPop {
+                0%   { transform: scale(0); opacity: 0; }
+                100% { transform: scale(1); opacity: 1; }
+              }
+            `}</style>
+          </div>
+        )}
 
         {/* ── STEP: UPLOAD ── */}
         {step === "upload" && (
           <div className="space-y-4 py-2">
-            {/* Instrucciones */}
             <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 space-y-2">
               <p className="text-xs font-semibold text-blue-800">¿Cómo funciona?</p>
               <ol className="text-xs text-blue-700 space-y-1 list-decimal list-inside">
-                <li>Descarga el template con los alumnos pre-cargados</li>
+                <li>Descarga el template — ya incluye los alumnos del curso</li>
                 <li>Llena la columna <strong>nota</strong> y el <strong>título</strong> de la evaluación</li>
                 <li>Sube el archivo para importar</li>
               </ol>
@@ -128,7 +178,7 @@ export default function ImportGradesModal({
               className="w-full border-dashed border-2 border-blue-200 text-blue-700 hover:bg-blue-50 h-12"
             >
               <span className="icon-[lucide--download] text-base mr-2" />
-              Descargar template Excel
+              Descargar template Excel (con alumnos)
             </Button>
 
             <div
@@ -161,7 +211,6 @@ export default function ImportGradesModal({
         {/* ── STEP: PREVIEW ── */}
         {step === "preview" && preview && (
           <div className="space-y-4 py-2">
-            {/* Resumen */}
             <div className="grid grid-cols-3 gap-3">
               <div className="bg-gray-50 rounded-xl p-3 text-center">
                 <p className="text-xl font-bold text-gray-900">{preview.total}</p>
@@ -181,7 +230,6 @@ export default function ImportGradesModal({
               </div>
             </div>
 
-            {/* Preview de filas válidas */}
             {preview.validRows.length > 0 && (
               <div>
                 <p className="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-2">
@@ -212,7 +260,6 @@ export default function ImportGradesModal({
               </div>
             )}
 
-            {/* Errores */}
             {preview.errors.length > 0 && (
               <div>
                 <p className="text-xs font-semibold text-red-500 uppercase tracking-widest mb-2">
@@ -243,15 +290,6 @@ export default function ImportGradesModal({
         {/* ── STEP: RESULT ── */}
         {step === "result" && result && (
           <div className="space-y-4 py-4">
-            <div className="text-center">
-              <p className="text-4xl mb-3">{result.imported > 0 ? "✅" : "⚠️"}</p>
-              <p className="text-lg font-bold text-gray-900">
-                {result.imported > 0
-                  ? `${result.imported} nota${result.imported > 1 ? "s" : ""} importada${result.imported > 1 ? "s" : ""}`
-                  : "Sin notas importadas"}
-              </p>
-            </div>
-
             <div className="grid grid-cols-3 gap-3">
               <div className="bg-green-50 rounded-xl p-3 text-center">
                 <p className="text-xl font-bold text-green-700">{result.imported}</p>
@@ -284,40 +322,49 @@ export default function ImportGradesModal({
                 </div>
               </div>
             )}
+
+            {result.errors?.length > 0 && (
+              <div className="max-h-32 overflow-y-auto bg-red-50 border border-red-100 rounded-xl p-3 space-y-1.5">
+                <p className="text-xs font-semibold text-red-500 mb-1">Errores del servidor:</p>
+                {result.errors.map((e, i) => (
+                  <div key={i} className="flex items-start gap-2">
+                    <span className="text-red-400 text-xs shrink-0">{e.email}:</span>
+                    <span className="text-xs text-red-700">{e.message}</span>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
 
-        <DialogFooter>
-          {step === "upload" && (
-            <Button variant="ghost" onClick={handleClose}>Cancelar</Button>
-          )}
+        {/* ── Footer (oculto durante animaciones) ── */}
+        {step !== "sending" && step !== "success" && (
+          <DialogFooter>
+            {step === "upload" && (
+              <Button variant="ghost" onClick={handleClose}>Cancelar</Button>
+            )}
 
-          {step === "preview" && (
-            <>
-              <Button variant="ghost" onClick={reset} disabled={loading}>
-                ← Volver
-              </Button>
-              <Button
-                onClick={handleImport}
-                disabled={loading || preview?.validRows?.length === 0}
-                className="bg-blue-950 hover:bg-blue-900"
-              >
-                {loading ? (
-                  <span className="flex items-center gap-1.5">
-                    <span className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                    Importando...
-                  </span>
-                ) : `Importar ${preview?.validRows?.length ?? 0} notas`}
-              </Button>
-            </>
-          )}
+            {step === "preview" && (
+              <>
+                <Button variant="ghost" onClick={reset} disabled={loading}>← Volver</Button>
+                <Button
+                  onClick={handleImport}
+                  disabled={!canImport}
+                  className="bg-blue-950 hover:bg-blue-900"
+                >
+                  Importar {preview?.validRows?.length ?? 0} notas
+                </Button>
+              </>
+            )}
 
-          {step === "result" && (
-            <Button onClick={handleClose} className="bg-blue-950 hover:bg-blue-900">
-              Cerrar
-            </Button>
-          )}
-        </DialogFooter>
+            {step === "result" && (
+              <Button onClick={handleClose} className="bg-blue-950 hover:bg-blue-900">
+                Cerrar
+              </Button>
+            )}
+          </DialogFooter>
+        )}
+
       </DialogContent>
     </Dialog>
   );

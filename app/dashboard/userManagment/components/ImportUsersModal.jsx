@@ -1,7 +1,7 @@
 // components/ImportUsersModal.jsx
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Dialog, DialogContent, DialogHeader,
   DialogTitle, DialogDescription, DialogFooter,
@@ -11,15 +11,24 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { parseBulkInvitesExcel } from "@/lib/import/bulkInviteParser";
 
+// step: "pick" | "preview" | "sending" | "success" | "done"
+
 export default function ImportUsersModal({ open, onClose, onImport }) {
-  const [file, setFile] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [step, setStep] = useState("pick"); // "pick" | "preview" | "done"
-  const [preview, setPreview] = useState(null);
+  const [file, setFile]             = useState(null);
+  const [loading, setLoading]       = useState(false);
+  const [step, setStep]             = useState("pick");
+  const [preview, setPreview]       = useState(null);
   const [parseError, setParseError] = useState("");
   const [uploadResult, setUploadResult] = useState(null);
 
   const fileName = useMemo(() => file?.name ?? "", [file]);
+
+  // Auto-avanzar de "success" → "done" tras 1.8 s
+  useEffect(() => {
+    if (step !== "success") return;
+    const t = setTimeout(() => setStep("done"), 1800);
+    return () => clearTimeout(t);
+  }, [step]);
 
   const reset = () => {
     setFile(null);
@@ -27,6 +36,7 @@ export default function ImportUsersModal({ open, onClose, onImport }) {
     setPreview(null);
     setParseError("");
     setUploadResult(null);
+    setLoading(false);
   };
 
   const handlePick = (e) => {
@@ -38,12 +48,7 @@ export default function ImportUsersModal({ open, onClose, onImport }) {
   };
 
   function handleDownloadTemplate() {
-    const link = document.createElement("a");
-    link.href = "/templates/invitaciones-bulk-template.xlsx";
-    link.download = "invitaciones-bulk-template.xlsx";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    window.location.href = "/api/admin/invitations/template";
   }
 
   const handleValidate = async () => {
@@ -51,7 +56,6 @@ export default function ImportUsersModal({ open, onClose, onImport }) {
     setLoading(true);
     setParseError("");
     setPreview(null);
-
     try {
       const result = await parseBulkInvitesExcel(file);
       setPreview(result);
@@ -65,8 +69,9 @@ export default function ImportUsersModal({ open, onClose, onImport }) {
 
   const handleUpload = async () => {
     if (!preview?.validRows?.length) return;
+    setParseError("");
+    setStep("sending");
 
-    setLoading(true);
     try {
       const res = await fetch("/api/admin/invitations/bulk", {
         method: "POST",
@@ -75,39 +80,79 @@ export default function ImportUsersModal({ open, onClose, onImport }) {
       });
 
       const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data?.message ?? `Error ${res.status}`);
-      }
+      if (!res.ok) throw new Error(data?.message ?? `Error ${res.status}`);
 
       setUploadResult(data);
-      setStep("done");
       await onImport?.(data);
+      setStep("success");
     } catch (e) {
-      setParseError(e?.message ?? "No se pudo subir el archivo.");
-    } finally {
-      setLoading(false);
+      setParseError(e?.message ?? "No se pudo enviar las invitaciones.");
+      setStep("preview");
     }
   };
 
-  const hasErrors = (preview?.errors?.length ?? 0) > 0;
+  const hasErrors    = (preview?.errors?.length ?? 0) > 0;
   const hasValidRows = (preview?.validRows?.length ?? 0) > 0;
-  const canUpload = step === "preview" && !hasErrors && hasValidRows && !loading;
+  const canUpload    = step === "preview" && !hasErrors && hasValidRows && !loading;
 
   return (
     <Dialog open={open} onOpenChange={(v) => { if (!v) { reset(); onClose?.(); } }}>
       <DialogContent className="max-w-lg">
-        <DialogHeader>
-          <DialogTitle>Importar usuarios por Excel</DialogTitle>
-          <DialogDescription>
-            Descarga el template, complétalo y sube el archivo. Las invitaciones se enviarán por email automáticamente.
-          </DialogDescription>
-        </DialogHeader>
+
+        {/* ── Encabezado (oculto durante animaciones) ── */}
+        {step !== "sending" && step !== "success" && (
+          <DialogHeader>
+            <DialogTitle>Importar usuarios por Excel</DialogTitle>
+            <DialogDescription>
+              Descarga el template, complétalo y sube el archivo. Las invitaciones se enviarán por email automáticamente.
+            </DialogDescription>
+          </DialogHeader>
+        )}
 
         <div className="space-y-4">
 
-          {/* Paso 1: template + selector */}
-          {step !== "done" && (
+          {/* ── Animación de carga ── */}
+          {step === "sending" && (
+            <div className="flex flex-col items-center justify-center py-10 gap-5">
+              <div className="relative w-16 h-16">
+                <div className="absolute inset-0 rounded-full border-4 border-blue-100" />
+                <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-blue-950 animate-spin" />
+              </div>
+              <div className="text-center space-y-1">
+                <p className="text-sm font-semibold text-gray-800">Procesando invitaciones…</p>
+                <p className="text-xs text-gray-500">
+                  Enviando {preview?.validRows?.length ?? 0} invitaciones por email. Por favor espera.
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* ── Animación de éxito ── */}
+          {step === "success" && (
+            <div className="flex flex-col items-center justify-center py-10 gap-5">
+              <div
+                className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center"
+                style={{ animation: "successPop 0.4s cubic-bezier(0.175,0.885,0.32,1.275) both" }}
+              >
+                <span className="icon-[lucide--check] text-green-600 text-3xl" />
+              </div>
+              <div className="text-center space-y-1">
+                <p className="text-sm font-semibold text-gray-800">
+                  ¡{uploadResult?.created ?? 0} invitaciones enviadas!
+                </p>
+                <p className="text-xs text-gray-500">Preparando el resumen…</p>
+              </div>
+              <style>{`
+                @keyframes successPop {
+                  0%   { transform: scale(0); opacity: 0; }
+                  100% { transform: scale(1); opacity: 1; }
+                }
+              `}</style>
+            </div>
+          )}
+
+          {/* ── Paso 1: template + selector ── */}
+          {(step === "pick" || step === "preview") && (
             <>
               <div className="rounded-lg border p-3 bg-white flex items-center justify-between gap-3">
                 <div>
@@ -123,7 +168,6 @@ export default function ImportUsersModal({ open, onClose, onImport }) {
                 {fileName && <p className="text-xs text-muted-foreground">Seleccionado: {fileName}</p>}
               </div>
 
-              {/* Columnas esperadas */}
               <div className="rounded-lg border bg-gray-50 p-3 text-xs text-gray-600 space-y-1">
                 <p className="font-medium text-sm text-gray-700 mb-1">Columnas esperadas</p>
                 <p><span className="font-medium">Todos:</span> email, rol, enviar invitación (S/N)</p>
@@ -134,14 +178,14 @@ export default function ImportUsersModal({ open, onClose, onImport }) {
             </>
           )}
 
-          {/* Error de parseo */}
+          {/* ── Error de parseo ── */}
           {parseError && (
             <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
               {parseError}
             </div>
           )}
 
-          {/* Paso 2: preview */}
+          {/* ── Paso 2: preview de validación ── */}
           {step === "preview" && preview && (
             <div className="rounded-lg border p-3 bg-white space-y-3">
               <div className="flex items-center justify-between">
@@ -181,7 +225,7 @@ export default function ImportUsersModal({ open, onClose, onImport }) {
             </div>
           )}
 
-          {/* Paso 3: resultado del upload */}
+          {/* ── Paso 3: resultado final ── */}
           {step === "done" && uploadResult && (
             <div className="rounded-lg border p-4 bg-white space-y-3">
               <p className="text-sm font-medium">Proceso completado</p>
@@ -216,32 +260,36 @@ export default function ImportUsersModal({ open, onClose, onImport }) {
           )}
         </div>
 
-        <DialogFooter>
-          {step === "done" ? (
-            <Button onClick={() => { reset(); onClose?.(); }}>Cerrar</Button>
-          ) : (
-            <>
-              <Button variant="ghost" onClick={() => { reset(); onClose?.(); }} disabled={loading}>Cancelar</Button>
+        {/* ── Footer (oculto durante animaciones) ── */}
+        {step !== "sending" && step !== "success" && (
+          <DialogFooter>
+            {step === "done" ? (
+              <Button onClick={() => { reset(); onClose?.(); }}>Cerrar</Button>
+            ) : (
+              <>
+                <Button variant="ghost" onClick={() => { reset(); onClose?.(); }} disabled={loading}>Cancelar</Button>
 
-              {step === "pick" && (
-                <Button variant="outline" onClick={handleValidate} disabled={!file || loading}>
-                  {loading ? "Validando..." : "Validar archivo"}
-                </Button>
-              )}
+                {step === "pick" && (
+                  <Button variant="outline" onClick={handleValidate} disabled={!file || loading}>
+                    {loading ? "Validando..." : "Validar archivo"}
+                  </Button>
+                )}
 
-              {step === "preview" && (
-                <>
-                  <Button variant="outline" onClick={() => setStep("pick")} disabled={loading}>
-                    Cambiar archivo
-                  </Button>
-                  <Button onClick={handleUpload} disabled={!canUpload}>
-                    {loading ? "Enviando invitaciones..." : `Confirmar y enviar (${preview?.validRows?.length ?? 0})`}
-                  </Button>
-                </>
-              )}
-            </>
-          )}
-        </DialogFooter>
+                {step === "preview" && (
+                  <>
+                    <Button variant="outline" onClick={() => setStep("pick")} disabled={loading}>
+                      Cambiar archivo
+                    </Button>
+                    <Button onClick={handleUpload} disabled={!canUpload}>
+                      {`Confirmar y enviar (${preview?.validRows?.length ?? 0})`}
+                    </Button>
+                  </>
+                )}
+              </>
+            )}
+          </DialogFooter>
+        )}
+
       </DialogContent>
     </Dialog>
   );

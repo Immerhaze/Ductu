@@ -6,7 +6,6 @@ import AcademicYearsTab from "./AcademicYearsTab";
 import SubjectsTab from "./SubjectsTab";
 import CoursesTab from "./CoursesTab";
 import AssignmentsTab from "./AssignmentsTab";
-import InstitutionTab from "./InstitutionTab";
 
 const ADMIN_TABS = [
   { key: "years",       label: "Año académico" },
@@ -14,7 +13,6 @@ const ADMIN_TABS = [
   { key: "courses",     label: "Cursos" },
   { key: "subjects",    label: "Asignaturas" },
   { key: "assignments", label: "Asignaciones docentes" },
-  { key: "institution", label: "Institución" },
 ];
 
 export default function SettingsClient({ userRole }) {
@@ -67,12 +65,11 @@ export default function SettingsClient({ userRole }) {
       </div>
 
       {/* Contenido */}
-   {activeTab === "years"       && <AcademicYearsTab />}
-{activeTab === "periods"     && <AcademicYearsTab showPeriodsOnly />}
-{activeTab === "courses"     && <CoursesTab />}
-{activeTab === "subjects"    && <SubjectsTab />}
-{activeTab === "assignments" && <AssignmentsTab />}
-{activeTab === "institution" && <InstitutionTab />}
+         {activeTab === "years"       && <AcademicYearsTab />}
+      {activeTab === "periods"     && <AcademicYearsTab showPeriodsOnly />}
+      {activeTab === "courses"     && <CoursesTab />}
+      {activeTab === "subjects"    && <SubjectsTab />}
+      {activeTab === "assignments" && <AssignmentsTab />}
     </div>
   );
 }

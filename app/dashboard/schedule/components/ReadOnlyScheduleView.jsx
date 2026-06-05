@@ -18,7 +18,7 @@ export default function ReadOnlyScheduleView({ userRole }) {
         if (!res.ok) return;
         const data = await res.json();
         setSlots(data.slots ?? []);
-        setBlocks(data.blocks ?? []);
+        setBlocks((data.blocks ?? []).sort((a, b) => a.startTime.localeCompare(b.startTime)));
       } finally {
         setLoading(false);
       }

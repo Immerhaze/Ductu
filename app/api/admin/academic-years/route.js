@@ -18,7 +18,7 @@ export async function GET() {
       }),
       prisma.institutionAcademicPolicy.findUnique({
         where: { institutionId },
-        select: { activeAcademicYearId: true, passingGrade: true, scaleMin: true, scaleMax: true },
+        select: { activeAcademicYearId: true },
       }),
     ]);
 

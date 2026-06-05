@@ -1,17 +1,76 @@
 // app/dashboard/settings/components/AssignmentsTab.jsx
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+
+function TeacherGroup({ teacher, assignments, onDelete }) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <div className="border-b border-gray-100 last:border-0">
+      {/* Cabecera del docente */}
+      <button
+        onClick={() => setOpen((v) => !v)}
+        className="w-full flex items-center gap-4 px-6 py-4 hover:bg-gray-50 transition-colors text-left"
+      >
+        <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center shrink-0">
+          <span className="text-xs font-bold text-indigo-700">
+            {teacher.name?.charAt(0)?.toUpperCase() ?? "?"}
+          </span>
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-semibold text-gray-900">{teacher.name}</p>
+          <p className="text-xs text-gray-400">{teacher.email}</p>
+        </div>
+        <span className="text-xs font-medium bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full shrink-0">
+          {assignments.length} asignación{assignments.length !== 1 ? "es" : ""}
+        </span>
+        <svg
+          className={`w-4 h-4 text-gray-400 shrink-0 transition-transform ${open ? "rotate-180" : ""}`}
+          fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+
+      {/* Asignaciones del docente */}
+      {open && (
+        <div className="bg-gray-50/60 divide-y divide-gray-100">
+          {assignments.map((a) => (
+            <div key={a.id} className="flex items-center gap-4 px-6 py-3 pl-16">
+              <div className="flex-1 flex items-center gap-3 flex-wrap">
+                <span className="text-sm text-gray-700 font-medium">{a.course?.name ?? "—"}</span>
+                <svg className="w-3 h-3 text-gray-300 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                </svg>
+                <span className="text-xs font-medium bg-indigo-50 text-indigo-700 border border-indigo-100 px-2.5 py-0.5 rounded-full">
+                  {a.subject?.name ?? "—"}
+                </span>
+              </div>
+              <button
+                onClick={() => onDelete(a.id)}
+                className="text-xs text-gray-300 hover:text-red-500 transition-colors shrink-0"
+                title="Eliminar asignación"
+              >
+                🗑️
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function AssignmentsTab() {
   const [assignments, setAssignments] = useState([]);
   const [loading, setLoading]         = useState(true);
   const [error, setError]             = useState("");
   const [modalOpen, setModalOpen]     = useState(false);
+  const [search, setSearch]           = useState("");
 
-  // Datos para el modal
   const [teachers, setTeachers]   = useState([]);
   const [courses, setCourses]     = useState([]);
   const [subjects, setSubjects]   = useState([]);
@@ -26,7 +85,7 @@ export default function AssignmentsTab() {
         fetch("/api/admin/assignments"),
         fetch("/api/admin/users"),
         fetch("/api/courses?onlyActive=1"),
-        fetch("/api/admin/subjects"),
+        fetch("/api/subjects"),
       ]);
       const [assignData, usersData, coursesData, subjectsData] = await Promise.all([
         assignRes.json(), usersRes.json(), coursesRes.json(), subjectsRes.json(),
@@ -64,6 +123,33 @@ export default function AssignmentsTab() {
     await load();
   };
 
+  // Agrupar por docente
+  const grouped = useMemo(() => {
+    const q = search.toLowerCase().trim();
+
+    const filtered = q
+      ? assignments.filter((a) =>
+          a.teacher?.fullName?.toLowerCase().includes(q) ||
+          a.teacher?.email?.toLowerCase().includes(q) ||
+          a.course?.name?.toLowerCase().includes(q) ||
+          a.subject?.name?.toLowerCase().includes(q)
+        )
+      : assignments;
+
+    const map = {};
+    for (const a of filtered) {
+      const tid = a.teacher?.id ?? "unknown";
+      if (!map[tid]) {
+        map[tid] = {
+          teacher: { id: tid, name: a.teacher?.fullName ?? "—", email: a.teacher?.email ?? "" },
+          assignments: [],
+        };
+      }
+      map[tid].assignments.push(a);
+    }
+    return Object.values(map).sort((a, b) => a.teacher.name.localeCompare(b.teacher.name));
+  }, [assignments, search]);
+
   if (loading) return (
     <div className="flex items-center gap-3 py-8 text-gray-400 text-sm">
       <div className="w-5 h-5 border-2 border-gray-200 border-t-blue-500 rounded-full animate-spin" />
@@ -73,11 +159,12 @@ export default function AssignmentsTab() {
 
   return (
     <div className="space-y-4">
+      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <p className="text-sm font-semibold text-gray-900">Asignaciones docentes</p>
           <p className="text-xs text-gray-400 mt-0.5">
-            Asigna qué docente enseña qué asignatura en qué curso para el año activo
+            {assignments.length} asignación{assignments.length !== 1 ? "es" : ""} · {grouped.length} docente{grouped.length !== 1 ? "s" : ""}
           </p>
         </div>
         <Button onClick={() => setModalOpen(true)} className="bg-blue-950 hover:bg-blue-900 text-sm">
@@ -85,8 +172,29 @@ export default function AssignmentsTab() {
         </Button>
       </div>
 
+      {/* Buscador */}
+      {assignments.length > 0 && (
+        <div className="relative">
+          <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" />
+          </svg>
+          <input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Buscar por docente, email, curso o asignatura..."
+            className="w-full pl-9 pr-4 py-2 text-sm border border-gray-200 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          {search && (
+            <button onClick={() => setSearch("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 text-xs">
+              ✕
+            </button>
+          )}
+        </div>
+      )}
+
       {error && <p className="text-sm text-red-600">{error}</p>}
 
+      {/* Lista */}
       {assignments.length === 0 ? (
         <div className="bg-white border border-gray-200 rounded-2xl py-12 text-center">
           <p className="text-3xl mb-3">👩‍🏫</p>
@@ -95,45 +203,24 @@ export default function AssignmentsTab() {
             Las asignaciones determinan qué docente puede ingresar notas en cada curso y asignatura.
           </p>
         </div>
+      ) : grouped.length === 0 ? (
+        <div className="bg-white border border-gray-200 rounded-2xl py-10 text-center">
+          <p className="text-sm text-gray-500">Sin resultados para "{search}"</p>
+        </div>
       ) : (
         <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="bg-gray-50 border-b border-gray-100">
-                <th className="text-left px-6 py-3 text-xs font-semibold text-gray-400 uppercase tracking-widest">Docente</th>
-                <th className="text-left px-6 py-3 text-xs font-semibold text-gray-400 uppercase tracking-widest">Curso</th>
-                <th className="text-left px-6 py-3 text-xs font-semibold text-gray-400 uppercase tracking-widest">Asignatura</th>
-                <th className="text-right px-6 py-3 text-xs font-semibold text-gray-400 uppercase tracking-widest">Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              {assignments.map((a) => (
-                <tr key={a.id} className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
-                  <td className="px-6 py-3">
-                    <p className="font-medium text-gray-900">{a.teacher?.fullName ?? "—"}</p>
-                    <p className="text-xs text-gray-400">{a.teacher?.email}</p>
-                  </td>
-                  <td className="px-6 py-3 text-gray-700">{a.course?.name ?? "—"}</td>
-                  <td className="px-6 py-3">
-                    <span className="text-xs font-medium bg-indigo-50 text-indigo-700 border border-indigo-100 px-2.5 py-0.5 rounded-full">
-                      {a.subject?.name ?? "—"}
-                    </span>
-                  </td>
-                  <td className="px-6 py-3 text-right">
-                    <button
-                      onClick={() => handleDelete(a.id)}
-                      className="text-xs text-gray-400 hover:text-red-500 transition-colors"
-                    >
-                      🗑️ Eliminar
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          {grouped.map(({ teacher, assignments: teacherAssignments }) => (
+            <TeacherGroup
+              key={teacher.id}
+              teacher={teacher}
+              assignments={teacherAssignments}
+              onDelete={handleDelete}
+            />
+          ))}
         </div>
       )}
 
+      {/* Modal */}
       <Dialog open={modalOpen} onOpenChange={(v) => { if (!v) { setModalOpen(false); setError(""); } }}>
         <DialogContent className="max-w-sm">
           <DialogHeader><DialogTitle>Nueva asignación docente</DialogTitle></DialogHeader>

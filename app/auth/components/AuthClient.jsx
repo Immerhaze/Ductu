@@ -33,6 +33,13 @@ export default function AuthClient({
   invitedRole,
   institutionName,
 }) {
+
+const ROLE_LABELS = {
+   TEACHER:"Profesor/a",
+   ADMINISTRATIVE:"Administrativo/a",
+   STUDENT:"Estudiante"
+  };
+
   const isInvite = mode === "invite";
 
   const initialIsLogin = useMemo(() => Boolean(isLoginDefault), [isLoginDefault]);
@@ -106,7 +113,7 @@ export default function AuthClient({
             {invitedRole ? (
               <>
                 <br />
-                Rol: <span className="font-semibold">{invitedRole}</span>
+                Rol: <span className="font-semibold">{ROLE_LABELS[invitedRole]}</span>
               </>
             ) : null}
           </p>

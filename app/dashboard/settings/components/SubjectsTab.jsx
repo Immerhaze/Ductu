@@ -18,7 +18,7 @@ export default function SubjectsTab() {
 
   const load = async () => {
     try {
-      const res = await fetch("/api/admin/subjects");
+      const res = await fetch("/api/subjects");
       const data = await res.json();
       setSubjects(data.subjects ?? []);
     } catch { setError("No se pudieron cargar las asignaturas."); }
@@ -34,7 +34,7 @@ export default function SubjectsTab() {
     if (!name.trim()) { setError("Nombre requerido."); return; }
     setSaving(true); setError("");
     try {
-      const url = editing ? `/api/admin/subjects/${editing.id}` : "/api/admin/subjects";
+      const url = editing ? `/api/subjects/${editing.id}` : "/api/subjects";
       const method = editing ? "PATCH" : "POST";
       const res = await fetch(url, {
         method,
@@ -49,7 +49,7 @@ export default function SubjectsTab() {
   };
 
   const handleToggle = async (subject) => {
-    await fetch(`/api/admin/subjects/${subject.id}`, {
+    await fetch(`/api/subjects/${subject.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ isActive: !subject.isActive }),
