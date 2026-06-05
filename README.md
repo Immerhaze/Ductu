@@ -24,11 +24,6 @@ La plataforma está construida con tecnologías modernas de desarrollo web, apli
 - Git y GitHub para control de versiones
 
 ---
-
-## 🧩 Módulo Principal – Administración de Usuarios
-
-Este repositorio incluye la implementación del **Módulo de Administración de Usuarios**, desarrollado como parte de la evidencia académica GA7-220501096-AA4-EV03.
-
 ### Funcionalidades Implementadas
 
 - Listado de usuarios institucionales
@@ -129,18 +124,10 @@ Modelado de base de datos con Prisma
 
 Panel administrativo con control por roles
 
-El proyecto se encuentra en desarrollo activo y evoluciona hacia una solución SaaS académica completamente escalable.
+<img width="969" height="980" alt="image" src="https://github.com/user-attachments/assets/abdb3b50-771c-4eec-9a27-42805a18d1cf" />
 
-📌 Acceso al Repositorio
 
-El repositorio se encuentra en modo privado debido a que el proyecto está en desarrollo activo.
-Se ha otorgado acceso al instructor para su respectiva revisión académica.
 
 👨‍💻 Autor
 
 Nicolás Romero Carrillo
-Tecnólogo en Análisis y Desarrollo de Software
-Proyecto Académico – ADSO
-
-
-arreglar el trayecto de la curva en las muestra graficas de materias para docentes - la curva de significar algo y poder comunicar el promedio o la poryeccion mas claramente
